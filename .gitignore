@@ -31,3 +31,6 @@ Thumbs.db
 /coverage
 /playwright-report
 /test-results
+
+# Capturas de npm run revisar
+/capturas/
