@@ -9,7 +9,20 @@ import { LoginForm } from './LoginForm';
 
 export const metadata: Metadata = { title: 'Iniciar sesión' };
 
-const notices = new Map([['salida', 'Cerraste sesión en todos tus dispositivos. ¡Hasta pronto!']]);
+const notices = new Map<string, { tone: 'success' | 'warning'; text: string }>([
+  [
+    'salida',
+    { tone: 'success', text: 'Cerraste sesión en todos tus dispositivos. ¡Hasta pronto!' },
+  ],
+  ['salida-local', { tone: 'success', text: 'Cerraste sesión en este equipo.' }],
+  [
+    'salida-sin-bd',
+    {
+      tone: 'warning',
+      text: 'Cerraste sesión en este equipo, pero no pudimos cerrar tus otras sesiones. Vuelve a entrar y cierra sesión otra vez en unos minutos.',
+    },
+  ],
+]);
 
 export default async function LoginPage({
   searchParams,
@@ -51,8 +64,8 @@ export default async function LoginPage({
               : 'Entra con el correo que te registró el equipo.'}
           </p>
           {notice && (
-            <FormAlert tone="success" className="mt-4">
-              {notice}
+            <FormAlert tone={notice.tone} className="mt-4">
+              {notice.text}
             </FormAlert>
           )}
           <div className="mt-6">

@@ -17,10 +17,15 @@ export function hashPassword(plain: string): Promise<string> {
 
 /**
  * bcrypt cuesta ~0,4 s de CPU. Se limita cuántas comparaciones corren a la vez para que una
- * ráfaga de intentos no deje sin respuesta al único proceso del sitio.
+ * ráfaga de intentos no deje sin respuesta al único proceso del sitio. Las demás esperan en
+ * fila (hasta WAIT_MS); los dispositivos conocidos pasan adelante para que un ataque no deje
+ * afuera al admin en su compu de siempre.
  */
 const MAX_CONCURRENT_COMPARES = 3;
+const MAX_WAITING = 50;
+const WAIT_MS = 10_000;
 let runningCompares = 0;
+const waiting: Array<() => void> = [];
 
 export class PasswordCheckBusyError extends Error {
   constructor() {
@@ -29,14 +34,47 @@ export class PasswordCheckBusyError extends Error {
   }
 }
 
-/** Compara contra el hash (o contra el de relleno si el correo no existe). */
-export async function verifyPassword(plain: string, passwordHash: string | null): Promise<boolean> {
-  if (runningCompares >= MAX_CONCURRENT_COMPARES) throw new PasswordCheckBusyError();
-  runningCompares += 1;
+function acquireSlot(priority: boolean): Promise<boolean> {
+  if (runningCompares < MAX_CONCURRENT_COMPARES) {
+    runningCompares += 1;
+    return Promise.resolve(true);
+  }
+  if (waiting.length >= MAX_WAITING) return Promise.resolve(false);
+  return new Promise((resolve) => {
+    const grant = () => {
+      clearTimeout(timer);
+      runningCompares += 1;
+      resolve(true);
+    };
+    const timer = setTimeout(() => {
+      const index = waiting.indexOf(grant);
+      if (index >= 0) waiting.splice(index, 1);
+      resolve(false);
+    }, WAIT_MS);
+    if (priority) waiting.unshift(grant);
+    else waiting.push(grant);
+  });
+}
+
+function releaseSlot(): void {
+  runningCompares -= 1;
+  waiting.shift()?.();
+}
+
+/**
+ * Compara contra el hash (o contra el de relleno si el correo no existe). Lanza
+ * PasswordCheckBusyError si no consigue turno a tiempo.
+ */
+export async function verifyPassword(
+  plain: string,
+  passwordHash: string | null,
+  { priority = false }: { priority?: boolean } = {},
+): Promise<boolean> {
+  if (!(await acquireSlot(priority))) throw new PasswordCheckBusyError();
   try {
     return await compare(plain, passwordHash ?? DUMMY_HASH);
   } finally {
-    runningCompares -= 1;
+    releaseSlot();
   }
 }
 

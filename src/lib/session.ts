@@ -12,6 +12,8 @@ export type AdminSession = {
 
 /** Dispositivo donde ya se inició sesión con éxito (patrón «device cookie» de OWASP). */
 export type TrustedDevice = {
+  /** Id aleatorio del dispositivo: sus intentos fallidos tienen su propio límite. */
+  id: string;
   /** Correos que entraron bien desde este navegador (máx. 5, el más reciente primero). */
   emails: string[];
 };
