@@ -14,7 +14,11 @@ export type EnvName =
   | 'SMTP_USER'
   | 'SMTP_PASS'
   | 'SMTP_FROM'
-  | 'YOUTUBE_API_KEY';
+  | 'YOUTUBE_API_KEY'
+  | 'WHATSAPP_TOKEN'
+  | 'WHATSAPP_PHONE_NUMBER_ID'
+  | 'WHATSAPP_TEMPLATE_SOLICITUD'
+  | 'WHATSAPP_API_URL';
 
 export class MissingEnvError extends Error {
   constructor(name: EnvName) {

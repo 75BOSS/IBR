@@ -5,6 +5,9 @@ import { Tag } from '@/components/Tag';
 import { formatDateTime } from '@/lib/dates';
 import type { Evento } from '@/lib/eventos';
 import { TIME_ZONE } from '@/lib/site';
+import { EVENTO_CATEGORIAS } from '@/lib/validators/eventos';
+
+const categoryLabel = new Map<string, string>(EVENTO_CATEGORIAS.map((c) => [c.value, c.label]));
 
 function dateBadge(date: Date) {
   const f = (options: Intl.DateTimeFormatOptions) =>
@@ -65,6 +68,9 @@ export function EventCard({ event, featured = false }: { event: Evento; featured
             <p className={`text-ink-soft ${featured ? '' : 'line-clamp-2'}`}>{event.resumen}</p>
           )}
           <p className="flex flex-wrap gap-1.5 pt-1">
+            {event.categoria !== 'evento' && (
+              <Tag tone="accent">{categoryLabel.get(event.categoria)}</Tag>
+            )}
             {event.ubicacion && (
               <Tag tone="brand">
                 <Icon name="mapPin" className="size-3" /> {event.ubicacion}

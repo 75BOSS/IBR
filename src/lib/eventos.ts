@@ -72,6 +72,14 @@ export function listPastEventos(limit: number): Promise<Evento[]> {
   );
 }
 
+/** Publicados de una categoría, del más reciente al más antiguo (noticias, oración…). */
+export function listEventosByCategoria(categoria: string, limit: number): Promise<Evento[]> {
+  return query<Evento>(
+    `${SELECT} WHERE e.publicado = 1 AND e.categoria = ? ORDER BY e.fecha_inicio DESC LIMIT ?`,
+    [categoria, limit],
+  );
+}
+
 export function listAllEventos(): Promise<Evento[]> {
   return query<Evento>(`${SELECT} ORDER BY e.fecha_inicio DESC`);
 }

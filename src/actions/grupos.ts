@@ -14,6 +14,7 @@ import { siteUrl } from '@/lib/site';
 import { fieldErrorsOf, id as idSchema, optionalText, valuesOf } from '@/lib/validators/common';
 import { GRUPO_FIELDS, grupoSchema, unirmeSchema } from '@/lib/validators/grupos';
 import { formatPhoneEc } from '@/lib/whatsapp';
+import { sendWhatsAppTemplate } from '@/lib/whatsapp-cloud';
 
 function revalidateGrupos(id?: number) {
   revalidatePath('/admin/grupos');
@@ -157,8 +158,9 @@ export async function joinGroup(_prev: FormState, formData: FormData): Promise<F
     nombre: string;
     lider_nombre: string | null;
     lider_email: string | null;
+    lider_telefono: string | null;
   }>(
-    'SELECT id, nombre, lider_nombre, lider_email FROM grupos WHERE id = ? AND publico = 1 AND activo = 1',
+    'SELECT id, nombre, lider_nombre, lider_email, lider_telefono FROM grupos WHERE id = ? AND publico = 1 AND activo = 1',
     [d.grupo_id],
   );
   if (!group)
@@ -188,6 +190,15 @@ export async function joinGroup(_prev: FormState, formData: FormData): Promise<F
       .filter((line) => line !== null)
       .join('\n'),
   });
+  // Plantilla «nueva_solicitud_grupo»: {{1}} líder, {{2}} persona, {{3}} grupo, {{4}} su WhatsApp.
+  if (group.lider_telefono) {
+    await sendWhatsAppTemplate(group.lider_telefono, [
+      group.lider_nombre ?? 'líder',
+      d.nombre,
+      group.nombre,
+      formatPhoneEc(d.telefono),
+    ]);
+  }
   revalidatePath('/admin/grupos/solicitudes');
   return { status: 'success', message: JOIN_OK };
 }

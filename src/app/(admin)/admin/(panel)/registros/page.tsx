@@ -9,7 +9,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { Tag } from '@/components/Tag';
 import { FlashToast } from '@/components/Toast';
 import { ContactLinks } from '@/components/admin/ContactLinks';
-import { FilterTabs } from '@/components/admin/FilterTabs';
+import { FilterTabs } from '@/components/FilterTabs';
 import { StatusForm } from '@/components/admin/StatusForm';
 import { requireAdmin } from '@/lib/auth';
 import { formatDateTime } from '@/lib/dates';

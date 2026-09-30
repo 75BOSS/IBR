@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export type FilterTab = { label: string; href: string; count?: number; active: boolean };
 
-/** Pestañas de filtro del panel (estado de solicitudes, registros, peticiones). */
+/** Pestañas de filtro (estados en el panel, categorías de eventos en el sitio). */
 export function FilterTabs({ tabs, label }: { tabs: FilterTab[]; label: string }) {
   return (
     <nav aria-label={label}>

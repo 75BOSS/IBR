@@ -60,8 +60,8 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [x] Ministerios por rango de edad: `/ministerios/[slug]` con sus reuniones y grupos.
 - [x] `/servir`: `areas_servicio` + `voluntarios`.
 - [x] Suscripción a agenda semanal (`suscriptores`) + envío manual desde admin.
-- [ ] Aviso al líder por WhatsApp Cloud API cuando entra una solicitud a su grupo (patrón webhook ya usado en Pixelia).
-- [ ] Noticias / categorías en eventos (Noticias · Oración · Comunidad · Música · Capacitación).
+- [x] Aviso al líder por WhatsApp Cloud API cuando entra una solicitud a su grupo (patrón webhook ya usado en Pixelia).
+- [x] Noticias / categorías en eventos (Noticias · Oración · Comunidad · Música · Capacitación).
 - [x] Roles en admin: `admin` y `editor` (editor no toca config ni usuarios).
 
 ## F3 — Plataforma (según demanda)

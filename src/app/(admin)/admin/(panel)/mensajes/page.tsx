@@ -6,7 +6,7 @@ import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { ActionButton } from '@/components/ActionButton';
 import { ContactLinks } from '@/components/admin/ContactLinks';
-import { FilterTabs } from '@/components/admin/FilterTabs';
+import { FilterTabs } from '@/components/FilterTabs';
 import { requireAdmin } from '@/lib/auth';
 import { formatDateTime } from '@/lib/dates';
 import { type Contacto, countContactos, listContactos } from '@/lib/mensajes';
