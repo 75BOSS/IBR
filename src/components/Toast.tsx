@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Icon, type IconName } from '@/components/Icon';
 import type { FormState } from '@/lib/form-state';
@@ -87,4 +88,27 @@ export function useFormStateToast(state: FormState): void {
     if (state.status === 'success' && state.message)
       toast({ tone: 'success', message: state.message });
   }, [state, toast]);
+}
+
+/**
+ * Aviso después de una redirección (ej. crear → volver a la lista). La página pasa el código
+ * de ?aviso=; se muestra una vez y se limpia la URL. Solo textos fijos (no texto de la URL).
+ */
+const FLASH_MESSAGES = new Map([
+  ['creado', 'Guardado. Ya aparece en la lista.'],
+  ['guardado', 'Guardado'],
+  ['eliminado', 'Eliminado'],
+]);
+
+export function FlashToast({ code }: { code?: string }) {
+  const toast = useToast();
+  const router = useRouter();
+  const pathname = usePathname();
+  const message = code ? FLASH_MESSAGES.get(code) : undefined;
+  useEffect(() => {
+    if (!message) return;
+    toast({ tone: 'success', message });
+    router.replace(pathname, { scroll: false });
+  }, [message, pathname, router, toast]);
+  return null;
 }

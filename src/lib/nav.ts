@@ -22,7 +22,7 @@ export const ADMIN_NAV: { href: string; label: string; icon: IconName; ready: bo
   { href: '/admin/predicas', label: 'Prédicas', icon: 'play', ready: false },
   { href: '/admin/eventos', label: 'Eventos', icon: 'calendar', ready: false },
   { href: '/admin/peticiones', label: 'Peticiones', icon: 'handHeart', ready: false },
-  { href: '/admin/equipo', label: 'Equipo', icon: 'idCard', ready: false },
+  { href: '/admin/equipo', label: 'Equipo', icon: 'idCard', ready: true },
   { href: '/admin/config', label: 'Configuración', icon: 'settings', ready: true },
 ];
 

@@ -106,7 +106,7 @@ export function ConfigSectionForm({
 
   return (
     <Card title={section.title} as="section">
-      <form action={formAction} className="flex flex-col gap-5">
+      <form action={formAction} className="flex flex-col gap-5" noValidate>
         <p className="text-ink-soft">{section.intro}</p>
         {state.status === 'error' && state.message && <FormAlert>{state.message}</FormAlert>}
         <input type="hidden" name="grupo" value={section.group} />
