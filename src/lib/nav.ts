@@ -17,37 +17,68 @@ export const FOOTER_EXTRA_NAV = [
   { href: '/ministerios', label: 'Ministerios' },
   { href: '/servir', label: 'Servir' },
   { href: '/eventos', label: 'Eventos' },
+  { href: '/agenda', label: 'Agenda semanal' },
   { href: '/oracion', label: 'Pedir oración' },
   { href: '/contacto', label: 'Contacto' },
   { href: '/privacidad', label: 'Privacidad' },
 ] as const;
 
-/**
- * Menú del panel. `ready: false` se muestra deshabilitado con la etiqueta «Pronto» hasta que
- * el módulo exista (se cambia a true al terminar cada módulo).
- */
-export const ADMIN_NAV: {
+export type AdminNavItem = {
   href: string;
   label: string;
   icon: IconName;
   ready: boolean;
   /** Solo lo ve el rol admin (la página también lo exige con requireAdmin({ role: 'admin' })). */
   adminOnly?: boolean;
-}[] = [
-  { href: '/admin', label: 'Resumen', icon: 'dashboard', ready: true },
-  { href: '/admin/registros', label: 'Registros', icon: 'userPlus', ready: true },
-  { href: '/admin/grupos', label: 'Grupos', icon: 'users', ready: true },
-  { href: '/admin/reuniones', label: 'Reuniones', icon: 'clock', ready: true },
-  { href: '/admin/ubicaciones', label: 'Lugares', icon: 'mapPin', ready: true },
-  { href: '/admin/ministerios', label: 'Ministerios', icon: 'handHeart', ready: true },
-  { href: '/admin/predicas', label: 'Prédicas', icon: 'play', ready: true },
-  { href: '/admin/eventos', label: 'Eventos', icon: 'calendar', ready: true },
-  { href: '/admin/peticiones', label: 'Peticiones', icon: 'handHeart', ready: true },
-  { href: '/admin/mensajes', label: 'Mensajes', icon: 'mail', ready: true },
-  { href: '/admin/servir', label: 'Servir', icon: 'heartHandshake', ready: true },
-  { href: '/admin/equipo', label: 'Equipo', icon: 'idCard', ready: true },
-  { href: '/admin/usuarios', label: 'Usuarios', icon: 'lock', ready: true, adminOnly: true },
-  { href: '/admin/config', label: 'Configuración', icon: 'settings', ready: true, adminOnly: true },
+};
+
+/**
+ * Menú del panel, agrupado por tema para encontrar cada módulo sin leer toda la lista.
+ * `ready: false` se muestra deshabilitado con la etiqueta «Pronto» hasta que el módulo exista.
+ */
+export const ADMIN_NAV: { title: string | null; items: AdminNavItem[] }[] = [
+  {
+    title: null,
+    items: [{ href: '/admin', label: 'Resumen', icon: 'dashboard', ready: true }],
+  },
+  {
+    title: 'Personas',
+    items: [
+      { href: '/admin/registros', label: 'Registros', icon: 'userPlus', ready: true },
+      { href: '/admin/grupos', label: 'Grupos', icon: 'users', ready: true },
+      { href: '/admin/peticiones', label: 'Peticiones', icon: 'handHeart', ready: true },
+      { href: '/admin/mensajes', label: 'Mensajes', icon: 'mail', ready: true },
+      { href: '/admin/servir', label: 'Servir', icon: 'heartHandshake', ready: true },
+    ],
+  },
+  {
+    title: 'Contenido del sitio',
+    items: [
+      { href: '/admin/eventos', label: 'Eventos', icon: 'calendar', ready: true },
+      { href: '/admin/predicas', label: 'Prédicas', icon: 'play', ready: true },
+      { href: '/admin/reuniones', label: 'Reuniones', icon: 'clock', ready: true },
+      { href: '/admin/ministerios', label: 'Ministerios', icon: 'church', ready: true },
+      { href: '/admin/ubicaciones', label: 'Lugares', icon: 'mapPin', ready: true },
+      { href: '/admin/equipo', label: 'Equipo', icon: 'idCard', ready: true },
+    ],
+  },
+  {
+    title: 'Comunicación',
+    items: [{ href: '/admin/agenda', label: 'Agenda semanal', icon: 'mailOpen', ready: true }],
+  },
+  {
+    title: 'Administración',
+    items: [
+      { href: '/admin/usuarios', label: 'Usuarios', icon: 'lock', ready: true, adminOnly: true },
+      {
+        href: '/admin/config',
+        label: 'Configuración',
+        icon: 'settings',
+        ready: true,
+        adminOnly: true,
+      },
+    ],
+  },
 ];
 
 const SOCIALS = [

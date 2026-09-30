@@ -92,6 +92,11 @@ export default async function PrivacidadPage() {
                 interesa, cuándo puedes y lo que quieras contarnos.
               </li>
               <li>
+                <strong>Agenda semanal:</strong> tu correo y, si quieres, tu nombre. Solo te
+                escribimos después de que confirmes, y cada correo trae el enlace para darte de
+                baja.
+              </li>
+              <li>
                 Junto con cada envío guardamos la fecha y la dirección IP desde donde se hizo, para
                 registrar tu consentimiento y frenar mensajes automáticos (spam).
               </li>

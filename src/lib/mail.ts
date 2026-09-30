@@ -36,6 +36,8 @@ export async function sendMail(message: {
   subject: string;
   text: string;
   replyTo?: string | null;
+  /** Página para darse de baja (correos masivos): cabecera List-Unsubscribe. */
+  unsubscribeUrl?: string;
 }): Promise<MailResult> {
   if (!message.to) {
     console.warn(
@@ -55,6 +57,7 @@ export async function sendMail(message: {
       subject: message.subject,
       text: message.text,
       replyTo: message.replyTo ?? undefined,
+      list: message.unsubscribeUrl ? { unsubscribe: message.unsubscribeUrl } : undefined,
     });
     return { sent: true };
   } catch (error) {

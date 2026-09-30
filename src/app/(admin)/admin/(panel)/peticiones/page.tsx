@@ -5,7 +5,7 @@ import { type Column, DataTable } from '@/components/DataTable';
 import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { Tag } from '@/components/Tag';
-import { ActionButton } from '@/components/admin/ActionButton';
+import { ActionButton } from '@/components/ActionButton';
 import { ContactLinks } from '@/components/admin/ContactLinks';
 import { FilterTabs } from '@/components/admin/FilterTabs';
 import { requireAdmin } from '@/lib/auth';

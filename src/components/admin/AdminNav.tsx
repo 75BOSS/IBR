@@ -8,7 +8,7 @@ import { BrandMark } from '@/components/BrandMark';
 import { Button } from '@/components/Button';
 import { Icon } from '@/components/Icon';
 import { Tag } from '@/components/Tag';
-import { ADMIN_NAV, isActivePath } from '@/lib/nav';
+import { ADMIN_NAV, type AdminNavItem, isActivePath } from '@/lib/nav';
 
 type AdminNavProps = { user: { nombre: string; rol: 'admin' | 'editor' } };
 
@@ -20,41 +20,72 @@ function NavLinks({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
+  const groups = ADMIN_NAV.map((g) => ({
+    ...g,
+    items: g.items.filter((item) => !item.adminOnly || rol === 'admin'),
+  })).filter((g) => g.items.length > 0);
   return (
-    <ul className="flex flex-col gap-0.5">
-      {ADMIN_NAV.filter((item) => !item.adminOnly || rol === 'admin').map((item) => {
-        const active = isActivePath(pathname, item.href);
-        if (!item.ready) {
-          return (
-            <li key={item.href}>
-              <span
-                aria-disabled="true"
-                className="flex min-h-11 cursor-not-allowed items-center gap-3 rounded-xl px-3 text-sidebar-muted"
-              >
-                <Icon name={item.icon} />
-                <span className="flex-1">{item.label}</span>
-                <Tag tone="inverse">Pronto</Tag>
-              </span>
-            </li>
-          );
-        }
-        return (
-          <li key={item.href}>
-            <Link
-              href={item.href}
-              onClick={onNavigate}
-              aria-current={active ? 'page' : undefined}
-              className={`flex min-h-11 items-center gap-3 rounded-xl px-3 font-semibold transition-colors ${
-                active ? 'bg-sidebar-ink text-sidebar' : 'text-sidebar-ink hover:bg-sidebar-ink/10'
-              }`}
-            >
-              <Icon name={item.icon} />
-              {item.label}
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
+    <div className="flex flex-col gap-4">
+      {groups.map((group) => (
+        <div key={group.title ?? 'inicio'} className="flex flex-col gap-1">
+          {group.title && (
+            <p className="px-3 text-xs font-bold tracking-[0.14em] text-sidebar-muted uppercase">
+              {group.title}
+            </p>
+          )}
+          <ul className="flex flex-col gap-0.5">
+            {group.items.map((item) => (
+              <NavItemLink
+                key={item.href}
+                item={item}
+                active={isActivePath(pathname, item.href)}
+                onNavigate={onNavigate}
+              />
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function NavItemLink({
+  item,
+  active,
+  onNavigate,
+}: {
+  item: AdminNavItem;
+  active: boolean;
+  onNavigate?: () => void;
+}) {
+  if (!item.ready) {
+    return (
+      <li>
+        <span
+          aria-disabled="true"
+          className="flex min-h-11 cursor-not-allowed items-center gap-3 rounded-xl px-3 text-sidebar-muted"
+        >
+          <Icon name={item.icon} />
+          <span className="flex-1">{item.label}</span>
+          <Tag tone="inverse">Pronto</Tag>
+        </span>
+      </li>
+    );
+  }
+  return (
+    <li>
+      <Link
+        href={item.href}
+        onClick={onNavigate}
+        aria-current={active ? 'page' : undefined}
+        className={`flex min-h-11 items-center gap-3 rounded-xl px-3 font-semibold transition-colors ${
+          active ? 'bg-sidebar-ink text-sidebar' : 'text-sidebar-ink hover:bg-sidebar-ink/10'
+        }`}
+      >
+        <Icon name={item.icon} />
+        {item.label}
+      </Link>
+    </li>
   );
 }
 
@@ -185,9 +216,10 @@ export function AdminNav({ user }: AdminNavProps) {
         </div>
       </dialog>
 
-      <aside className="sticky top-0 hidden h-dvh flex-col gap-6 overflow-y-auto bg-sidebar p-4 text-sidebar-ink on-dark lg:flex">
+      {/* El menú se desplaza por dentro; la marca y el bloque del usuario quedan siempre a la vista. */}
+      <aside className="sticky top-0 hidden h-dvh flex-col gap-5 bg-sidebar p-4 text-sidebar-ink on-dark lg:flex">
         <Brand />
-        <nav aria-label="Panel" className="flex-1">
+        <nav aria-label="Panel" className="-mx-1.5 min-h-0 flex-1 overflow-y-auto p-1.5">
           <NavLinks rol={user.rol} />
         </nav>
         <UserBlock user={user} />

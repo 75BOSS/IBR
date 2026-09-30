@@ -6,7 +6,7 @@ import type { ButtonVariant } from '@/components/button-styles';
 import { useToastAction } from '@/components/Toast';
 import type { FormState } from '@/lib/form-state';
 
-/** Botón de una sola acción no destructiva (marcar atendida, leído…), con carga y toast. */
+/** Botón de una sola acción no destructiva (marcar atendida, leído, confirmar suscripción…), con carga y toast. */
 export function ActionButton({
   action,
   fields,
