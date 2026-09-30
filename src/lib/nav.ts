@@ -13,6 +13,7 @@ export const PUBLIC_NAV = [
 
 /** Enlaces que no caben en el menú principal: van en el pie de página. */
 export const FOOTER_EXTRA_NAV = [
+  { href: '/nosotros', label: 'Nosotros' },
   { href: '/eventos', label: 'Eventos' },
   { href: '/oracion', label: 'Pedir oración' },
   { href: '/contacto', label: 'Contacto' },

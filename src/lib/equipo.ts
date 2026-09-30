@@ -27,3 +27,8 @@ export function getEquipo(id: number): Promise<EquipoRow | null> {
 export function listPastores(): Promise<EquipoRow[]> {
   return query<EquipoRow>(`${SELECT} WHERE es_pastor = 1 AND visible = 1 ORDER BY orden, nombre`);
 }
+
+/** Equipo visible en el sitio: pastores primero y luego líderes (página «Nosotros»). */
+export function listEquipoVisible(): Promise<EquipoRow[]> {
+  return query<EquipoRow>(`${SELECT} WHERE visible = 1 ORDER BY es_pastor DESC, orden, nombre`);
+}

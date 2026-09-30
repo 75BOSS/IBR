@@ -31,6 +31,10 @@ export const CONFIG_DEFAULTS = {
   home_hero_titulo: 'Bienvenido a casa',
   home_hero_sub: null,
   home_hero_imagen: null,
+  nosotros_historia: null,
+  nosotros_mision: null,
+  nosotros_creencias: null,
+  nosotros_imagen: null,
 } satisfies Record<string, string | null>;
 
 export type ConfigKey = keyof typeof CONFIG_DEFAULTS;

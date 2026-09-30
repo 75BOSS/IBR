@@ -1,4 +1,5 @@
 import type { ConfigKey } from '@/lib/config';
+import { paragraphs } from '@/lib/text';
 
 /**
  * Qué se edita en /admin/config y cómo. Una sola definición para el formulario y la
@@ -150,6 +151,35 @@ export const CONFIG_SECTIONS: ConfigSection[] = [
       },
     ],
   },
+  {
+    group: 'nosotros',
+    title: 'Nosotros',
+    intro:
+      'Lo que se muestra en la página «Nosotros». La visión se edita en «Datos de la iglesia».',
+    fields: [
+      {
+        key: 'nosotros_historia',
+        label: 'Nuestra historia',
+        kind: 'textarea',
+        max: 4000,
+        hint: 'Cómo y cuándo nació la iglesia. Separa los párrafos con una línea en blanco.',
+      },
+      { key: 'nosotros_mision', label: 'Misión', kind: 'textarea', max: 400 },
+      {
+        key: 'nosotros_creencias',
+        label: 'En qué creemos',
+        kind: 'textarea',
+        max: 6000,
+        hint: 'Una creencia por párrafo, separados por una línea en blanco. La primera línea es el título (ej. «La Biblia») y debajo va la explicación. Si lo dejas vacío, la sección no aparece.',
+      },
+      {
+        key: 'nosotros_imagen',
+        label: 'Foto de la iglesia',
+        kind: 'image',
+        hint: 'Una foto de la congregación o del auditorio, horizontal.',
+      },
+    ],
+  },
 ];
 
 /** Cuentas bancarias de /dar (config.dar_cuentas, JSON). */
@@ -171,4 +201,19 @@ export function parseBankAccounts(value: string | null | undefined): BankAccount
   } catch {
     return []; // JSON dañado a mano en phpMyAdmin: se muestra sin cuentas en vez de romper la página
   }
+}
+
+export type Creencia = { titulo: string | null; texto: string };
+
+/**
+ * «En qué creemos» (config.nosotros_creencias): párrafos separados por una línea en blanco;
+ * en cada uno, la primera línea es el título y el resto la explicación. Un párrafo de una sola
+ * línea queda como texto sin título.
+ */
+export function parseCreencias(value: string | null | undefined): Creencia[] {
+  return paragraphs(value).map((block) => {
+    const [first = '', ...rest] = block.split('\n');
+    const texto = rest.join('\n').trim();
+    return texto ? { titulo: first.trim(), texto } : { titulo: null, texto: first.trim() };
+  });
 }

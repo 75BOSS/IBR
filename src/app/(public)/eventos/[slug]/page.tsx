@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { pageMetadata } from '@/lib/seo';
+import { paragraphs } from '@/lib/text';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -51,7 +52,7 @@ export default async function EventoPage({ params }: Props) {
   if (!event) notFound();
   const url = `${siteUrl()}/eventos/${event.slug}`;
   const share = `https://wa.me/?text=${encodeURIComponent(`${event.titulo} — ${url}`)}`;
-  const paragraphs = (event.cuerpo ?? '').split(/\n\s*\n/).filter((p) => p.trim());
+  const body = paragraphs(event.cuerpo);
 
   return (
     <article className="container-page flex flex-col gap-[clamp(1.25rem,3vw,2rem)] py-[clamp(2rem,6vw,4.5rem)]">
@@ -77,7 +78,7 @@ export default async function EventoPage({ params }: Props) {
             </div>
           )}
           <div className="flex max-w-prose flex-col gap-4 text-lg leading-relaxed text-ink">
-            {paragraphs.map((p, i) => (
+            {body.map((p, i) => (
               <p key={i} className="whitespace-pre-line">
                 {p}
               </p>

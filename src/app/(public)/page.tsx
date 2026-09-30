@@ -238,7 +238,11 @@ export default async function HomePage() {
 
         {pastores.length > 0 && (
           <section aria-labelledby="pastores" className="flex flex-col gap-4">
-            <SectionTitle id="pastores" title="Nuestros pastores" />
+            <SectionTitle
+              id="pastores"
+              title="Nuestros pastores"
+              link={{ href: '/nosotros', label: 'Conócenos' }}
+            />
             <ul className="flex flex-wrap gap-[clamp(1rem,3vw,2rem)]">
               {pastores.map((p) => (
                 <li
