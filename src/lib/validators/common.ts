@@ -127,7 +127,6 @@ export const fecha = z
   .string({ error: 'Elige la fecha.' })
   .regex(/^\d{4}-\d{2}-\d{2}$/, { error: 'Elige la fecha en el calendario.' });
 
-/** Convierte los fieldErrors de Zod al formato de FormState. */
 /**
  * Para `.refine()` entre campos: Zod no corre las reglas del objeto si algún campo falló, así
  * que la persona corregía un error y recién ahí le aparecía el siguiente. Con esto la regla se
@@ -138,6 +137,7 @@ export function whenValid(...fields: string[]) {
     !payload.issues.some((issue) => fields.includes(String(issue.path?.[0])));
 }
 
+/** Convierte los fieldErrors de Zod al formato de FormState. */
 export function fieldErrorsOf(error: z.ZodError): Record<string, string[]> {
   return z.flattenError(error).fieldErrors as Record<string, string[]>;
 }

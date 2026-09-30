@@ -10,7 +10,7 @@ import { eventWhen } from '@/components/site/EventCard';
 import { requireAdmin } from '@/lib/auth';
 import { getDashboardCounts } from '@/lib/dashboard';
 import { formatDateTime } from '@/lib/dates';
-import { listUpcomingEventos } from '@/lib/eventos';
+import { listNotStartedEventos } from '@/lib/eventos';
 import { listRegistros } from '@/lib/registros';
 
 export const metadata: Metadata = { title: 'Resumen' };
@@ -82,7 +82,7 @@ export default async function DashboardPage({
   const [counts, nuevos, eventos] = await Promise.all([
     getDashboardCounts(),
     listRegistros({ estado: 'nuevo', limit: 5 }),
-    listUpcomingEventos(4),
+    listNotStartedEventos(4),
   ]);
 
   return (

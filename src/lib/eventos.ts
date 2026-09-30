@@ -41,6 +41,17 @@ export function listUpcomingEventos(limit: number): Promise<Evento[]> {
   );
 }
 
+/**
+ * Los que aún no empiezan, por fecha (resumen del panel). Misma regla que
+ * v_dashboard.eventos_proximos, para que el contador y la lista coincidan.
+ */
+export function listNotStartedEventos(limit: number): Promise<Evento[]> {
+  return query<Evento>(
+    `${SELECT} WHERE e.publicado = 1 AND e.fecha_inicio >= NOW() ORDER BY e.fecha_inicio LIMIT ?`,
+    [limit],
+  );
+}
+
 export function listPastEventos(limit: number): Promise<Evento[]> {
   return query<Evento>(
     `${SELECT} WHERE e.publicado = 1 AND COALESCE(e.fecha_fin, e.fecha_inicio) < NOW() - INTERVAL 1 DAY
