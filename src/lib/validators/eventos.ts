@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { fromLocalInputValue } from '@/lib/dates';
 import {
   checkbox,
+  optionalCupo,
   optionalId,
   optionalText,
   optionalUrl,
@@ -28,6 +29,11 @@ export const EVENTO_FIELDS = [
   'ubicacion_id',
   'rango_edad_id',
   'link_externo',
+  'cupo',
+  'requiere_inscripcion',
+  'publicado',
+  'destacado',
+  'todo_el_dia',
 ] as const;
 
 const localDateTime = (label: string) =>
@@ -59,6 +65,8 @@ export const eventoSchema = z
     link_externo: optionalUrl,
     destacado: checkbox,
     publicado: checkbox,
+    requiere_inscripcion: checkbox,
+    cupo: optionalCupo(5000),
   })
   .refine((e) => !e.fecha_fin || e.fecha_fin > e.fecha_inicio, {
     path: ['fecha_fin'],

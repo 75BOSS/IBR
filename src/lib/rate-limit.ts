@@ -19,7 +19,12 @@ export type RateLimitForm =
   | 'login_ip'
   | 'login_cuenta'
   | 'login_dispositivo'
-  | 'cambio_clave';
+  | 'cambio_clave'
+  | 'inscripcion'
+  | 'inscripcion_cancelar'
+  | 'servir'
+  | 'agenda'
+  | 'agenda_baja';
 
 export type RateLimitSubject = { ip: string } | { account: string };
 export type RateLimitOptions = { max?: number; windowMinutes?: number };

@@ -107,6 +107,19 @@ export const checkbox = z.preprocess(
 
 export const id = z.coerce.number({ error: 'Falta el identificador.' }).int().positive();
 
+/** Cantidad opcional (cupo): vacío = sin límite. */
+export function optionalCupo(max: number) {
+  return z.preprocess(
+    (v) => (v === '' || v == null ? null : v),
+    z.coerce
+      .number({ error: 'El cupo debe ser un número, ej. 12.' })
+      .int({ error: 'El cupo debe ser un número entero, ej. 12.' })
+      .min(1, { error: 'El cupo debe ser al menos 1. Déjalo vacío si no hay límite.' })
+      .max(max, { error: `El cupo máximo es ${max}.` })
+      .nullable(),
+  );
+}
+
 export const optionalId = z.preprocess(emptyToNull, z.coerce.number().int().positive().nullable());
 
 export const diaSemana = z.coerce

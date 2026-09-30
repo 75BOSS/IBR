@@ -79,19 +79,23 @@ export async function saveEvento(_prev: FormState, formData: FormData): Promise<
     d.link_externo,
     d.destacado,
     d.publicado,
+    d.requiere_inscripcion,
+    d.requiere_inscripcion ? d.cupo : null,
   ];
   if (id) {
     await execute(
       `UPDATE eventos SET titulo = ?, resumen = ?, cuerpo = ?, categoria = ?, fecha_inicio = ?, fecha_fin = ?, todo_el_dia = ?,
-              ubicacion_id = ?, rango_edad_id = ?, imagen_url = ?, imagen_public_id = ?, link_externo = ?, destacado = ?, publicado = ?
+              ubicacion_id = ?, rango_edad_id = ?, imagen_url = ?, imagen_public_id = ?, link_externo = ?, destacado = ?, publicado = ?,
+              requiere_inscripcion = ?, cupo = ?
         WHERE id = ?`,
       [...params, id],
     );
   } else {
     await execute(
       `INSERT INTO eventos (titulo, resumen, cuerpo, categoria, fecha_inicio, fecha_fin, todo_el_dia, ubicacion_id, rango_edad_id,
-                            imagen_url, imagen_public_id, link_externo, destacado, publicado, slug, creado_por)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                            imagen_url, imagen_public_id, link_externo, destacado, publicado,
+                            requiere_inscripcion, cupo, slug, creado_por)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [...params, slug, admin.id],
     );
   }

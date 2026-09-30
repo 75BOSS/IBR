@@ -5,6 +5,7 @@ import { Button } from '@/components/Button';
 import { FormAlert } from '@/components/FormAlert';
 import { Icon } from '@/components/Icon';
 import { ConsentField, HoneypotField } from '@/components/PublicFormExtras';
+import { SecretReveal } from '@/components/SecretReveal';
 import type { CrudFormHelpers } from '@/components/admin/CrudForm';
 import { type FormState, initialFormState } from '@/lib/form-state';
 
@@ -20,6 +21,7 @@ export function PublicForm({
   withConsent = true,
   consentOptionalHint,
   thanks,
+  closed,
   children,
 }: {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
@@ -30,6 +32,12 @@ export function PublicForm({
   consentOptionalHint?: string;
   /** Qué más decir después del mensaje de éxito (ej. próximos pasos). */
   thanks?: ReactNode;
+  /**
+   * Si llega, en vez del formulario se muestra esto (ej. «se llenó el cupo»). El agradecimiento
+   * de un envío exitoso tiene prioridad: el envío puede ser justo el que cerró el cupo y la
+   * página se vuelve a generar con `closed` mientras la persona todavía debe ver su código.
+   */
+  closed?: ReactNode;
   children: (helpers: CrudFormHelpers) => ReactNode;
 }) {
   const [state, formAction] = useActionState<FormState, FormData>(action, initialFormState);
@@ -42,10 +50,17 @@ export function PublicForm({
       >
         <Icon name="check" className="size-8" />
         <p className="font-display text-h3 font-semibold">{state.message}</p>
+        {state.secret && (
+          <div className="w-full">
+            <SecretReveal secret={state.secret} />
+          </div>
+        )}
         {thanks && <div className="text-ink">{thanks}</div>}
       </div>
     );
   }
+
+  if (closed) return <>{closed}</>;
 
   const helpers: CrudFormHelpers = {
     v: (key, stored) => state.values?.[key] ?? (stored == null ? '' : String(stored)),

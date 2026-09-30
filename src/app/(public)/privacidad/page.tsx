@@ -84,6 +84,14 @@ export default async function PrivacidadPage() {
                 <strong>Contacto:</strong> nombre, WhatsApp o correo y tu mensaje.
               </li>
               <li>
+                <strong>Inscripción a eventos:</strong> nombre, WhatsApp, correo (opcional) y
+                cuántas personas vienen. Te damos un código para ver o cancelar tu inscripción.
+              </li>
+              <li>
+                <strong>Servir:</strong> nombre, WhatsApp, correo (opcional), el área que te
+                interesa, cuándo puedes y lo que quieras contarnos.
+              </li>
+              <li>
                 Junto con cada envío guardamos la fecha y la dirección IP desde donde se hizo, para
                 registrar tu consentimiento y frenar mensajes automáticos (spam).
               </li>

@@ -66,6 +66,24 @@ export default async function EventosAdminPage({
       ),
     },
     {
+      key: 'inscritos',
+      header: 'Inscritos',
+      className: 'md:w-32',
+      cell: (e) =>
+        e.requiere_inscripcion ? (
+          <Link
+            href={`/admin/eventos/${e.id}/inscritos`}
+            className="inline-flex items-center gap-1.5 font-semibold text-brand-strong hover:underline"
+          >
+            <Icon name="users" className="size-4" />
+            {e.inscritos}
+            {e.cupo !== null && <span className="font-normal text-ink-soft">/ {e.cupo}</span>}
+          </Link>
+        ) : (
+          <span className="text-ink-soft">—</span>
+        ),
+    },
+    {
       key: 'acciones',
       header: 'Acciones',
       hideLabelOnMobile: true,
@@ -84,7 +102,9 @@ export default async function EventosAdminPage({
             action={deleteEvento}
             fields={{ id: String(e.id) }}
             title={`¿Eliminar «${e.titulo}»?`}
-            description="Se borra del sitio junto con su imagen, y el enlace compartido dejará de funcionar. No se puede deshacer."
+            description={`Se borra del sitio junto con su imagen${
+              Number(e.inscritos) > 0 ? ` y sus ${e.inscritos} inscripciones` : ''
+            }, y el enlace compartido dejará de funcionar. No se puede deshacer.`}
             triggerLabel="Eliminar"
           />
         </span>

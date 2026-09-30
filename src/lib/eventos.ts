@@ -18,6 +18,11 @@ export type Evento = {
   link_externo: string | null;
   destacado: boolean;
   publicado: boolean;
+  requiere_inscripcion: boolean;
+  /** null = sin límite. */
+  cupo: number | null;
+  /** Lugares ocupados (inscripciones confirmadas o que asistieron). */
+  inscritos: number;
   ubicacion: string | null;
   ubicacion_direccion: string | null;
   rango_edad: string | null;
@@ -26,6 +31,9 @@ export type Evento = {
 
 const SELECT = `SELECT e.id, e.slug, e.titulo, e.resumen, e.cuerpo, e.categoria, e.fecha_inicio, e.fecha_fin, e.todo_el_dia,
        e.ubicacion_id, e.rango_edad_id, e.imagen_url, e.imagen_public_id, e.link_externo, e.destacado, e.publicado,
+       e.requiere_inscripcion, e.cupo,
+       (SELECT COALESCE(SUM(i.personas), 0) FROM inscripciones i
+         WHERE i.evento_id = e.id AND i.estado <> 'cancelada') AS inscritos,
        u.nombre AS ubicacion, CASE WHEN u.publica = 1 THEN u.direccion END AS ubicacion_direccion,
        r.nombre AS rango_edad, r.color AS rango_color
   FROM eventos e

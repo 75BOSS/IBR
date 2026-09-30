@@ -13,6 +13,9 @@ import { formatDateTime, todayInChurchTz } from '@/lib/dates';
 import type { Evento } from '@/lib/eventos';
 import { getEvento } from '@/lib/eventos';
 import { siteUrl } from '@/lib/site';
+import { cupoStatus } from '@/lib/cupo';
+import { CupoCounter } from '@/components/site/CupoCounter';
+import { InscripcionForm } from './InscripcionForm';
 
 export const revalidate = 300;
 
@@ -53,6 +56,7 @@ export default async function EventoPage({ params }: Props) {
   const url = `${siteUrl()}/eventos/${event.slug}`;
   const share = `https://wa.me/?text=${encodeURIComponent(`${event.titulo} — ${url}`)}`;
   const body = paragraphs(event.cuerpo);
+  const cupo = event.requiere_inscripcion ? cupoStatus(event) : null;
 
   return (
     <article className="container-page flex flex-col gap-[clamp(1.25rem,3vw,2rem)] py-[clamp(2rem,6vw,4.5rem)]">
@@ -113,14 +117,22 @@ export default async function EventoPage({ params }: Props) {
             )}
           </dl>
           <div className="mt-5 flex flex-col gap-2">
+            {cupo?.abierto && (
+              <a href="#inscripcion" className={buttonClasses({ variant: 'accent', block: true })}>
+                Inscribirme
+              </a>
+            )}
             {event.link_externo && (
               <a
                 href={event.link_externo}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={buttonClasses({ variant: 'accent', block: true })}
+                className={buttonClasses({
+                  variant: cupo?.abierto ? 'secondary' : 'accent',
+                  block: true,
+                })}
               >
-                Inscribirme / más información
+                Más información
                 <span className="sr-only"> (se abre en una pestaña nueva)</span>
               </a>
             )}
@@ -136,6 +148,37 @@ export default async function EventoPage({ params }: Props) {
           </div>
         </Card>
       </div>
+      {cupo && (
+        <section
+          id="inscripcion"
+          aria-labelledby="inscripcion-titulo"
+          className="grid scroll-mt-24 gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
+        >
+          <div className="flex flex-col gap-3">
+            <h2 id="inscripcion-titulo" className="text-h2 font-semibold text-brand-strong">
+              Inscríbete
+            </h2>
+            <p className="text-ink-soft">
+              Déjanos tus datos para reservar tu lugar. Recibirás un código para ver o cancelar tu
+              inscripción.
+            </p>
+            <CupoCounter
+              key={`${cupo.inscritos}-${cupo.abierto}`}
+              eventoId={event.id}
+              initial={cupo}
+            />
+          </div>
+          {/* Siempre el mismo árbol: el formulario conserva su éxito aunque el cupo se cierre. */}
+          <Card emphasis="featured">
+            <InscripcionForm
+              eventoId={event.id}
+              closedReason={
+                cupo.abierto ? null : (cupo.motivo ?? 'Las inscripciones están cerradas.')
+              }
+            />
+          </Card>
+        </section>
+      )}
     </article>
   );
 }

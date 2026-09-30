@@ -20,7 +20,7 @@ export function SecretReveal({
   children?: ReactNode;
 }) {
   return (
-    <div role="status" className="flex flex-col gap-4">
+    <div role={message ? 'status' : undefined} className="flex flex-col gap-4">
       {message && (
         <p className="flex items-start gap-2 font-semibold text-success">
           <Icon name="check" className="mt-0.5 size-5 shrink-0" /> {message}

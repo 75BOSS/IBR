@@ -8,6 +8,7 @@ import {
   optionalText,
   requiredPhone,
   requiredText,
+  optionalCupo,
 } from '@/lib/validators/common';
 
 export const GRUPO_FIELDS = [
@@ -42,15 +43,7 @@ export const grupoSchema = z.object({
   lider_nombre: optionalText(120),
   lider_telefono: optionalPhone,
   lider_email: optionalEmail,
-  cupo: z.preprocess(
-    (v) => (v === '' || v == null ? null : v),
-    z.coerce
-      .number({ error: 'El cupo debe ser un número, ej. 12.' })
-      .int()
-      .min(1)
-      .max(500)
-      .nullable(),
-  ),
+  cupo: optionalCupo(500),
   publico: checkbox,
   activo: checkbox,
 });
