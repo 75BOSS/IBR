@@ -9,14 +9,16 @@ type Props = {
   /** Título del video: se usa como texto alternativo y título del iframe (accesibilidad). */
   title: string;
   className?: string;
+  /** Cargar el reproductor de inmediato (cuando la persona ya pidió verlo). */
+  startPlaying?: boolean;
 } & ({ videoId: string; channelId?: never } | { channelId: string; videoId?: never });
 
 /**
  * Video de YouTube liviano: muestra la miniatura y carga el reproductor (youtube-nocookie)
  * solo al pulsar. Con `channelId` incrusta la transmisión en vivo del canal.
  */
-export function YouTubeEmbed({ title, className = '', ...source }: Props) {
-  const [playing, setPlaying] = useState(false);
+export function YouTubeEmbed({ title, className = '', startPlaying = false, ...source }: Props) {
+  const [playing, setPlaying] = useState(startPlaying);
   const src =
     source.videoId !== undefined
       ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(source.videoId)}?autoplay=1&rel=0`
