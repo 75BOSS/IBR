@@ -21,7 +21,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 ## F1 — Web que sirve (4–5 semanas)
 
 ### Contenido y configuración
-- [ ] Tabla `config` + pantalla `/admin/config`: dirección, teléfono/WhatsApp, correo, cuentas bancarias, canal YouTube, redes, textos de home.
+- [x] Tabla `config` + pantalla `/admin/config`: dirección, teléfono/WhatsApp, correo, cuentas bancarias, canal YouTube, redes, textos de home.
 - [ ] `equipo` + `/admin/equipo` (pastores y líderes con foto en Cloudinary).
 
 ### Público
