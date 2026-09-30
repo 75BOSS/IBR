@@ -22,7 +22,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 
 ### Contenido y configuración
 - [x] Tabla `config` + pantalla `/admin/config`: dirección, teléfono/WhatsApp, correo, cuentas bancarias, canal YouTube, redes, textos de home.
-- [ ] `equipo` + `/admin/equipo` (pastores y líderes con foto en Cloudinary).
+- [x] `equipo` + `/admin/equipo` (pastores y líderes con foto en Cloudinary).
 
 ### Público
 - [ ] `/` Home: hero con foto real + 3 accesos (Soy nuevo · Horarios · Grupos), próximos 3 eventos, última prédica, pastores, bloque de oración, mapa, botón WhatsApp.
