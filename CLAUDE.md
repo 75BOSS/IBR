@@ -98,7 +98,7 @@ sql/
 - **Formularios públicos**: Zod → honeypot → `consumeRateLimit('<form>', { ip: await getClientIp() })` → insert → aviso.
 - **Menú del panel**: una sola lista `ADMIN_NAV` en `src/lib/nav.ts`; poner `ready: true` al terminar el módulo.
 - **Configuración**: leer con `getSiteConfig()`; al guardar en `/admin/config`, `revalidateTag(CONFIG_TAG)`.
-- **Colores y tipografía**: solo tokens de `src/app/globals.css` (`bg-surface`, `text-ink-soft`, `text-h2`…). Superficies oscuras: variantes `inverse` de `Button`/`Tag`, nunca pisar clases con `className`.
+- **Colores y tipografía**: solo tokens de `src/app/globals.css` (`bg-surface`, `text-ink-soft`, `text-h2`…). Superficies oscuras: variantes `inverse` de `Button`/`Tag` (`inverseOutline` para una acción visible sobre la portada o un panel de marca), nunca pisar clases con `className`.
 - **Íconos**: `<Icon name="…">`; para uno nuevo se agrega su SVG al mapa de `src/components/Icon.tsx`.
 - **Páginas**: encabezado con `PageHeader`; avisos de formulario/pantalla con `FormAlert`; contenedor `container-page` (sitio) o `container-panel` (panel). Superficies oscuras llevan la clase `on-dark` (anillo de foco claro).
 - **Estilos de botón** en Server Components: `buttonClasses()` de `@/components/button-styles` (no de `Button.tsx`, que es cliente).

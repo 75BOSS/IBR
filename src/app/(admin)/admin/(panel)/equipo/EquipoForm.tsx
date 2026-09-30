@@ -1,21 +1,11 @@
 'use client';
 
+import type { EquipoRow } from '@/lib/equipo';
 import { saveEquipo } from '@/actions/equipo';
 import { Checkbox } from '@/components/Checkbox';
 import { CrudForm } from '@/components/admin/CrudForm';
 import { Field } from '@/components/Field';
 import { ImageField } from '@/components/ImageField';
-
-export type EquipoRow = {
-  id: number;
-  nombre: string;
-  rol: string;
-  bio: string | null;
-  foto_url: string | null;
-  es_pastor: boolean;
-  orden: number;
-  visible: boolean;
-};
 
 export function EquipoForm({
   person,

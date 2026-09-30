@@ -4,7 +4,15 @@
  * en el servidor).
  */
 export type ButtonVariant =
-  'primary' | 'accent' | 'secondary' | 'ghost' | 'danger' | 'dangerGhost' | 'inverse' | 'whatsapp';
+  | 'primary'
+  | 'accent'
+  | 'secondary'
+  | 'ghost'
+  | 'danger'
+  | 'dangerGhost'
+  | 'inverse'
+  | 'inverseOutline'
+  | 'whatsapp';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const base =
@@ -22,6 +30,8 @@ const variants: Record<ButtonVariant, string> = {
   dangerGhost: 'text-danger hover:bg-danger-soft',
   /** Botón fantasma sobre superficies oscuras (barra lateral, pie). */
   inverse: 'text-sidebar-ink hover:bg-sidebar-ink/10',
+  /** Acción secundaria visible sobre superficies oscuras (portada, paneles de marca). */
+  inverseOutline: 'border-2 border-surface/70 text-surface hover:bg-surface/10',
   whatsapp: 'bg-whatsapp text-surface hover:brightness-95',
 };
 

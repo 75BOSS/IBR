@@ -10,8 +10,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { Tag } from '@/components/Tag';
 import { FlashToast } from '@/components/Toast';
 import { requireAdmin } from '@/lib/auth';
-import { query } from '@/lib/db';
-import type { EquipoRow } from './EquipoForm';
+import { type EquipoRow, listEquipo } from '@/lib/equipo';
 
 export const metadata: Metadata = { title: 'Equipo' };
 
@@ -22,9 +21,7 @@ export default async function EquipoPage({
 }) {
   await requireAdmin();
   const { aviso } = await searchParams;
-  const people = await query<EquipoRow>(
-    'SELECT id, nombre, rol, bio, foto_url, es_pastor, orden, visible FROM equipo ORDER BY orden, nombre',
-  );
+  const people = await listEquipo();
 
   const columns: Column<EquipoRow>[] = [
     {

@@ -25,7 +25,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [x] `equipo` + `/admin/equipo` (pastores y líderes con foto en Cloudinary).
 
 ### Público
-- [ ] `/` Home: hero con foto real + 3 accesos (Soy nuevo · Horarios · Grupos), próximos 3 eventos, última prédica, pastores, bloque de oración, mapa, botón WhatsApp.
+- [x] `/` Home: hero con foto real + 3 accesos (Soy nuevo · Horarios · Grupos), próximos 3 eventos, última prédica, pastores, bloque de oración, mapa, botón WhatsApp.
 - [x] `/reuniones`: horarios por día desde `reuniones`, dirección, mapa embebido, "cómo llegar", opción En línea.
 - [x] `/soy-nuevo`: qué esperar, ministerios por rango de edad, formulario → `registros` (origen=web, decidio_seguir, como_llego, peticion, acepta_datos). Correo de aviso al responsable configurado.
 - [x] `/grupos`: directorio público filtrable por zona (ubicación), día, rango de edad y tipo; solo grupos `publico=1 AND activo=1`. `/grupos/[id]`: ficha + "Quiero unirme" → `solicitudes_grupo` + aviso al líder por correo.
