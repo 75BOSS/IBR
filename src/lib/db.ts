@@ -54,3 +54,43 @@ export async function execute(sql: string, params: unknown[] = []): Promise<Resu
   const [result] = await getPool().query<ResultSetHeader>(sql, params);
   return result;
 }
+
+export type Tx = {
+  query<T>(sql: string, params?: unknown[]): Promise<T[]>;
+  queryOne<T>(sql: string, params?: unknown[]): Promise<T | null>;
+  execute(sql: string, params?: unknown[]): Promise<ResultSetHeader>;
+};
+
+/**
+ * Varias consultas en una transacción, en la misma conexión. Si `fn` lanza un error se
+ * deshace todo. Para bloquear una fila mientras se decide (ej. el cupo de un evento) usar
+ * `SELECT … FOR UPDATE` dentro de `fn`.
+ */
+export async function withTransaction<T>(fn: (tx: Tx) => Promise<T>): Promise<T> {
+  const connection = await getPool().getConnection();
+  const tx: Tx = {
+    async query<R>(sql: string, params: unknown[] = []) {
+      const [rows] = await connection.query<RowDataPacket[]>(sql, params);
+      return rows as R[];
+    },
+    async queryOne<R>(sql: string, params: unknown[] = []) {
+      const [rows] = await connection.query<RowDataPacket[]>(sql, params);
+      return (rows[0] as R | undefined) ?? null;
+    },
+    async execute(sql: string, params: unknown[] = []) {
+      const [result] = await connection.query<ResultSetHeader>(sql, params);
+      return result;
+    },
+  };
+  try {
+    await connection.beginTransaction();
+    const result = await fn(tx);
+    await connection.commit();
+    return result;
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
+}
