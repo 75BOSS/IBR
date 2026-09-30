@@ -39,24 +39,34 @@ export type SiteConfig = Record<ConfigKey, string | null>;
 /** Tag para revalidar desde el admin al guardar: revalidateTag(CONFIG_TAG). */
 export const CONFIG_TAG = 'config';
 
-async function loadSiteConfig(): Promise<SiteConfig> {
+async function loadSiteConfigFromDb(): Promise<SiteConfig> {
   const config: SiteConfig = { ...CONFIG_DEFAULTS };
-  try {
-    const rows = await query<{ clave: string; valor: string | null }>(
-      'SELECT clave, valor FROM config',
-    );
-    for (const row of rows) {
-      if (row.clave in config) config[row.clave as ConfigKey] = row.valor;
-    }
-  } catch (error) {
-    // Decisión (ESTADO.md 2026-09-30): el encabezado y pie del sitio no deben tumbar la
-    // página si la BD falla un momento; se registra el error y se usan los valores base.
-    console.error('[config] No se pudo leer la tabla config; se usan valores por defecto.', error);
+  const rows = await query<{ clave: string; valor: string | null }>(
+    'SELECT clave, valor FROM config',
+  );
+  for (const row of rows) {
+    if (row.clave in config) config[row.clave as ConfigKey] = row.valor;
   }
   return config;
 }
 
-export const getSiteConfig = unstable_cache(loadSiteConfig, ['site-config'], {
+// Solo se guarda en caché una lectura buena: si la BD falla, la función lanza y Next sigue
+// sirviendo el último valor bueno (no lo pisa con los valores por defecto).
+const cachedSiteConfig = unstable_cache(loadSiteConfigFromDb, ['site-config'], {
   revalidate: 300,
   tags: [CONFIG_TAG],
 });
+
+/**
+ * Configuración del sitio. Si la BD no responde y no hay un valor bueno en caché, se usan
+ * los valores base y se registra el error: el encabezado y el pie no deben tumbar el sitio
+ * ni el build (decisión en ESTADO.md 2026-09-30).
+ */
+export async function getSiteConfig(): Promise<SiteConfig> {
+  try {
+    return await cachedSiteConfig();
+  } catch (error) {
+    console.error('[config] No se pudo leer la tabla config; se usan valores base.', error);
+    return { ...CONFIG_DEFAULTS };
+  }
+}

@@ -19,6 +19,9 @@ export function connectionOptions(uri: string): PoolOptions {
     uri,
     // La BD guarda UTC; mysql2 convierte DATETIME ↔ Date asumiendo UTC.
     timezone: 'Z',
+    // DATE es una fecha sin hora (fecha de prédica, cumpleaños): llega como 'YYYY-MM-DD' y no
+    // se convierte de zona horaria (como Date saldría un día antes en Ecuador). Ver lib/dates.ts.
+    dateStrings: ['DATE'],
     charset: 'utf8mb4_unicode_ci',
     decimalNumbers: true,
     supportBigNumbers: true,
