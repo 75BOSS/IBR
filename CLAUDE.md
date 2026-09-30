@@ -11,6 +11,24 @@ Idioma del código: inglés en identificadores; español en UI, comentarios de d
 3. Actualizar `ESTADO.md` al terminar cada sesión: qué se hizo, qué quedó a medias, qué se descubrió.
 4. Nunca tocar tablas del sistema PHP heredado (`grupos`, `ubicaciones`, `registros`, `rangos_edad`) sin revisar `MIGRACION-PHP.md`.
 
+## Reglas Pixelia (se aplican siempre)
+
+1. **Causa raíz, nunca parche del síntoma.** Si algo falla, primero se explica la causa (en el commit o en `ESTADO.md`) y después se arregla donde nace. Nada de `try/catch` que silencie, `!important`, `setTimeout` para "esperar" ni condiciones especiales para un solo caso.
+2. **Reutilizar antes que duplicar.** Un componente, función o clase por concepto. Si ya existe algo parecido (en `src/components`, `src/lib`, `src/actions`), se extiende con una prop u opción; no se escribe otro.
+3. **Responsive real.** En tablet y celular los componentes, tarjetas y tablas se **redimensionan** (tipografía, padding, columnas y anchos fluidos con `clamp()`/unidades relativas), no solo se reacomodan. Nada obliga a deslizar en exceso: las tablas del admin pasan a filas-tarjeta compactas en celular en vez de scroll horizontal. Breakpoints del proyecto: **360, 768, 1024, 1280** (`xs`, `md`, `lg`, `xl` en Tailwind). Cada página se revisa a 360 px y 768 px antes de darla por terminada.
+4. **Las 10 heurísticas de Nielsen, explícitas:**
+   - Visibilidad del estado: todo botón que envía muestra carga (`Button` con `pending`), todo guardado confirma con un toast ("Guardado").
+   - Prevención de errores: todo borrado o acción irreversible pide confirmación (`ConfirmDialog`); validación en cliente y servidor con el mismo esquema Zod.
+   - Consistencia: los mismos botones, campos, tablas y patrones en todo el admin (salen de `src/components`, no se estilan a mano por página).
+   - Reconocer antes que recordar: labels visibles siempre; el placeholder es solo un ejemplo, nunca el único texto.
+   - Mensajes de error que dicen **qué pasó y cómo arreglarlo** ("El teléfono debe tener 10 dígitos, ej. 0991234567"), junto al campo y en lenguaje humano.
+   - Además: lenguaje de la iglesia y no técnico, salida clara (cancelar/volver), atajos solo como extra, diseño sin ruido y ayuda breve donde haga falta.
+5. **Diseño con carácter:**
+   - Nada de blanco puro (`#fff`): fondos y superficies usan los tokens cálidos del tema.
+   - Nada de tarjetas idénticas en cuadrícula: variar jerarquía (destacada + secundarias, tamaños, acentos).
+   - Cabeceras de tabla y paneles con color diferenciado; **ningún encabezado de tabla en blanco**.
+   - Tipografía con carácter (títulos en serif `Fraunces`, texto en `Figtree`); prohibido usar Inter o Space Grotesk por defecto.
+
 ## Stack (fijo, no cambiar sin decisión explícita)
 
 | Capa | Elección |
