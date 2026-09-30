@@ -30,7 +30,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [x] `/soy-nuevo`: qué esperar, ministerios por rango de edad, formulario → `registros` (origen=web, decidio_seguir, como_llego, peticion, acepta_datos). Correo de aviso al responsable configurado.
 - [x] `/grupos`: directorio público filtrable por zona (ubicación), día, rango de edad y tipo; solo grupos `publico=1 AND activo=1`. `/grupos/[id]`: ficha + "Quiero unirme" → `solicitudes_grupo` + aviso al líder por correo.
 - [x] `/predicas`: grilla desde `predicas`, filtro por serie y predicador, `YouTubeEmbed`. Botón "En vivo" que aparece si `config.en_vivo_activo=1` o dentro del horario de culto.
-- [ ] `/dar`: cuentas bancarias, QR, texto pastoral. Sin pasarela en F1.
+- [x] `/dar`: cuentas bancarias, QR, texto pastoral. Sin pasarela en F1.
 - [x] `/oracion`: formulario corto → `peticiones` (es_privada).
 - [x] `/contacto`: formulario → `contactos`, redes, mapa, WhatsApp.
 - [ ] Páginas legales: `/privacidad` (política de datos, obligatoria por el consentimiento).
