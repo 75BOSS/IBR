@@ -8,13 +8,13 @@ import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { Tag } from '@/components/Tag';
 import { FlashToast } from '@/components/Toast';
+import { ContactLinks } from '@/components/admin/ContactLinks';
 import { FilterTabs } from '@/components/admin/FilterTabs';
 import { StatusForm } from '@/components/admin/StatusForm';
 import { requireAdmin } from '@/lib/auth';
 import { formatDateTime } from '@/lib/dates';
 import { type Registro, countRegistrosPorEstado, listRegistros } from '@/lib/registros';
 import { ORIGENES, REGISTRO_ESTADOS, SITUACIONES } from '@/lib/validators/registros';
-import { formatPhoneEc, whatsappHref } from '@/lib/whatsapp';
 
 export const metadata: Metadata = { title: 'Registros' };
 
@@ -47,28 +47,12 @@ export default async function RegistrosPage({
       header: 'Persona',
       primary: true,
       cell: (r) => (
-        <span className="flex flex-col gap-1">
-          <span className="font-semibold">
-            {r.nombres} {r.apellidos}
-          </span>
-          {r.telefono && (
-            <a
-              href={
-                whatsappHref(
-                  r.telefono,
-                  `Hola ${r.nombres}, te saludamos de la Iglesia Bíblica Riobamba.`,
-                ) ?? `tel:${r.telefono}`
-              }
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-whatsapp hover:underline"
-            >
-              <Icon name="whatsapp" className="size-4" /> {formatPhoneEc(r.telefono)}
-              <span className="sr-only"> (abrir WhatsApp)</span>
-            </a>
-          )}
-          {r.email && <span className="text-sm break-all text-ink-soft">{r.email}</span>}
-        </span>
+        <ContactLinks
+          nombre={`${r.nombres} ${r.apellidos ?? ''}`.trim()}
+          telefono={r.telefono}
+          email={r.email}
+          saludo={`Hola ${r.nombres}, te saludamos de la Iglesia Bíblica Riobamba.`}
+        />
       ),
     },
     {

@@ -31,7 +31,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [x] `/grupos`: directorio público filtrable por zona (ubicación), día, rango de edad y tipo; solo grupos `publico=1 AND activo=1`. `/grupos/[id]`: ficha + "Quiero unirme" → `solicitudes_grupo` + aviso al líder por correo.
 - [x] `/predicas`: grilla desde `predicas`, filtro por serie y predicador, `YouTubeEmbed`. Botón "En vivo" que aparece si `config.en_vivo_activo=1` o dentro del horario de culto.
 - [ ] `/dar`: cuentas bancarias, QR, texto pastoral. Sin pasarela en F1.
-- [ ] `/oracion`: formulario corto → `peticiones` (es_privada).
+- [x] `/oracion`: formulario corto → `peticiones` (es_privada).
 - [ ] `/contacto`: formulario → `contactos`, redes, mapa, WhatsApp.
 - [ ] Páginas legales: `/privacidad` (política de datos, obligatoria por el consentimiento).
 - [ ] `sitemap.xml`, `robots.txt`, Metadata/OG por página, favicon, manifest básico.
@@ -43,7 +43,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [x] `/admin/reuniones`: CRUD horarios. _(+ `/admin/ubicaciones` «Lugares», ver ESTADO.md)_
 - [x] `/admin/predicas`: pegar link de YouTube → se extrae `youtube_id`, se trae título/miniatura vía YouTube Data API (o manual si no hay key).
 - [x] `/admin/eventos`: CRUD básico (sin inscripción aún), imagen en Cloudinary, `publicado`.
-- [ ] `/admin/peticiones`: lista, marcar atendida.
+- [x] `/admin/peticiones`: lista, marcar atendida.
 - [ ] Rate limit + honeypot en todos los formularios públicos.
 
 ### Cierre F1

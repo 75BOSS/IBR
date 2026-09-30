@@ -4,13 +4,13 @@ import { updateSolicitud } from '@/actions/grupos';
 import { type Column, DataTable } from '@/components/DataTable';
 import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
+import { ContactLinks } from '@/components/admin/ContactLinks';
 import { FilterTabs } from '@/components/admin/FilterTabs';
 import { StatusForm } from '@/components/admin/StatusForm';
 import { requireAdmin } from '@/lib/auth';
 import { formatDateTime } from '@/lib/dates';
 import { query } from '@/lib/db';
 import { SOLICITUD_ESTADOS } from '@/lib/validators/grupos';
-import { formatPhoneEc, whatsappHref } from '@/lib/whatsapp';
 
 export const metadata: Metadata = { title: 'Solicitudes de grupos' };
 
@@ -53,23 +53,11 @@ export default async function SolicitudesPage({
       header: 'Persona',
       primary: true,
       cell: (s) => (
-        <span className="flex flex-col gap-1">
-          <span className="font-semibold">{s.nombre}</span>
-          <a
-            href={
-              whatsappHref(
-                s.telefono,
-                `Hola ${s.nombre}, te escribo de la Iglesia Bíblica Riobamba por el grupo «${s.grupo}».`,
-              ) ?? `tel:${s.telefono}`
-            }
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-whatsapp hover:underline"
-          >
-            <Icon name="whatsapp" className="size-4" /> {formatPhoneEc(s.telefono)}
-            <span className="sr-only"> (abrir WhatsApp)</span>
-          </a>
-        </span>
+        <ContactLinks
+          nombre={s.nombre}
+          telefono={s.telefono}
+          saludo={`Hola ${s.nombre}, te escribo de la Iglesia Bíblica Riobamba por el grupo «${s.grupo}».`}
+        />
       ),
     },
     {
