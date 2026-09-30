@@ -20,3 +20,13 @@ export function whatsappHref(number: string | null | undefined, message?: string
   if (message) url.searchParams.set('text', message);
   return url.toString();
 }
+
+/** Teléfono para mostrar: 0991234567 → «099 123 4567»; 032123456 → «03 212 3456». */
+export function formatPhoneEc(value: string | null | undefined): string {
+  const international = normalizeEcuadorWhatsapp(value);
+  if (!international) return value ?? '';
+  const local = `0${international.slice(3)}`;
+  return local.length === 10
+    ? `${local.slice(0, 3)} ${local.slice(3, 6)} ${local.slice(6)}`
+    : `${local.slice(0, 2)} ${local.slice(2, 5)} ${local.slice(5)}`;
+}

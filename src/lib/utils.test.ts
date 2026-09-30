@@ -3,7 +3,7 @@ import { describe, it } from 'node:test';
 import { rateLimitIp } from '@/lib/ip';
 import { safeMapsEmbedUrl } from '@/lib/maps';
 import { safeAdminPath } from '@/lib/validators/auth';
-import { whatsappHref } from '@/lib/whatsapp';
+import { formatPhoneEc, whatsappHref } from '@/lib/whatsapp';
 import { parseYouTubeId } from '@/lib/youtube';
 
 describe('parseYouTubeId', () => {
@@ -105,4 +105,10 @@ describe('rateLimitIp (clave del límite por IP)', () => {
     assert.equal(rateLimitIp('2800:bf0:1:2::5'), '2800:0bf0:0001:0002::/64'));
   it('IPv6 corta con :: al inicio del bloque', () =>
     assert.equal(rateLimitIp('2800::1'), '2800:0000:0000:0000::/64'));
+});
+
+describe('formatPhoneEc', () => {
+  it('celular', () => assert.equal(formatPhoneEc('0991234567'), '099 123 4567'));
+  it('fijo', () => assert.equal(formatPhoneEc('032123456'), '03 212 3456'));
+  it('inválido se muestra igual', () => assert.equal(formatPhoneEc('123'), '123'));
 });

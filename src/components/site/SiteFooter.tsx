@@ -4,6 +4,7 @@ import { Icon, type IconName } from '@/components/Icon';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import type { SiteConfig } from '@/lib/config';
 import { PUBLIC_NAV } from '@/lib/nav';
+import { formatPhoneEc } from '@/lib/whatsapp';
 
 const SOCIALS: {
   key: 'instagram' | 'tiktok' | 'youtube' | 'facebook';
@@ -83,7 +84,7 @@ export function SiteFooter({ config }: { config: SiteConfig }) {
                     className="inline-flex items-center gap-2 hover:underline"
                   >
                     <Icon name="phone" className="size-5 text-footer-muted" />
-                    {config.telefono}
+                    {formatPhoneEc(config.telefono)}
                   </a>
                 </li>
               )}
@@ -102,6 +103,7 @@ export function SiteFooter({ config }: { config: SiteConfig }) {
                 <li className="pt-1">
                   <WhatsAppButton
                     number={config.whatsapp}
+                    label="WhatsApp"
                     message="Hola, les escribo desde la página web."
                   />
                 </li>
