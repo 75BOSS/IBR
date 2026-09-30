@@ -12,11 +12,17 @@ import { ADMIN_NAV, isActivePath } from '@/lib/nav';
 
 type AdminNavProps = { user: { nombre: string; rol: 'admin' | 'editor' } };
 
-function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
+function NavLinks({
+  rol,
+  onNavigate,
+}: {
+  rol: AdminNavProps['user']['rol'];
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
   return (
     <ul className="flex flex-col gap-0.5">
-      {ADMIN_NAV.map((item) => {
+      {ADMIN_NAV.filter((item) => !item.adminOnly || rol === 'admin').map((item) => {
         const active = isActivePath(pathname, item.href);
         if (!item.ready) {
           return (
@@ -166,7 +172,7 @@ export function AdminNav({ user }: AdminNavProps) {
           </div>
           {/* Relleno de 6 px: el anillo de foco (2 px + 3 px) no se recorta con overflow. */}
           <nav aria-label="Panel" className="-mx-1.5 flex-1 overflow-y-auto p-1.5">
-            <NavLinks onNavigate={close} />
+            <NavLinks rol={user.rol} onNavigate={close} />
           </nav>
           <UserBlock user={user} />
         </div>
@@ -175,7 +181,7 @@ export function AdminNav({ user }: AdminNavProps) {
       <aside className="sticky top-0 hidden h-dvh flex-col gap-6 overflow-y-auto bg-sidebar p-4 text-sidebar-ink on-dark lg:flex">
         <Brand />
         <nav aria-label="Panel" className="flex-1">
-          <NavLinks />
+          <NavLinks rol={user.rol} />
         </nav>
         <UserBlock user={user} />
       </aside>

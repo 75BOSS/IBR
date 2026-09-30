@@ -23,7 +23,14 @@ export const FOOTER_EXTRA_NAV = [
  * Menú del panel. `ready: false` se muestra deshabilitado con la etiqueta «Pronto» hasta que
  * el módulo exista (se cambia a true al terminar cada módulo de F1).
  */
-export const ADMIN_NAV: { href: string; label: string; icon: IconName; ready: boolean }[] = [
+export const ADMIN_NAV: {
+  href: string;
+  label: string;
+  icon: IconName;
+  ready: boolean;
+  /** Solo lo ve el rol admin (la página también lo exige con requireAdmin({ role: 'admin' })). */
+  adminOnly?: boolean;
+}[] = [
   { href: '/admin', label: 'Resumen', icon: 'dashboard', ready: true },
   { href: '/admin/registros', label: 'Registros', icon: 'userPlus', ready: true },
   { href: '/admin/grupos', label: 'Grupos', icon: 'users', ready: true },
@@ -34,7 +41,7 @@ export const ADMIN_NAV: { href: string; label: string; icon: IconName; ready: bo
   { href: '/admin/peticiones', label: 'Peticiones', icon: 'handHeart', ready: true },
   { href: '/admin/mensajes', label: 'Mensajes', icon: 'mail', ready: true },
   { href: '/admin/equipo', label: 'Equipo', icon: 'idCard', ready: true },
-  { href: '/admin/config', label: 'Configuración', icon: 'settings', ready: true },
+  { href: '/admin/config', label: 'Configuración', icon: 'settings', ready: true, adminOnly: true },
 ];
 
 const SOCIALS = [
