@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { BrandMark } from '@/components/BrandMark';
 import { MainNav } from '@/components/site/MainNav';
 import type { SiteConfig } from '@/lib/config';
-import { whatsappHref } from '@/lib/whatsapp';
 
 export function SiteHeader({ config }: { config: SiteConfig }) {
   return (
@@ -20,7 +19,7 @@ export function SiteHeader({ config }: { config: SiteConfig }) {
           </span>
           <span className="sr-only">— {config.nombre_iglesia}, ir al inicio</span>
         </Link>
-        <MainNav whatsappUrl={whatsappHref(config.whatsapp)} />
+        <MainNav whatsapp={config.whatsapp} />
       </div>
     </header>
   );

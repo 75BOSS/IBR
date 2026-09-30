@@ -1,3 +1,4 @@
+import { buttonClasses } from '@/components/button-styles';
 import { Icon } from '@/components/Icon';
 import { whatsappHref } from '@/lib/whatsapp';
 
@@ -42,7 +43,7 @@ export function WhatsAppButton({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-whatsapp px-4 text-[0.95rem] font-semibold text-surface transition-colors hover:brightness-95 ${className}`}
+      className={buttonClasses({ variant: 'whatsapp', className })}
     >
       <Icon name="whatsapp" className="size-5" />
       <span>{label}</span>

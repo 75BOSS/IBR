@@ -3,18 +3,22 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { buttonClasses } from '@/components/Button';
+import { buttonClasses } from '@/components/button-styles';
 import { Icon } from '@/components/Icon';
+import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { PUBLIC_NAV, isActivePath } from '@/lib/nav';
 
 /** Navegación principal: lista en escritorio, menú desplegable en celular y tablet. */
-export function MainNav({ whatsappUrl }: { whatsappUrl: string | null }) {
+export function MainNav({ whatsapp }: { whatsapp: string | null }) {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  // El menú queda abierto solo en la ruta donde se abrió: cualquier navegación lo cierra.
+  const [openOn, setOpenOn] = useState<string | null>(null);
+  const open = openOn === pathname;
+  const close = () => setOpenOn(null);
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setOpen(false);
+    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setOpenOn(null);
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
@@ -48,6 +52,7 @@ export function MainNav({ whatsappUrl }: { whatsappUrl: string | null }) {
 
       <Link
         href="/soy-nuevo"
+        onClick={close}
         aria-current={isActivePath(pathname, '/soy-nuevo') ? 'page' : undefined}
         className={buttonClasses({
           variant: 'accent',
@@ -63,7 +68,7 @@ export function MainNav({ whatsappUrl }: { whatsappUrl: string | null }) {
         className="grid size-11 place-items-center rounded-xl text-brand-strong hover:bg-brand-soft lg:hidden"
         aria-expanded={open}
         aria-controls="menu-principal"
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => setOpenOn(open ? null : pathname)}
       >
         <Icon name={open ? 'close' : 'menu'} className="size-6" />
         <span className="sr-only">{open ? 'Cerrar menú' : 'Abrir menú'}</span>
@@ -82,7 +87,7 @@ export function MainNav({ whatsappUrl }: { whatsappUrl: string | null }) {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    onClick={() => setOpen(false)}
+                    onClick={close}
                     aria-current={active ? 'page' : undefined}
                     className={`flex min-h-13 items-center justify-between py-3 text-lg font-semibold ${
                       active ? 'text-accent-strong' : 'text-ink'
@@ -95,18 +100,11 @@ export function MainNav({ whatsappUrl }: { whatsappUrl: string | null }) {
               );
             })}
           </ul>
-          {whatsappUrl && (
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 flex min-h-11 items-center justify-center gap-2 rounded-xl bg-whatsapp font-semibold text-surface"
-            >
-              <Icon name="whatsapp" />
-              Escríbenos por WhatsApp
-              <span className="sr-only"> (se abre en una pestaña nueva)</span>
-            </a>
-          )}
+          <WhatsAppButton
+            number={whatsapp}
+            message="Hola, les escribo desde la página web."
+            className="mt-3 w-full"
+          />
         </nav>
       </div>
     </>

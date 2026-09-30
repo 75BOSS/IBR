@@ -14,6 +14,8 @@ describe('parseYouTubeId', () => {
     `https://m.youtube.com/watch?v=${id}`,
     `https://www.youtube.com/live/${id}?feature=share`,
     `https://www.youtube.com/embed/${id}`,
+    `Https://youtu.be/${id}`,
+    `HTTPS://WWW.YOUTUBE.COM/watch?v=${id}`,
     id,
   ]) {
     it(`extrae el ID de ${input}`, () => assert.equal(parseYouTubeId(input), id));
@@ -57,6 +59,14 @@ describe('whatsappHref', () => {
       whatsappHref('593991234567', 'Hola IBR'),
       'https://wa.me/593991234567?text=Hola+IBR',
     ));
+  it('quita el 0 sobrante tras +593', () =>
+    assert.equal(whatsappHref('+593 0991234567'), 'https://wa.me/593991234567'));
+  it('acepta el prefijo internacional 00', () =>
+    assert.equal(whatsappHref('00593991234567'), 'https://wa.me/593991234567'));
+  it('acepta un fijo con código de provincia', () =>
+    assert.equal(whatsappHref('03 212 3456'), 'https://wa.me/59332123456'));
+  it('rechaza números que no son de Ecuador', () =>
+    assert.equal(whatsappHref('+1 555 123 4567'), null));
   it('sin número usable devuelve null', () => {
     assert.equal(whatsappHref(''), null);
     assert.equal(whatsappHref('123'), null);

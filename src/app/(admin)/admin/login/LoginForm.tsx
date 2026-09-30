@@ -4,6 +4,7 @@ import { useActionState } from 'react';
 import { type LoginState, login } from '@/actions/auth';
 import { Button } from '@/components/Button';
 import { Field } from '@/components/Field';
+import { FormAlert } from '@/components/FormAlert';
 import { initialFormState } from '@/lib/form-state';
 
 export function LoginForm({ next }: { next?: string }) {
@@ -11,14 +12,7 @@ export function LoginForm({ next }: { next?: string }) {
 
   return (
     <form action={formAction} className="flex flex-col gap-5" noValidate>
-      {state.status === 'error' && state.message && (
-        <div
-          role="alert"
-          className="rounded-xl border border-danger/40 bg-danger-soft px-4 py-3 text-sm font-medium text-danger-strong"
-        >
-          {state.message}
-        </div>
-      )}
+      {state.status === 'error' && state.message && <FormAlert>{state.message}</FormAlert>}
       <Field
         label="Correo"
         name="email"

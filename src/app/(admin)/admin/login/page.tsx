@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { BrandMark } from '@/components/BrandMark';
+import { Card } from '@/components/Card';
+import { FormAlert } from '@/components/FormAlert';
 import { getCurrentAdmin } from '@/lib/auth';
 import { safeAdminPath } from '@/lib/validators/auth';
 import { LoginForm } from './LoginForm';
@@ -22,7 +24,7 @@ export default async function LoginPage({
 
   return (
     <main className="grid min-h-dvh grid-rows-[auto_1fr] lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:grid-rows-1">
-      <section className="flex flex-col justify-between gap-6 bg-sidebar px-[clamp(1.25rem,5vw,4rem)] py-[clamp(1.25rem,5vw,4rem)] text-sidebar-ink">
+      <section className="flex flex-col justify-between gap-6 bg-sidebar px-[clamp(1.25rem,5vw,4rem)] py-[clamp(1.25rem,5vw,4rem)] text-sidebar-ink on-dark">
         <div className="flex items-center gap-3">
           <BrandMark size="lg" />
           <span className="text-sm leading-tight font-semibold tracking-wide text-sidebar-muted uppercase">
@@ -41,7 +43,7 @@ export default async function LoginPage({
       </section>
 
       <section className="flex items-start justify-center px-[clamp(1rem,5vw,4rem)] py-[clamp(1.5rem,6vw,5rem)] lg:items-center">
-        <div className="w-full max-w-md rounded-2xl bg-surface p-[clamp(1.25rem,4vw,2.5rem)] shadow-card">
+        <Card emphasis="featured" className="w-full max-w-md">
           <h1 className="text-h1 font-semibold text-brand-strong">Iniciar sesión</h1>
           <p className="mt-2 text-ink-soft">
             {target
@@ -49,12 +51,9 @@ export default async function LoginPage({
               : 'Entra con el correo que te registró el equipo.'}
           </p>
           {notice && (
-            <p
-              role="status"
-              className="mt-4 rounded-xl bg-success-soft px-4 py-3 text-sm font-medium text-success"
-            >
+            <FormAlert tone="success" className="mt-4">
               {notice}
-            </p>
+            </FormAlert>
           )}
           <div className="mt-6">
             <LoginForm next={target} />
@@ -62,7 +61,7 @@ export default async function LoginPage({
           <p className="mt-6 text-sm text-ink-soft">
             ¿Olvidaste tu contraseña? Pide a un administrador que la restablezca.
           </p>
-        </div>
+        </Card>
       </section>
     </main>
   );

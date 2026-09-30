@@ -43,7 +43,7 @@ export function MapEmbed({
           href={directions}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex min-h-12 items-center justify-between gap-3 bg-brand-soft px-4 font-semibold text-brand-strong hover:bg-brand-soft/70"
+          className="flex min-h-12 items-center justify-between gap-3 bg-brand-soft px-4 font-semibold text-brand-strong hover:bg-brand-soft/70 focus-visible:outline-offset-[-4px]"
         >
           <span className="flex items-center gap-2">
             <Icon name="mapPin" />

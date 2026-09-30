@@ -90,9 +90,10 @@
     text-wrap: balance;
   }
 
-  /* Foco visible y consistente en todo el sitio (accesibilidad mínima de CLAUDE.md). */
+  /* Foco visible y consistente en todo el sitio (accesibilidad mínima de CLAUDE.md).
+     El color sale de --focus-ring: sobre fondos oscuros lo cambia la utilidad on-dark. */
   :focus-visible {
-    outline: 3px solid var(--color-accent);
+    outline: 3px solid var(--focus-ring, var(--color-accent));
     outline-offset: 2px;
     border-radius: 0.25rem;
   }
@@ -117,6 +118,17 @@
 
 @theme {
   --animate-toast-in: toast-in 180ms ease-out;
+}
+
+/* Superficies oscuras (barra lateral, pie, franjas petróleo): anillo de foco claro (≥ 9:1). */
+@utility on-dark {
+  --focus-ring: var(--color-accent-soft);
+}
+
+/* Contenido de las páginas del panel: márgenes fluidos junto a la barra lateral. */
+@utility container-panel {
+  padding-inline: clamp(1rem, 4vw, 2.5rem);
+  padding-block: clamp(1.5rem, 5vw, 3rem);
 }
 
 /* Ancho de contenido con márgenes fluidos (16 px en 360, hasta 40 px en escritorio). */

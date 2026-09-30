@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { Card } from '@/components/Card';
+import { PageHeader } from '@/components/PageHeader';
 import { requireAdmin } from '@/lib/auth';
 import { getClientIp } from '@/lib/request';
 import { SseTest } from './SseTest';
@@ -26,14 +27,12 @@ export default async function DiagnosticsPage() {
   const detectedIp = await getClientIp();
 
   return (
-    <div className="flex flex-col gap-6 px-[clamp(1rem,4vw,2.5rem)] py-[clamp(1.5rem,5vw,3rem)]">
-      <header>
-        <p className="text-sm font-semibold tracking-widest text-accent uppercase">Temporal · F0</p>
-        <h1 className="mt-2 text-h1 font-semibold text-brand-strong">Diagnóstico del hosting</h1>
-        <p className="mt-2 max-w-prose text-ink-soft">
-          Abre esta página en dev.ibriglesia.com y anota los resultados en ESTADO.md.
-        </p>
-      </header>
+    <div className="flex flex-col gap-6 container-panel">
+      <PageHeader
+        eyebrow="Temporal · F0"
+        title="Diagnóstico del hosting"
+        intro="Abre esta página en dev.ibriglesia.com y anota los resultados en ESTADO.md."
+      />
       <Card title="1 · SSE detrás del proxy">
         <SseTest />
       </Card>

@@ -30,7 +30,7 @@ export function SiteFooter({ config }: { config: SiteConfig }) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-auto bg-footer text-footer-ink">
+    <footer className="mt-auto bg-footer text-footer-ink on-dark">
       <div className="container-page grid gap-x-10 gap-y-8 py-[clamp(2.5rem,6vw,4.5rem)] md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
         <div className="flex flex-col gap-4 md:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-3">

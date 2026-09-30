@@ -9,7 +9,7 @@ export function parseYouTubeId(input: string): string | null {
   if (ID_PATTERN.test(value)) return value;
   let url: URL;
   try {
-    url = new URL(value.startsWith('http') ? value : `https://${value}`);
+    url = new URL(/^https?:\/\//i.test(value) ? value : `https://${value}`);
   } catch {
     return null; // no es una URL: la persona pegó otra cosa
   }

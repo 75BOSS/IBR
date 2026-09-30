@@ -4,8 +4,10 @@ import { Button, ButtonLink } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Field } from '@/components/Field';
+import { FormAlert } from '@/components/FormAlert';
 import { Icon } from '@/components/Icon';
 import { MapEmbed } from '@/components/MapEmbed';
+import { PageHeader } from '@/components/PageHeader';
 import { Tag } from '@/components/Tag';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { YouTubeEmbed } from '@/components/YouTubeEmbed';
@@ -21,15 +23,12 @@ export const metadata: Metadata = { title: 'Componentes' };
 export default async function ComponentsPage() {
   await requireAdmin();
   return (
-    <div className="flex flex-col gap-[clamp(1.25rem,3vw,2rem)] px-[clamp(1rem,4vw,2.5rem)] py-[clamp(1.5rem,5vw,3rem)]">
-      <header>
-        <p className="text-sm font-semibold tracking-widest text-accent uppercase">Guía</p>
-        <h1 className="mt-2 text-h1 font-semibold text-brand-strong">Componentes base</h1>
-        <p className="mt-2 max-w-prose text-ink-soft">
-          Un componente por concepto. Si algo no encaja, se extiende el componente con una opción
-          nueva; no se estiliza a mano en la página.
-        </p>
-      </header>
+    <div className="flex flex-col gap-[clamp(1.25rem,3vw,2rem)] container-panel">
+      <PageHeader
+        eyebrow="Guía"
+        title="Componentes base"
+        intro="Un componente por concepto. Si algo no encaja, se extiende el componente con una opción nueva; no se estiliza a mano en la página."
+      />
 
       <Card title="Botones" actions={<Tag tone="brand">Button · ButtonLink</Tag>}>
         <div className="flex flex-col gap-4">
@@ -59,7 +58,7 @@ export default async function ComponentsPage() {
               Enlace con forma de botón
             </ButtonLink>
           </div>
-          <div className="flex flex-wrap gap-2 rounded-xl bg-sidebar p-3">
+          <div className="flex flex-wrap gap-2 rounded-xl bg-sidebar p-3 on-dark">
             <Button variant="inverse" icon={<Icon name="logOut" className="size-4" />}>
               Inverso (sobre fondo oscuro)
             </Button>
@@ -121,6 +120,9 @@ export default async function ComponentsPage() {
             actions={<Tag tone="brand">Toast · ConfirmDialog</Tag>}
           >
             <div className="flex flex-col gap-4">
+              <FormAlert>No se pudo guardar. Revisa los campos marcados.</FormAlert>
+              <FormAlert tone="success">Cerraste sesión en todos tus dispositivos.</FormAlert>
+              <FormAlert tone="warning">Esa sección es solo para administradores.</FormAlert>
               <ToastDemo />
               <div className="flex flex-wrap gap-2">
                 <ConfirmDialog

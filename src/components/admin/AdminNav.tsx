@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { logout } from '@/actions/auth';
 import { BrandMark } from '@/components/BrandMark';
 import { Button } from '@/components/Button';
@@ -95,9 +95,9 @@ function UserBlock({ user }: AdminNavProps) {
   );
 }
 
-function Brand() {
+function Brand({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <Link href="/admin" className="flex items-center gap-3 rounded-lg">
+    <Link href="/admin" onClick={onNavigate} className="flex items-center gap-3 rounded-lg">
       <BrandMark size="sm" />
       <span className="font-display text-lg font-semibold">Panel IBR</span>
     </Link>
@@ -108,13 +108,30 @@ function Brand() {
  * Menú del panel: barra lateral fija desde 1024 px; en celular/tablet, barra superior con un
  * cajón (<dialog> nativo: atrapa el foco, cierra con Escape y bloquea el fondo).
  */
+/** Mismo valor que --breakpoint-lg (64rem): desde ahí se ve la barra lateral fija. */
+const DESKTOP_QUERY = '(min-width: 64rem)';
+
 export function AdminNav({ user }: AdminNavProps) {
   const drawer = useRef<HTMLDialogElement>(null);
+  const pathname = usePathname();
   const close = () => drawer.current?.close();
+
+  // Cualquier navegación (enlaces, logo, atrás/adelante) cierra el cajón.
+  useEffect(() => {
+    drawer.current?.close();
+  }, [pathname]);
+
+  // Un <dialog> modal oculto por CSS sigue bloqueando la página: al pasar a escritorio se cierra.
+  useEffect(() => {
+    const desktop = window.matchMedia(DESKTOP_QUERY);
+    const onChange = () => desktop.matches && drawer.current?.close();
+    desktop.addEventListener('change', onChange);
+    return () => desktop.removeEventListener('change', onChange);
+  }, []);
 
   return (
     <>
-      <div className="sticky top-0 z-30 flex h-14 items-center gap-3 bg-sidebar px-3 text-sidebar-ink md:h-16 md:px-5 lg:hidden">
+      <div className="sticky top-0 z-30 flex h-14 items-center gap-3 bg-sidebar px-3 text-sidebar-ink on-dark md:h-16 md:px-5 lg:hidden">
         <button
           type="button"
           onClick={() => drawer.current?.showModal()}
@@ -133,11 +150,11 @@ export function AdminNav({ user }: AdminNavProps) {
         ref={drawer}
         aria-label="Menú del panel"
         onClick={(event) => event.target === drawer.current && close()}
-        className="m-0 h-dvh max-h-dvh w-[min(20rem,86vw)] max-w-none bg-sidebar p-0 text-sidebar-ink backdrop:bg-ink/50 lg:hidden"
+        className="m-0 h-dvh max-h-dvh w-[min(20rem,86vw)] max-w-none bg-sidebar p-0 text-sidebar-ink on-dark backdrop:bg-ink/50 lg:hidden"
       >
         <div className="flex h-full flex-col gap-6 p-4">
           <div className="flex items-center justify-between">
-            <Brand />
+            <Brand onNavigate={close} />
             <button
               type="button"
               onClick={close}
@@ -147,14 +164,15 @@ export function AdminNav({ user }: AdminNavProps) {
               <span className="sr-only">Cerrar menú</span>
             </button>
           </div>
-          <nav aria-label="Panel" className="flex-1 overflow-y-auto">
+          {/* Relleno de 6 px: el anillo de foco (2 px + 3 px) no se recorta con overflow. */}
+          <nav aria-label="Panel" className="-mx-1.5 flex-1 overflow-y-auto p-1.5">
             <NavLinks onNavigate={close} />
           </nav>
           <UserBlock user={user} />
         </div>
       </dialog>
 
-      <aside className="sticky top-0 hidden h-dvh flex-col gap-6 overflow-y-auto bg-sidebar p-4 text-sidebar-ink lg:flex">
+      <aside className="sticky top-0 hidden h-dvh flex-col gap-6 overflow-y-auto bg-sidebar p-4 text-sidebar-ink on-dark lg:flex">
         <Brand />
         <nav aria-label="Panel" className="flex-1">
           <NavLinks />

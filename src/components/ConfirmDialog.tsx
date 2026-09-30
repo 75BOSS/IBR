@@ -1,14 +1,26 @@
 'use client';
 
-import { type ReactNode, useActionState, useEffect, useId, useRef } from 'react';
-import { Button, type ButtonVariant } from '@/components/Button';
+import {
+  type ReactNode,
+  type RefObject,
+  useActionState,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react';
+import { Button } from '@/components/Button';
+import type { ButtonVariant } from '@/components/button-styles';
+import { FormAlert } from '@/components/FormAlert';
 import { Icon, type IconName } from '@/components/Icon';
 import { useToast } from '@/components/Toast';
 import { type FormState, initialFormState } from '@/lib/form-state';
 
+type Action = (state: FormState, formData: FormData) => Promise<FormState>;
+
 type Props = {
   /** Server action que recibe los `fields` como FormData y devuelve un FormState. */
-  action: (state: FormState, formData: FormData) => Promise<FormState>;
+  action: Action;
   /** Campos ocultos que viajan con la confirmación (ej. { id: '12' }). */
   fields?: Record<string, string>;
   title: string;
@@ -24,31 +36,24 @@ type Props = {
 
 /**
  * Confirmación antes de acciones irreversibles (borrar, desactivar). El foco inicial queda en
- * «Cancelar» y el error, si lo hay, se muestra dentro del diálogo sin cerrarlo.
+ * «Cancelar»; cada apertura empieza limpia; mientras procesa no se puede cerrar; el error se
+ * muestra dentro del diálogo y el éxito con un toast.
  */
 export function ConfirmDialog({
-  action,
-  fields = {},
-  title,
-  description,
   triggerLabel,
   triggerIcon = 'trash',
   triggerVariant = 'dangerGhost',
-  confirmLabel = 'Sí, eliminar',
-  pendingLabel = 'Eliminando…',
-  tone = 'danger',
+  ...props
 }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
+  const [openCount, setOpenCount] = useState(0);
   const titleId = useId();
   const descriptionId = useId();
-  const toast = useToast();
-  const [state, formAction] = useActionState(action, initialFormState);
 
+  // Se abre después de montar el formulario nuevo, para que el foco inicial caiga en su «Cancelar».
   useEffect(() => {
-    if (state.status !== 'success') return;
-    dialog.current?.close();
-    if (state.message) toast({ tone: 'success', message: state.message });
-  }, [state, toast]);
+    if (openCount > 0) dialog.current?.showModal();
+  }, [openCount]);
 
   return (
     <>
@@ -56,7 +61,7 @@ export function ConfirmDialog({
         variant={triggerVariant}
         size="sm"
         icon={<Icon name={triggerIcon} className="size-4" />}
-        onClick={() => dialog.current?.showModal()}
+        onClick={() => setOpenCount((n) => n + 1)}
         aria-haspopup="dialog"
       >
         {triggerLabel}
@@ -67,49 +72,100 @@ export function ConfirmDialog({
         aria-describedby={descriptionId}
         className="m-auto w-[min(30rem,calc(100vw-2rem))] rounded-2xl bg-surface p-0 text-ink shadow-pop backdrop:bg-ink/55"
       >
-        <form action={formAction} className="flex flex-col gap-5 p-[clamp(1.25rem,4vw,1.75rem)]">
-          <div className="flex items-start gap-3">
-            <span
-              className={`grid size-10 shrink-0 place-items-center rounded-full ${
-                tone === 'danger' ? 'bg-danger-soft text-danger' : 'bg-brand-soft text-brand'
-              }`}
-            >
-              <Icon name="warning" />
-            </span>
-            <div className="flex flex-col gap-1.5">
-              <h2 id={titleId} className="text-h3 font-semibold">
-                {title}
-              </h2>
-              <div id={descriptionId} className="text-ink-soft">
-                {description}
-              </div>
-            </div>
-          </div>
-          {state.status === 'error' && state.message && (
-            <p
-              role="alert"
-              className="rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger-strong"
-            >
-              {state.message}
-            </p>
-          )}
-          {Object.entries(fields).map(([name, value]) => (
-            <input key={name} type="hidden" name={name} value={value} />
-          ))}
-          <div className="flex flex-col-reverse gap-2 md:flex-row md:justify-end">
-            <Button variant="secondary" onClick={() => dialog.current?.close()} autoFocus>
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              variant={tone === 'danger' ? 'danger' : 'primary'}
-              pendingLabel={pendingLabel}
-            >
-              {confirmLabel}
-            </Button>
-          </div>
-        </form>
+        {/* key: cada apertura monta un formulario nuevo (sin el error del intento anterior). */}
+        <ConfirmForm
+          key={openCount}
+          dialog={dialog}
+          titleId={titleId}
+          descriptionId={descriptionId}
+          {...props}
+        />
       </dialog>
     </>
+  );
+}
+
+function ConfirmForm({
+  dialog,
+  action,
+  fields = {},
+  title,
+  description,
+  confirmLabel = 'Sí, eliminar',
+  pendingLabel = 'Eliminando…',
+  tone = 'danger',
+  titleId,
+  descriptionId,
+}: Omit<Props, 'triggerLabel' | 'triggerIcon' | 'triggerVariant'> & {
+  dialog: RefObject<HTMLDialogElement | null>;
+  titleId: string;
+  descriptionId: string;
+}) {
+  const toast = useToast();
+
+  // El cierre y el toast van dentro de la acción (después del await): si la acción borra la
+  // fila que contiene este diálogo, el componente se desmonta pero el aviso igual aparece.
+  const [state, formAction, pending] = useActionState<FormState, FormData>(
+    async (prev, formData) => {
+      const result = await action(prev, formData);
+      if (result.status === 'success') {
+        dialog.current?.close();
+        if (result.message) toast({ tone: 'success', message: result.message });
+      }
+      return result;
+    },
+    initialFormState,
+  );
+
+  // Escape no cierra el diálogo mientras la acción está en curso.
+  useEffect(() => {
+    const element = dialog.current;
+    if (!element || !pending) return;
+    const blockCancel = (event: Event) => event.preventDefault();
+    element.addEventListener('cancel', blockCancel);
+    return () => element.removeEventListener('cancel', blockCancel);
+  }, [dialog, pending]);
+
+  return (
+    <form action={formAction} className="flex flex-col gap-5 p-[clamp(1.25rem,4vw,1.75rem)]">
+      <div className="flex items-start gap-3">
+        <span
+          className={`grid size-10 shrink-0 place-items-center rounded-full ${
+            tone === 'danger' ? 'bg-danger-soft text-danger' : 'bg-brand-soft text-brand'
+          }`}
+        >
+          <Icon name="warning" />
+        </span>
+        <div className="flex flex-col gap-1.5">
+          <h2 id={titleId} className="text-h3 font-semibold">
+            {title}
+          </h2>
+          <div id={descriptionId} className="text-ink-soft">
+            {description}
+          </div>
+        </div>
+      </div>
+      {state.status === 'error' && state.message && <FormAlert>{state.message}</FormAlert>}
+      {Object.entries(fields).map(([name, value]) => (
+        <input key={name} type="hidden" name={name} value={value} />
+      ))}
+      <div className="flex flex-col-reverse gap-2 md:flex-row md:justify-end">
+        <Button
+          variant="secondary"
+          onClick={() => dialog.current?.close()}
+          disabled={pending}
+          autoFocus
+        >
+          Cancelar
+        </Button>
+        <Button
+          type="submit"
+          variant={tone === 'danger' ? 'danger' : 'primary'}
+          pendingLabel={pendingLabel}
+        >
+          {confirmLabel}
+        </Button>
+      </div>
+    </form>
   );
 }

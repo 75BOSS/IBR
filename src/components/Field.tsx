@@ -29,7 +29,7 @@ export type FieldProps = InputFieldProps | TextareaFieldProps | SelectFieldProps
 
 const controlBase =
   'block w-full rounded-xl border bg-surface px-3.5 text-base text-ink ' +
-  'placeholder:text-ink-soft/70 transition-colors motion-safe:duration-150 ' +
+  'placeholder:text-ink-soft transition-colors motion-safe:duration-150 ' +
   'focus:border-brand disabled:bg-sunken disabled:text-ink-soft';
 
 /**

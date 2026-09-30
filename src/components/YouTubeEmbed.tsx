@@ -23,6 +23,7 @@ export function YouTubeEmbed({ title, className = '', ...source }: Props) {
       : `https://www.youtube-nocookie.com/embed/live_stream?channel=${encodeURIComponent(source.channelId)}&autoplay=1`;
 
   return (
+    // overflow-hidden recortaría un anillo externo: el foco del botón se dibuja por dentro.
     <div className={`relative aspect-video overflow-hidden rounded-2xl bg-ink ${className}`}>
       {playing ? (
         <iframe
@@ -37,7 +38,7 @@ export function YouTubeEmbed({ title, className = '', ...source }: Props) {
         <button
           type="button"
           onClick={() => setPlaying(true)}
-          className="group absolute inset-0 grid size-full place-items-center"
+          className="group absolute inset-0 grid size-full place-items-center [--focus-ring:var(--color-surface)] focus-visible:outline-offset-[-6px]"
         >
           {source.videoId !== undefined ? (
             <Image
@@ -50,7 +51,7 @@ export function YouTubeEmbed({ title, className = '', ...source }: Props) {
           ) : (
             <span className="absolute inset-0 bg-brand-strong" aria-hidden="true" />
           )}
-          <span className="relative grid size-14 place-items-center rounded-full bg-accent text-surface shadow-pop transition-transform group-hover:scale-105 md:size-18">
+          <span className="relative grid size-14 place-items-center rounded-full bg-accent text-surface shadow-pop transition-transform group-hover:scale-105 group-focus-visible:ring-4 group-focus-visible:ring-surface md:size-18">
             <Icon name="play" className="size-7 translate-x-0.5 md:size-9" />
           </span>
           <span className="sr-only">Reproducir: {title}</span>
