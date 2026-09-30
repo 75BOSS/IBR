@@ -33,7 +33,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [x] `/dar`: cuentas bancarias, QR, texto pastoral. Sin pasarela en F1.
 - [x] `/oracion`: formulario corto → `peticiones` (es_privada).
 - [x] `/contacto`: formulario → `contactos`, redes, mapa, WhatsApp.
-- [ ] Páginas legales: `/privacidad` (política de datos, obligatoria por el consentimiento).
+- [x] Páginas legales: `/privacidad` (política de datos, obligatoria por el consentimiento).
 - [ ] `sitemap.xml`, `robots.txt`, Metadata/OG por página, favicon, manifest básico.
 
 ### Admin
