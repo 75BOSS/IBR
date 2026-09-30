@@ -79,3 +79,32 @@ export async function deleteImage(publicId: string | null | undefined): Promise<
     console.error(`[cloudinary] no se pudo borrar ${publicId}:`, error);
   }
 }
+
+export type StoredImage = { url: string | null; publicId: string | null };
+
+/**
+ * Procesa un campo de foto de un formulario del panel (ImageField): archivo nuevo → sube y
+ * borra la anterior; «Quitar esta foto» → borra; nada → deja la actual.
+ */
+export async function resolveImageField(
+  formData: FormData,
+  field: string,
+  current: StoredImage,
+  folder: string,
+): Promise<StoredImage | { error: string }> {
+  const file = formData.get(field);
+  if (file instanceof File && file.size > 0) {
+    const problem = imageProblem(file);
+    if (problem) return { error: problem };
+    if (!isCloudinaryConfigured())
+      return { error: 'La subida de fotos aún no está activada (falta configurar Cloudinary).' };
+    const uploaded = await uploadImage(file, folder);
+    await deleteImage(current.publicId);
+    return uploaded;
+  }
+  if (formData.get(`${field}__quitar`) === '1') {
+    await deleteImage(current.publicId);
+    return { url: null, publicId: null };
+  }
+  return current;
+}

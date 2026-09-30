@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth';
-import { deleteImage, imageProblem, isCloudinaryConfigured, uploadImage } from '@/lib/cloudinary';
+import { deleteImage, resolveImageField } from '@/lib/cloudinary';
 import { execute, queryOne } from '@/lib/db';
 import type { FormState } from '@/lib/form-state';
 import { fieldErrorsOf, id as idSchema, valuesOf } from '@/lib/validators/common';
@@ -41,37 +41,16 @@ export async function saveEquipo(_prev: FormState, formData: FormData): Promise<
   if (editingId && !current)
     return { status: 'error', message: 'Esta persona ya no existe. Vuelve a la lista.' };
 
-  let foto: Foto = current ?? { foto_url: null, foto_public_id: null };
-  const file = formData.get('foto');
-  if (file instanceof File && file.size > 0) {
-    const problem = imageProblem(file);
-    if (problem) return { status: 'error', fieldErrors: { foto: [problem] }, values };
-    if (!isCloudinaryConfigured()) {
-      return {
-        status: 'error',
-        fieldErrors: { foto: ['La subida de fotos aún no está activada (falta Cloudinary).'] },
-        values,
-      };
-    }
-    const uploaded = await uploadImage(file, 'equipo');
-    await deleteImage(current?.foto_public_id);
-    foto = { foto_url: uploaded.url, foto_public_id: uploaded.publicId };
-  } else if (formData.get('foto__quitar') === '1') {
-    await deleteImage(current?.foto_public_id);
-    foto = { foto_url: null, foto_public_id: null };
-  }
+  const foto = await resolveImageField(
+    formData,
+    'foto',
+    { url: current?.foto_url ?? null, publicId: current?.foto_public_id ?? null },
+    'equipo',
+  );
+  if ('error' in foto) return { status: 'error', fieldErrors: { foto: [foto.error] }, values };
 
   const d = parsed.data;
-  const params = [
-    d.nombre,
-    d.rol,
-    d.bio,
-    foto.foto_url,
-    foto.foto_public_id,
-    d.es_pastor,
-    d.orden,
-    d.visible,
-  ];
+  const params = [d.nombre, d.rol, d.bio, foto.url, foto.publicId, d.es_pastor, d.orden, d.visible];
   if (editingId) {
     await execute(
       `UPDATE equipo SET nombre = ?, rol = ?, bio = ?, foto_url = ?, foto_public_id = ?, es_pastor = ?, orden = ?, visible = ?

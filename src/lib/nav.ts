@@ -21,7 +21,7 @@ export const ADMIN_NAV: { href: string; label: string; icon: IconName; ready: bo
   { href: '/admin/reuniones', label: 'Reuniones', icon: 'clock', ready: true },
   { href: '/admin/ubicaciones', label: 'Lugares', icon: 'mapPin', ready: true },
   { href: '/admin/predicas', label: 'Prédicas', icon: 'play', ready: true },
-  { href: '/admin/eventos', label: 'Eventos', icon: 'calendar', ready: false },
+  { href: '/admin/eventos', label: 'Eventos', icon: 'calendar', ready: true },
   { href: '/admin/peticiones', label: 'Peticiones', icon: 'handHeart', ready: false },
   { href: '/admin/equipo', label: 'Equipo', icon: 'idCard', ready: true },
   { href: '/admin/config', label: 'Configuración', icon: 'settings', ready: true },
