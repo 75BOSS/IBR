@@ -4,18 +4,19 @@ import { useActionState } from 'react';
 import { type LoginState, login } from '@/actions/auth';
 import { Button } from '@/components/Button';
 import { Field } from '@/components/Field';
+import { initialFormState } from '@/lib/form-state';
 
 export function LoginForm({ next }: { next?: string }) {
-  const [state, formAction] = useActionState<LoginState, FormData>(login, {});
+  const [state, formAction] = useActionState<LoginState, FormData>(login, initialFormState);
 
   return (
     <form action={formAction} className="flex flex-col gap-5" noValidate>
-      {state.error && (
+      {state.status === 'error' && state.message && (
         <div
           role="alert"
           className="rounded-xl border border-danger/40 bg-danger-soft px-4 py-3 text-sm font-medium text-danger-strong"
         >
-          {state.error}
+          {state.message}
         </div>
       )}
       <Field

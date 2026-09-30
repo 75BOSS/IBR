@@ -4,16 +4,14 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth';
 import { execute, queryOne } from '@/lib/db';
+import type { FormState } from '@/lib/form-state';
 import { verifyPassword } from '@/lib/password';
 import { minutesText, rateLimitStatus, recordAttempt } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/request';
 import { loginSchema, safeAdminPath } from '@/lib/validators/auth';
 
-export type LoginState = {
-  error?: string;
-  fieldErrors?: { email?: string[]; password?: string[] };
-  values?: { email: string };
-};
+type LoginField = 'email' | 'password';
+export type LoginState = FormState<LoginField>;
 
 const WRONG_CREDENTIALS =
   'El correo o la contraseña no coinciden. Revisa que el correo esté bien escrito y las ' +
@@ -26,7 +24,11 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     password: formData.get('password'),
   });
   if (!parsed.success) {
-    return { fieldErrors: z.flattenError(parsed.error).fieldErrors, values: { email: rawEmail } };
+    return {
+      status: 'error',
+      fieldErrors: z.flattenError(parsed.error).fieldErrors,
+      values: { email: rawEmail },
+    };
   }
 
   const { email, password } = parsed.data;
@@ -42,7 +44,8 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     if (byIp.blocked || byAccount.blocked) {
       const minutes = Math.max(byIp.retryAfterMinutes, byAccount.retryAfterMinutes);
       return {
-        error: `Demasiados intentos fallidos. Por seguridad, espera ${minutesText(minutes)} y vuelve a intentar.`,
+        status: 'error',
+        message: `Demasiados intentos fallidos. Por seguridad, espera ${minutesText(minutes)} y vuelve a intentar.`,
         values,
       };
     }
@@ -58,7 +61,7 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
         recordAttempt('login_ip', { ip }),
         recordAttempt('login_cuenta', { account: email }),
       ]);
-      return { error: WRONG_CREDENTIALS, values };
+      return { status: 'error', message: WRONG_CREDENTIALS, values };
     }
 
     await execute('UPDATE usuarios_admin SET ultimo_login = NOW() WHERE id = ?', [user.id]);
@@ -70,7 +73,8 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     // Falla de BD o de configuración: se registra el detalle y se explica qué hacer.
     console.error('[login] no se pudo verificar el acceso:', error);
     return {
-      error:
+      status: 'error',
+      message:
         'No pudimos conectar con el servidor para verificar tus datos. Intenta de nuevo en unos ' +
         'minutos; si el problema sigue, avisa a Pixelia.',
       values,

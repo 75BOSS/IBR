@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Figtree, Fraunces } from 'next/font/google';
+import { ToastProvider } from '@/components/Toast';
 import { siteUrl } from '@/lib/site';
 import './globals.css';
 
@@ -41,7 +42,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es" className={`${fraunces.variable} ${figtree.variable}`}>
-      <body>{children}</body>
+      <body>
+        <ToastProvider>{children}</ToastProvider>
+      </body>
     </html>
   );
 }

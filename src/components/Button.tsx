@@ -5,7 +5,8 @@ import type { ComponentProps, ReactNode } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Spinner } from '@/components/Spinner';
 
-export type ButtonVariant = 'primary' | 'accent' | 'secondary' | 'ghost' | 'danger' | 'inverse';
+export type ButtonVariant =
+  'primary' | 'accent' | 'secondary' | 'ghost' | 'danger' | 'dangerGhost' | 'inverse';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const base =
@@ -19,6 +20,8 @@ const variants: Record<ButtonVariant, string> = {
   secondary: 'border border-brand/40 bg-surface text-brand-strong hover:bg-brand-soft',
   ghost: 'text-brand-strong hover:bg-brand-soft',
   danger: 'bg-danger text-surface hover:bg-danger-strong',
+  /** Acción destructiva discreta (ej. «Eliminar» en una fila); siempre con ConfirmDialog. */
+  dangerGhost: 'text-danger hover:bg-danger-soft',
   /** Botón fantasma sobre superficies oscuras (barra lateral, pie). */
   inverse: 'text-sidebar-ink hover:bg-sidebar-ink/10',
 };
