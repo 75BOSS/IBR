@@ -14,6 +14,15 @@ const eslintConfig = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   prettier,
   {
+    rules: {
+      // Permite separar props con desestructuración: const { a, ...resto } = props
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { ignoreRestSiblings: true, argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+    },
+  },
+  {
     ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts'],
   },
 ];
