@@ -1,0 +1,128 @@
+@import 'tailwindcss';
+
+/*
+ * Tema IBR. Tokens únicos del proyecto: ningún componente usa colores sueltos.
+ * Contraste verificado (AA): texto ≥ 4.5:1, bordes de controles ≥ 3:1.
+ * Regla Pixelia: nada de blanco puro; superficies en tonos arena/papel.
+ */
+@theme {
+  /* Breakpoints del proyecto: 360 · 768 · 1024 · 1280 (se eliminan los de Tailwind por defecto). */
+  --breakpoint-*: initial;
+  --breakpoint-xs: 22.5rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+
+  /* Superficies */
+  --color-canvas: #f4eee3; /* fondo de página */
+  --color-surface: #fbf7f0; /* tarjetas, campos */
+  --color-sunken: #ece4d4; /* paneles hundidos, filas alternas */
+  --color-line: #cfc4b0; /* divisores decorativos */
+  --color-field-border: #8c8373; /* bordes de controles (3.5:1) */
+
+  /* Texto */
+  --color-ink: #1e2a2f;
+  --color-ink-soft: #4f5d62;
+
+  /* Marca: petróleo (confianza) + terracota (acción) */
+  --color-brand: #0e5e6f;
+  --color-brand-strong: #0a4654;
+  --color-brand-soft: #d5e6e8;
+  --color-accent: #b4532a;
+  --color-accent-strong: #94401d;
+  --color-accent-soft: #f3dfd2;
+
+  /* Paneles oscuros */
+  --color-sidebar: #0b3a44;
+  --color-sidebar-ink: #e6efef;
+  --color-sidebar-muted: #9dbbbf;
+  --color-footer: #1b2b30;
+  --color-footer-ink: #e9e2d3;
+  --color-footer-muted: #a9b4b1;
+
+  /* Estados */
+  --color-success: #1f6140;
+  --color-success-soft: #ddeee2;
+  --color-warning: #7a5200;
+  --color-warning-soft: #f7eacb;
+  --color-danger: #a8321e;
+  --color-danger-strong: #8a2a18;
+  --color-danger-soft: #f6e0d9;
+  --color-whatsapp: #157a4b;
+
+  /* Tipografía con carácter: Fraunces (títulos) + Figtree (texto). */
+  --font-display: var(--font-fraunces), 'Iowan Old Style', Georgia, serif;
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+
+  /* Escala fluida: se redimensiona entre 360 y 1280 px, no solo se reacomoda. */
+  --text-display: clamp(2.125rem, 1.35rem + 3.4vw, 3.75rem);
+  --text-display--line-height: 1.05;
+  --text-h1: clamp(1.75rem, 1.3rem + 2vw, 2.75rem);
+  --text-h1--line-height: 1.1;
+  --text-h2: clamp(1.375rem, 1.1rem + 1.2vw, 2rem);
+  --text-h2--line-height: 1.2;
+  --text-h3: clamp(1.125rem, 1rem + 0.55vw, 1.375rem);
+  --text-h3--line-height: 1.3;
+
+  --shadow-card: 0 1px 2px rgb(30 42 47 / 0.06), 0 10px 28px -14px rgb(30 42 47 / 0.28);
+  --shadow-pop: 0 12px 40px -12px rgb(30 42 47 / 0.35);
+}
+
+@layer base {
+  html {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  /* Foco visible y consistente en todo el sitio (accesibilidad mínima de CLAUDE.md). */
+  :focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+
+  ::selection {
+    background-color: var(--color-accent-soft);
+    color: var(--color-ink);
+  }
+}
+
+/* Animaciones: siempre con `motion-safe:` para respetar prefers-reduced-motion. */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@theme {
+  --animate-toast-in: toast-in 180ms ease-out;
+}
+
+/* Ancho de contenido con márgenes fluidos (16 px en 360, hasta 40 px en escritorio). */
+@utility container-page {
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2.5rem);
+}
