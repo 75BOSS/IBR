@@ -8,6 +8,7 @@ import { todayInChurchTz } from '@/lib/dates';
 import { execute, queryOne } from '@/lib/db';
 import type { FormState } from '@/lib/form-state';
 import { slugify } from '@/lib/slug';
+import { uniqueSlug } from '@/lib/slug-db';
 import { fieldErrorsOf, id as idSchema, valuesOf } from '@/lib/validators/common';
 import { EVENTO_FIELDS, eventoSchema } from '@/lib/validators/eventos';
 
@@ -16,18 +17,6 @@ function revalidateEventos(slug?: string) {
   revalidatePath('/eventos');
   if (slug) revalidatePath(`/eventos/${slug}`);
   revalidatePath('/', 'layout'); // el inicio muestra los próximos eventos
-}
-
-async function uniqueSlug(base: string, excludeId: number | null): Promise<string> {
-  let slug = base || 'evento';
-  for (let n = 2; ; n++) {
-    const taken = await queryOne<{ id: number }>(
-      'SELECT id FROM eventos WHERE slug = ? AND id <> ?',
-      [slug, excludeId ?? 0],
-    );
-    if (!taken) return slug;
-    slug = `${base}-${n}`;
-  }
 }
 
 export async function saveEvento(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -68,7 +57,12 @@ export async function saveEvento(_prev: FormState, formData: FormData): Promise<
   // El enlace se mantiene al editar (ya pudo compartirse por WhatsApp); solo se crea al inicio.
   const slug =
     current?.slug ??
-    (await uniqueSlug(`${slugify(d.titulo, 190)}-${todayInChurchTz(d.fecha_inicio)}`, id));
+    (await uniqueSlug(
+      'eventos',
+      `${slugify(d.titulo, 190)}-${todayInChurchTz(d.fecha_inicio)}`,
+      id,
+      'evento',
+    ));
   if (d.destacado) await execute('UPDATE eventos SET destacado = 0 WHERE id <> ?', [id ?? 0]);
   const params = [
     d.titulo,

@@ -7,6 +7,7 @@ import { todayInChurchTz } from '@/lib/dates';
 import { execute, queryOne } from '@/lib/db';
 import type { FormState } from '@/lib/form-state';
 import { slugify } from '@/lib/slug';
+import { uniqueSlug } from '@/lib/slug-db';
 import { fieldErrorsOf, id as idSchema, valuesOf } from '@/lib/validators/common';
 import { PREDICA_FIELDS, predicaSchema } from '@/lib/validators/predicas';
 import { youTubeThumbnail } from '@/lib/youtube';
@@ -16,18 +17,6 @@ function revalidatePredicas() {
   revalidatePath('/admin/predicas');
   revalidatePath('/predicas');
   revalidatePath('/', 'layout'); // el inicio muestra la última prédica
-}
-
-async function uniqueSlug(base: string, excludeId: number | null): Promise<string> {
-  let slug = base || 'predica';
-  for (let n = 2; ; n++) {
-    const taken = await queryOne<{ id: number }>(
-      'SELECT id FROM predicas WHERE slug = ? AND id <> ?',
-      [slug, excludeId ?? 0],
-    );
-    if (!taken) return slug;
-    slug = `${base}-${n}`;
-  }
 }
 
 export async function savePredica(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -86,7 +75,7 @@ export async function savePredica(_prev: FormState, formData: FormData): Promise
     ? (info?.miniatura_url ?? youTubeThumbnail(d.enlace))
     : current!.miniatura_url;
   const duracion = videoChanged ? (info?.duracion_seg ?? null) : current!.duracion_seg;
-  const slug = await uniqueSlug(`${slugify(titulo, 190)}-${fecha}`, id);
+  const slug = await uniqueSlug('predicas', `${slugify(titulo, 190)}-${fecha}`, id, 'predica');
 
   if (d.destacada) await execute('UPDATE predicas SET destacada = 0 WHERE id <> ?', [id ?? 0]);
   const params = [
