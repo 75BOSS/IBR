@@ -48,14 +48,22 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 | 2026-09-30 | `TINYINT(1)` llega como `boolean` a JS | Tipos claros (`activo: boolean`); `TINYINT` sin (1), como `dia_semana`, sigue siendo número |
 | 2026-09-30 | `rate_limits.ip` guarda 16 bytes de SHA-256 de `ip:<ip>` o `cuenta:<email>` | Limitar el login por IP **y** por cuenta con la misma tabla; no guardar IPs en claro. Solo cambió el comentario del esquema |
 | 2026-09-30 | Sesión del admin: 12 h, cookie `ibr_admin` httpOnly/Secure/Lax; `requireAdmin()` revisa en BD que el usuario siga activo | Voluntarios en compus compartidas; desactivar a alguien corta el acceso de inmediato |
-| 2026-09-30 | Login: 5 intentos fallidos por IP y 10 por cuenta cada 10 min | Si el proxy permite falsear la IP, la cuenta sigue protegida. Costo aceptado: un atacante puede bloquear 10 min el login de una cuenta |
+| 2026-09-30 | Login: 5 intentos fallidos por IP y 10 por cuenta cada 10 min, **reservados antes** de verificar | Insertar y después contar: las peticiones simultáneas no se saltan el tope (probado: 12 simultáneas → 5 pasan) |
+| 2026-09-30 | Cookie de dispositivo `ibr_dispositivo` (180 días, patrón OWASP): el límite por cuenta solo aplica a navegadores donde esa cuenta nunca entró | Corrige lo que antes figuraba como «costo aceptado». La revisión mostró que el bloqueo por cuenta se podía mantener para siempre y dejaba sin acceso al admin. Ahora el admin entra desde su compu de siempre aunque lo ataquen |
+| 2026-09-30 | IP del visitante = la que agregó el proxy de confianza (`TRUSTED_PROXY_HOPS`, por defecto 1, contando desde la derecha de X-Forwarded-For) | Next no limpia X-Forwarded-For: la IP de la izquierda la escribe el visitante. Hay que confirmar el valor en `/admin/diagnostico` |
+| 2026-09-30 | `usuarios_admin.sesion_version`: «Cerrar sesión» cierra en todos los dispositivos; `db:seed-admin` sobre un usuario existente también | Poder cortar una sesión robada sin rotar `SESSION_SECRET`. Se agregó en `ESQUEMA.sql` (v0.2) porque aún no se aplicó en ninguna BD real |
+| 2026-09-30 | Máximo 3 verificaciones bcrypt simultáneas | Cada una cuesta ~0,4 s de CPU; una ráfaga no debe tumbar el único proceso |
+| 2026-09-30 | El middleware deja pasar las server actions (cabecera `next-action`) | Un 307 del middleware rompía la respuesta de la acción y mostraba la pantalla de error; la autorización de las acciones es `requireAdmin()` |
+| 2026-09-30 | Columnas `DATE` como texto `'YYYY-MM-DD'` (`dateStrings: ['DATE']`) | Como `Date` UTC salían un día antes al mostrarlas en hora de Ecuador |
+| 2026-09-30 | `next/image` solo acepta miniaturas de YouTube; Cloudinary se agrega en F1 con la ruta de la cuenta | Sin ruta, `/_next/image` servía de proxy para cualquier cuenta de Cloudinary (CPU/disco del hosting) |
 | 2026-09-30 | Grupo de rutas `(admin)/admin/(panel)` para las páginas con barra lateral | El login queda sin barra lateral sin condicionales en el layout; las URLs no cambian |
-| 2026-09-30 | `getSiteConfig()` usa los valores base si la BD no responde (y lo registra en el log) | El header y el footer no deben tumbar el sitio ni el build de Hostinger si la BD falla un momento |
+| 2026-09-30 | `getSiteConfig()` usa los valores base si la BD no responde y nunca hubo un valor bueno (lo registra en el log); un error no se guarda en caché | El header y el footer no deben tumbar el sitio ni el build de Hostinger; tampoco una caída breve debe pisar la configuración real 5 minutos |
 | 2026-09-30 | Tipografía Fraunces (títulos) + Figtree (texto); paleta petróleo `#0E5E6F` + terracota; fondos arena, sin blanco puro | Reglas Pixelia; contraste AA verificado en todas las combinaciones de texto |
 | 2026-09-30 | Íconos propios en `Icon.tsx` (trazos de Lucide ISC + marcas de Simple Icons CC0), sin librería | Sin dependencias pesadas; WhatsApp y TikTok no están en Lucide |
 | 2026-09-30 | `FormState` como resultado único de server actions; `ConfirmDialog` y `Toast` desde F0 | Consistencia (Nielsen) antes de construir los CRUD de F1 |
 | 2026-09-30 | `playwright-core` (dev) + `npm run revisar` para la revisión a 360/768/1280 | Comprobar las Reglas Pixelia (sin desborde horizontal) de forma repetible |
-| 2026-09-30 | Pruebas unitarias con `node:test` vía `tsx --test`, sin framework extra | Utilidades puras (YouTube, mapas, WhatsApp, redirecciones) |
+| 2026-09-30 | Pruebas unitarias con `node:test` vía `tsx --test`, sin framework extra | Utilidades puras (YouTube, mapas, WhatsApp, redirecciones, fechas): 41 pruebas |
+| 2026-09-30 | `PageHeader`, `FormAlert`, `container-panel` y `on-dark` como piezas únicas; `buttonClasses` en un módulo sin `'use client'` | La revisión encontró encabezados y avisos copiados a mano con variantes, y el foco con contraste < 3:1 sobre fondos oscuros |
 
 ## Pendiente de confirmar con la iglesia (bloquea F1 contenido, no F0)
 
@@ -86,12 +94,14 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 - F0.6: layout público (header con menú móvil y footer desde `config`) y panel (barra lateral y cajón con `<dialog>`), cada uno con su 404.
 - F0.7: los componentes base, más Toast, ConfirmDialog, Tag, Icon y BrandMark. El catálogo está en `/admin/componentes`.
 - F0.9 (parcial): `/api/ping-sse` y `/admin/diagnostico`. En local, los eventos llegan cada 2 s.
-- Revisión en 360/768/1280 px de `/`, `/admin/login`, `/admin`, `/admin/componentes` y los 404, sin desborde horizontal.
+- Revisión en 360/768/1280 px de `/`, `/admin/login`, `/admin`, `/admin/componentes`, `/admin/diagnostico` y los 404: sin desborde horizontal.
+- **Revisión adversarial de F0** con un workflow de 8 agentes (seguridad, bugs, Next.js y Reglas Pixelia, cada uno con su verificador escéptico). Salieron 37 hallazgos: 33 confirmados, 2 inciertos y 2 refutados. Se corrigieron los 33 confirmados y los 2 inciertos (HSTS y `/api/ping-sse` con sesión) en tres commits: login y sesión, Next y datos, UI. Cada corrección tiene su prueba: 15 escenarios de punta a punta en Chromium, pruebas de reserva concurrente en MySQL y MariaDB y 41 pruebas unitarias.
+- Los 2 refutados quedan como notas para F1: validar `NEXT_PUBLIC_SITE_URL` (https en producción) antes de usarla en sitemap o correos, y decidir si la navegación pública oculta las páginas que no existen cuando el sitio salga a producción.
 
 ## Descubrimientos / notas de sesión
 
 - `ESQUEMA.sql`, `db:migrate`, `db:seed-admin`, los helpers de `db.ts` y el login de punta a punta pasan tanto en **MySQL 8.0.46** como en **MariaDB 10.11.14**, ambos con la zona global en -05:00. En MySQL hay 21 avisos inofensivos de «display width deprecated» por `TINYINT(1)`. El SQL del código evita la sintaxis exclusiva de MySQL 8 (se usa `VALUES()` en `ON DUPLICATE KEY UPDATE`).
-- `next start` agrega `x-forwarded-for` por su cuenta. Detrás del proxy de Hostinger hay que confirmar si la primera IP de esa cabecera la controla el cliente. Para verlo: abrir `/admin/diagnostico` enviando una cabecera `X-Forwarded-For: 1.2.3.4` falsa. Si aparece 1.2.3.4 como primera IP, cambiar `getClientIp()` para que use la última IP que agrega el proxy.
+- `next start` pone `x-forwarded-for` solo si no llega, y **no limpia** lo que manda el visitante. Por eso `getClientIp()` toma la IP desde la derecha (`TRUSTED_PROXY_HOPS`). Cómo verificarlo en Hostinger: en `/admin/diagnostico`, `x-forwarded-for` debería terminar en tu IP real. Si hay dos IPs de Hostinger al final, poner `TRUSTED_PROXY_HOPS=2`. Revisar también que la respuesta traiga `Strict-Transport-Security`.
 - La compresión de Next no comprime `text/event-stream`, así que SSE no queda retenido por gzip.
 - El contenedor de Claude bloquea los dominios de YouTube, por eso la miniatura sale rota en las capturas locales. En Hostinger debería cargar.
 - Next.js inyecta su propio `role="alert"` (route announcer). En los tests hay que buscar el texto del mensaje, no el rol.
@@ -108,4 +118,5 @@ Para probar en MariaDB sin chocar con MySQL: `apt-get download mariadb-server-co
 2. Si ya hay credenciales de Hostinger: F0.8 (web app → `dev`), `npm run db:migrate` contra la BD nueva, crear el primer admin y correr `/admin/diagnostico` (F0.9). Anotar los resultados aquí.
 3. Si ya está el dump del PHP: reconciliar `ESQUEMA.sql` §«Tablas heredadas» (MIGRACION-PHP.md §1) **antes** de aplicarlo en Hostinger, y escribir `scripts/importar-php.ts`.
 4. Al cerrar F0: borrar `/api/ping-sse` y `/admin/diagnostico`.
-5. F1: arrancar por `/admin/config` y `/admin/equipo`. Crear el componente de tabla del panel (cabecera con color y filas-tarjeta en celular) con el primer listado real, no antes.
+5. F1: arrancar por `/admin/config` y `/admin/equipo`. Crear el componente de tabla del panel (cabecera con color y filas-tarjeta en celular) con el primer listado real, no antes. En `/admin/config`, validar el WhatsApp con `normalizeEcuadorWhatsapp()` y llamar a `revalidateTag(CONFIG_TAG)` al guardar.
+6. Filtrar `ADMIN_NAV` por rol (el editor no debe ver Configuración ni Usuarios) cuando existan esos módulos.

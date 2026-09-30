@@ -77,10 +77,11 @@ src/
     nav.ts               # PUBLIC_NAV, ADMIN_NAV (ready:true al terminar cada módulo)
     form-state.ts        # FormState: resultado estándar de server actions
     validators/          # esquemas Zod por entidad
-    youtube.ts  maps.ts  whatsapp.ts  site.ts   (mail.ts, cloudinary.ts en F1)
+    youtube.ts  maps.ts  whatsapp.ts  dates.ts  site.ts   (mail.ts, cloudinary.ts en F1)
     *.test.ts            # pruebas con node:test (npm test)
-  components/            # UI compartida: Button, Field, Card, Tag, Icon, Toast, ConfirmDialog,
-                         # YouTubeEmbed, MapEmbed, WhatsAppButton, BrandMark, Spinner; site/ y admin/
+  components/            # UI compartida: Button (+ button-styles.ts), Field, Card, Tag, Icon, Toast,
+                         # ConfirmDialog, FormAlert, PageHeader, YouTubeEmbed, MapEmbed, WhatsAppButton,
+                         # BrandMark, Spinner; site/ (header, menú, pie) y admin/ (AdminNav)
   actions/               # server actions por entidad: auth.ts, registros.ts, grupos.ts, predicas.ts...
 scripts/                 # migrate.ts, seed-admin.ts, revisar-responsive.ts, lib/script-db.ts
 sql/
@@ -98,6 +99,12 @@ sql/
 - **Configuración**: leer con `getSiteConfig()`; al guardar en `/admin/config`, `revalidateTag(CONFIG_TAG)`.
 - **Colores y tipografía**: solo tokens de `src/app/globals.css` (`bg-surface`, `text-ink-soft`, `text-h2`…). Superficies oscuras: variantes `inverse` de `Button`/`Tag`, nunca pisar clases con `className`.
 - **Íconos**: `<Icon name="…">`; para uno nuevo se agrega su SVG al mapa de `src/components/Icon.tsx`.
+- **Páginas**: encabezado con `PageHeader`; avisos de formulario/pantalla con `FormAlert`; contenedor `container-page` (sitio) o `container-panel` (panel). Superficies oscuras llevan la clase `on-dark` (anillo de foco claro).
+- **Estilos de botón** en Server Components: `buttonClasses()` de `@/components/button-styles` (no de `Button.tsx`, que es cliente).
+- **Fechas**: `DATETIME` llega como `Date` (UTC) → `formatDateTime()`; `DATE` llega como `'YYYY-MM-DD'` → `formatDateOnly()`; hoy en Ecuador → `todayInChurchTz()` (`src/lib/dates.ts`).
+- **WhatsApp**: guardar y mostrar con `normalizeEcuadorWhatsapp()` / `whatsappHref()` (`src/lib/whatsapp.ts`).
+- **Login y límites**: `reserveAttempt()` reserva el intento antes del trabajo caro y `release()` lo anula si no debe contar. La IP sale de `getClientIp()` (cuenta `TRUSTED_PROXY_HOPS` desde la derecha de X-Forwarded-For). Cerrar sesión o cambiar contraseña sube `usuarios_admin.sesion_version` y corta todas las sesiones.
+- **Middleware**: deja pasar las server actions (`next-action`); por eso `requireAdmin()` es obligatorio dentro de cada acción del panel.
 - **Scripts de terminal** importan `@/lib/db-config` y `@/lib/env`, nunca `@/lib/db` (es `server-only`).
 
 ## Reglas de código
