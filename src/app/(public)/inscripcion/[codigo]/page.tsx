@@ -10,6 +10,8 @@ import { Tag } from '@/components/Tag';
 import { formatDateTime } from '@/lib/dates';
 import { normalizeCode } from '@/lib/inscripcion-code';
 import { getInscripcionByCode } from '@/lib/inscripciones';
+import { qrSvg } from '@/lib/qr';
+import { siteUrl } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,6 +33,8 @@ export default async function InscripcionPage({ params }: { params: Promise<{ co
   if (!insc) notFound();
   const started = insc.fecha_inicio.getTime() <= Date.now();
   const estado = ESTADO[insc.estado];
+  const qr =
+    insc.estado === 'confirmada' ? await qrSvg(`${siteUrl()}/inscripcion/${insc.codigo}`) : null;
 
   return (
     <div className="container-page flex flex-col gap-6 py-[clamp(2rem,6vw,4.5rem)]">
@@ -69,6 +73,20 @@ export default async function InscripcionPage({ params }: { params: Promise<{ co
           <dt className="text-ink-soft">Código</dt>
           <dd className="font-mono text-lg font-semibold tracking-widest">{insc.codigo}</dd>
         </dl>
+        {qr && (
+          <div className="mt-6 flex flex-col items-center gap-2 rounded-2xl bg-sunken p-4 text-center">
+            <div
+              className="size-[clamp(11rem,55vw,14rem)] [&_svg]:size-full"
+              role="img"
+              aria-label={`Código QR de tu inscripción ${insc.codigo}`}
+              // SVG generado en el servidor por la librería qrcode a partir del código (no hay texto del usuario).
+              dangerouslySetInnerHTML={{ __html: qr }}
+            />
+            <p className="text-sm text-ink-soft">
+              Muéstralo en la entrada para registrar tu llegada. También sirve decir tu código.
+            </p>
+          </div>
+        )}
         <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-line/60 pt-4">
           <Link
             href={`/eventos/${insc.evento_slug}`}

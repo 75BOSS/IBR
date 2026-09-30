@@ -13,3 +13,13 @@ export function normalizeCode(raw: string): string | null {
   const code = raw.toUpperCase().replace(/[\s-]/g, '');
   return new RegExp(`^[${CODE_ALPHABET}]{8}$`).test(code) ? code : null;
 }
+
+/**
+ * Código a partir de lo que lee el escáner: el QR trae el enlace …/inscripcion/CODIGO, pero
+ * también se acepta el código escrito a mano.
+ */
+export function codeFromScan(raw: string): string | null {
+  const text = raw.trim();
+  const fromUrl = /\/inscripcion\/([^/?#\s]+)/.exec(text)?.[1];
+  return normalizeCode(fromUrl ?? text);
+}

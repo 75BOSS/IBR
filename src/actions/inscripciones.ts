@@ -4,9 +4,9 @@ import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth';
 import { cupoStatus } from '@/lib/cupo';
 import { formatDateTime } from '@/lib/dates';
-import { execute, withTransaction } from '@/lib/db';
+import { execute, queryOne, withTransaction } from '@/lib/db';
 import type { FormState } from '@/lib/form-state';
-import { newInscripcionCode, normalizeCode } from '@/lib/inscripcion-code';
+import { codeFromScan, newInscripcionCode, normalizeCode } from '@/lib/inscripcion-code';
 import { INSCRIPCION_ESTADOS } from '@/lib/inscripciones';
 import { sendMail } from '@/lib/mail';
 import { guardPublicForm } from '@/lib/public-form';
@@ -209,13 +209,64 @@ export async function setInscripcionEstado(
   const estado = INSCRIPCION_ESTADOS.find((e) => e.value === formData.get('estado'));
   if (!parsed.success || !estado)
     return { status: 'error', message: 'No entendimos el cambio. Recarga la página.' };
-  const { affectedRows } = await execute('UPDATE inscripciones SET estado = ? WHERE id = ?', [
-    estado.value,
-    parsed.data,
-  ]);
+  const { affectedRows } = await execute(
+    `UPDATE inscripciones
+        SET estado = ?, checkin_en = CASE WHEN ? = 'asistio' THEN COALESCE(checkin_en, NOW()) END
+      WHERE id = ?`,
+    [estado.value, estado.value, parsed.data],
+  );
   if (affectedRows === 0)
     return { status: 'error', message: 'Esta inscripción ya no existe. Recarga la página.' };
   revalidatePath('/admin/eventos', 'layout');
   revalidatePath('/eventos', 'layout');
   return { status: 'success', message: `Marcada como «${estado.label}»` };
+}
+
+/**
+ * Check-in en la puerta: registra la llegada por código (QR escaneado o escrito). Solo para el
+ * evento abierto en el tablero, para que un código de otro evento no pase.
+ */
+export async function checkIn(_prev: FormState, formData: FormData): Promise<FormState> {
+  await requireAdmin();
+  const eventoId = idSchema.safeParse(formData.get('evento_id'));
+  const codigo = codeFromScan(String(formData.get('codigo') ?? ''));
+  if (!eventoId.success) return { status: 'error', message: 'Recarga la página del tablero.' };
+  if (!codigo) {
+    return {
+      status: 'error',
+      message: 'Ese código no es válido: son 8 letras y números, ej. AB3D EF7H.',
+    };
+  }
+  const insc = await queryOne<{
+    id: number;
+    nombre: string;
+    personas: number;
+    estado: string;
+    checkin_en: Date | null;
+    evento_id: number;
+  }>(
+    'SELECT id, nombre, personas, estado, checkin_en, evento_id FROM inscripciones WHERE codigo = ?',
+    [codigo],
+  );
+  if (!insc || insc.evento_id !== eventoId.data) {
+    return { status: 'error', message: `No hay una inscripción ${codigo} para este evento.` };
+  }
+  if (insc.estado === 'cancelada') {
+    return { status: 'error', message: `La inscripción de ${insc.nombre} está cancelada.` };
+  }
+  if (insc.estado === 'asistio') {
+    return {
+      status: 'error',
+      message: `${insc.nombre} ya registró su llegada${insc.checkin_en ? ` (${formatDateTime(insc.checkin_en, { hour: 'numeric', minute: '2-digit' })})` : ''}. No hace falta volver a escanear.`,
+    };
+  }
+  await execute(
+    "UPDATE inscripciones SET estado = 'asistio', checkin_en = NOW() WHERE id = ? AND estado = 'confirmada'",
+    [insc.id],
+  );
+  revalidatePath('/admin/eventos', 'layout');
+  return {
+    status: 'success',
+    message: `Bienvenido/a, ${insc.nombre}${insc.personas > 1 ? ` (${insc.personas} personas)` : ''}.`,
+  };
 }

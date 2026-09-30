@@ -125,12 +125,20 @@ export default async function InscritosPage({ params }: { params: Promise<{ id: 
         }
         actions={
           rows.length > 0 && (
-            <a
-              href={`/admin/eventos-inscritos-csv/${event.id}`}
-              className={buttonClasses({ variant: 'secondary' })}
-            >
-              <Icon name="download" className="size-4" /> Exportar CSV
-            </a>
+            <>
+              <a
+                href={`/admin/eventos-inscritos-csv/${event.id}`}
+                className={buttonClasses({ variant: 'secondary' })}
+              >
+                <Icon name="download" className="size-4" /> Exportar CSV
+              </a>
+              <Link
+                href={`/admin/eventos/${event.id}/checkin`}
+                className={buttonClasses({ variant: 'primary' })}
+              >
+                <Icon name="check" className="size-4" /> Check-in en la puerta
+              </Link>
+            </>
           )
         }
       />
