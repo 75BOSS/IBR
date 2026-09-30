@@ -12,7 +12,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [x] `create-next-app` (TS, Tailwind, App Router, `src/`), ESLint, Prettier.
 - [x] `src/lib/db.ts` con pool `mysql2` y helper `query<T>()`; `scripts/migrate.ts`.
 - [ ] Aplicar `sql/ESQUEMA.sql` en la BD de Hostinger (vacía) y correr `MIGRACION-PHP.md` §2 (importar datos heredados).
-- [ ] Auth admin: `iron-session`, tabla `usuarios_admin`, login, middleware que protege `/admin/*`, seed del primer admin por script.
+- [x] Auth admin: `iron-session`, tabla `usuarios_admin`, login, middleware que protege `/admin/*`, seed del primer admin por script.
 - [ ] Layout público (header con 6 entradas: Inicio · Soy nuevo · Reuniones · Grupos · Prédicas · Dar; footer con redes, dirección, WhatsApp) y layout admin (sidebar).
 - [ ] Componentes base: `Field`, `Button`, `Card`, `YouTubeEmbed`, `MapEmbed`, `WhatsAppButton`, `Tag`.
 - [ ] Web app creada en Hostinger apuntando a `dev`; primer deploy verde; `dev.ibriglesia.com` funcionando.
