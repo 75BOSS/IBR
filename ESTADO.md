@@ -24,7 +24,7 @@ Lista consolidada. Nada de esto se sube al repo: los valores van en hPanel → W
 1. **Acceso a hPanel** o que crees tú la **web app Node.js** (Node 22, preset Next.js, build `npm run build`, rama `dev`, dominio `dev.ibriglesia.com`), conectada al repo `75BOSS/IBR`.
 2. **Base de datos MySQL nueva y vacía** en hPanel → Bases de datos: el host remoto, el usuario, la contraseña y el nombre, que van en `DATABASE_URL`. Dime también si es **MySQL 8 o MariaDB** y su versión (se ve en phpMyAdmin → Inicio).
 3. **Dump del sistema PHP** de grupos: phpMyAdmin → Exportar → Personalizado. Primero solo la estructura y después la estructura con los datos. Pásamelo por un canal privado, **no por GitHub** (tiene datos personales; `sql/legado/*.sql` está ignorado por git). Y acceso de **solo lectura** a esa BD (`LEGACY_DATABASE_URL`).
-4. **Correo y nombre del primer administrador**. Yo creo el usuario con una contraseña generada y te la paso una sola vez.
+4. **Correo y nombre del primer administrador**. Yo creo el usuario con una contraseña generada y te la paso una sola vez. Importante: **los pastores deben tener rol `admin`**, porque solo ese rol lee las peticiones de oración privadas; los voluntarios que cargan contenido van como `editor`.
 5. **`SESSION_SECRET`**: genera uno (o te lo genero) y cárgalo en Hostinger. Debe tener 32 caracteres aleatorios o más.
 6. **Token API de Hostinger** (alcance mínimo: websites + DNS) para que Claude Code pueda desplegar y leer los logs de build.
 7. **Cloudinary** (plan gratuito): `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`. Se usa desde F1.
@@ -84,6 +84,8 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 | 2026-09-30 | `whenValid()` en los `.refine()` entre campos y `emptyToNull` también para campos ausentes | Zod no corre las reglas del objeto si otro campo falló: los errores salían de a uno. Un campo opcional ausente daba un error en inglés |
 | 2026-09-30 | `pageMetadata()` (`src/lib/seo.ts`) arma el Open Graph completo de cada página, con `public/og-default.png` si no tiene imagen | Next reemplaza el `openGraph` del layout cuando la página define el suyo: los enlaces por WhatsApp salían sin imagen ni descripción |
 | 2026-09-30 | Íconos (favicon, `icon.png`, `apple-icon.png`, manifest 192/512/maskable) e imagen OG generados con Chromium y las fuentes reales | El favicon era el de Next. Reemplazables cuando la iglesia tenga logo |
+| 2026-09-30 | Peticiones privadas: solo el rol `admin` (pastores) lee el texto y los datos; para `editor` no salen de la BD (`CASE` en la consulta). El correo de aviso de una privada no lleva el texto | Lo promete `/oracion` y `/privacidad`; la revisión encontró que cualquier cuenta del panel las leía y que el correo (posible casilla compartida) llevaba el texto |
+| 2026-09-30 | Migración `002`: `acepta_datos` en `peticiones` y `contactos` (fecha = `creado_en`, IP = `ip`, como `solicitudes_grupo`) | CLAUDE.md pide guardar el consentimiento con fecha e IP; en una petición anónima queda en 0 |
 | 2026-09-30 | «Configuración» no aparece en el menú del rol editor (`adminOnly` en `ADMIN_NAV`) | La página ya exigía admin; el enlace solo llevaba a un aviso de «sin permiso» |
 
 ## Pendiente de confirmar con la iglesia (bloquea F1 contenido, no F0)
@@ -128,6 +130,7 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 - Sitio: portada real, Soy nuevo, Reuniones, Grupos (+ ficha y «Quiero unirme»), Prédicas (+ aviso «En vivo» por polling), Eventos (+ detalle), Dar, Pedir oración, Contacto, Privacidad, 404; `sitemap.xml`, `robots.txt`, manifest, íconos y Open Graph en todas.
 - Verificado de punta a punta en Chromium: los 4 formularios públicos (errores juntos, lo escrito se conserva, límite 5/10 min por IP y honeypot que no guarda), bandejas del panel (marcar, deshacer, borrar con confirmación, toasts, contadores) y la revisión 360/768/1280 de 30 rutas públicas y del panel sin desborde horizontal.
 - 76 pruebas unitarias (`npm test`), `npm run lint` y `npm run build` limpios.
+- Revisión independiente del código de F1: sin fallas de seguridad; 4 hallazgos corregidos (privadas visibles para editores, contador y lista de eventos del resumen con reglas distintas, consentimiento sin guardar en peticiones/contactos, un comentario fuera de lugar). La privacidad se probó con una cuenta editor y una admin.
 
 ## Descubrimientos / notas de sesión
 
@@ -148,7 +151,7 @@ Para probar en MariaDB sin chocar con MySQL: `apt-get download mariadb-server-co
 ## Qué hacer en la próxima sesión
 
 1. Ejecutar PASO 0 de `CLAUDE.md`.
-2. Si ya hay credenciales de Hostinger: F0.8 (web app → `dev`), `npm run db:migrate` contra la BD nueva (aplica `000` y `001`), crear el primer admin y correr `/admin/diagnostico` (F0.9). Anotar los resultados aquí. Cargar `NEXT_PUBLIC_SITE_URL` con `https://` (sitemap, OG y correos la usan).
+2. Si ya hay credenciales de Hostinger: F0.8 (web app → `dev`), `npm run db:migrate` contra la BD nueva (aplica `000`, `001` y `002`), crear el primer admin y correr `/admin/diagnostico` (F0.9). Anotar los resultados aquí. Cargar `NEXT_PUBLIC_SITE_URL` con `https://` (sitemap, OG y correos la usan).
 3. Si ya está el dump del PHP: reconciliar `ESQUEMA.sql` §«Tablas heredadas» (MIGRACION-PHP.md §1) **antes** de aplicarlo en Hostinger, y escribir `scripts/importar-php.ts`.
 4. Al cerrar F0: borrar `/api/ping-sse` y `/admin/diagnostico`.
 5. Con el contenido real cargado: repetir `npm run revisar` a 360/768 sobre `dev.ibriglesia.com` y probar un envío real de cada formulario (llega el correo a `email_avisos`).
