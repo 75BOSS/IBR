@@ -37,7 +37,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [x] `sitemap.xml`, `robots.txt`, Metadata/OG por página, favicon, manifest básico.
 
 ### Admin
-- [ ] `/admin` dashboard: registros nuevos esta semana, solicitudes pendientes, peticiones sin atender, próximos eventos.
+- [x] `/admin` dashboard: registros nuevos esta semana, solicitudes pendientes, peticiones sin atender, próximos eventos.
 - [x] `/admin/registros`: lista, filtro por origen/estado, cambiar estado, exportar CSV.
 - [x] `/admin/grupos`: CRUD completo (reemplaza al PHP), toggle público, asignar líder y ubicación; bandeja de `solicitudes_grupo` con estados.
 - [x] `/admin/reuniones`: CRUD horarios. _(+ `/admin/ubicaciones` «Lugares», ver ESTADO.md)_
