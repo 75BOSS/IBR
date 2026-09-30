@@ -44,7 +44,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [x] `/admin/predicas`: pegar link de YouTube → se extrae `youtube_id`, se trae título/miniatura vía YouTube Data API (o manual si no hay key).
 - [x] `/admin/eventos`: CRUD básico (sin inscripción aún), imagen en Cloudinary, `publicado`.
 - [x] `/admin/peticiones`: lista, marcar atendida.
-- [ ] Rate limit + honeypot en todos los formularios públicos.
+- [x] Rate limit + honeypot en todos los formularios públicos.
 
 ### Cierre F1
 - [ ] Cargar contenido real (fotos, horarios, dirección, pastores, cuentas).
