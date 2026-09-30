@@ -50,3 +50,58 @@ export function todayInChurchTz(now: Date = new Date()): string {
     day: '2-digit',
   }).format(now);
 }
+
+/** 1 = lunes … 7 = domingo (como en la BD). */
+export const DAY_NAMES = [
+  '',
+  'Lunes',
+  'Martes',
+  'Miércoles',
+  'Jueves',
+  'Viernes',
+  'Sábado',
+  'Domingo',
+] as const;
+
+export const DAY_OPTIONS = DAY_NAMES.slice(1).map((label, index) => ({
+  value: String(index + 1),
+  label,
+}));
+
+/** TIME de MySQL ('19:30:00') → '19:30'. */
+export function formatTime(value: string | null | undefined): string {
+  return value ? value.slice(0, 5) : '';
+}
+
+/** Date UTC → valor para <input type="datetime-local"> en hora de Ecuador. */
+export function toLocalInputValue(value: Date | null | undefined): string {
+  if (!value) return '';
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(value);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? '';
+  return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}`;
+}
+
+/**
+ * Valor de <input type="datetime-local"> escrito en hora de Ecuador (UTC−5, sin horario de
+ * verano) → Date UTC para guardar.
+ */
+export function fromLocalInputValue(value: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value);
+  if (!match) return null;
+  const [year, month, day, hour, minute] = match.slice(1).map(Number) as [
+    number,
+    number,
+    number,
+    number,
+    number,
+  ];
+  return new Date(Date.UTC(year, month - 1, day, hour + 5, minute));
+}

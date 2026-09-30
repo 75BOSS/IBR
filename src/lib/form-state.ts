@@ -12,3 +12,6 @@ export type FormState<Field extends string = string> = {
 };
 
 export const initialFormState: FormState = { status: 'idle' };
+
+/** Campo trampa de los formularios públicos: si llega con texto, lo llenó un bot. */
+export const HONEYPOT_FIELD = 'website';

@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { NO_DATE, formatDateOnly, formatDateTime, todayInChurchTz } from '@/lib/dates';
+import {
+  NO_DATE,
+  formatDateOnly,
+  formatDateTime,
+  formatTime,
+  fromLocalInputValue,
+  toLocalInputValue,
+  todayInChurchTz,
+} from '@/lib/dates';
 
 describe('fechas', () => {
   it('DATE se muestra sin correrse un día', () =>
@@ -17,4 +25,13 @@ describe('fechas', () => {
   it('fecha cero del PHP → sin fecha', () => assert.equal(formatDateOnly('0000-00-00'), NO_DATE));
   it('30 de febrero → sin fecha', () => assert.equal(formatDateOnly('2026-02-30'), NO_DATE));
   it('año 0026 → sin fecha (no 1926)', () => assert.equal(formatDateOnly('0026-09-27'), NO_DATE));
+});
+
+describe('horas y datetime-local', () => {
+  it('TIME se muestra en HH:MM', () => assert.equal(formatTime('19:30:00'), '19:30'));
+  it('ida y vuelta de datetime-local en hora de Ecuador', () => {
+    const utc = fromLocalInputValue('2026-10-04T19:30');
+    assert.equal(utc?.toISOString(), '2026-10-05T00:30:00.000Z');
+    assert.equal(toLocalInputValue(utc), '2026-10-04T19:30');
+  });
 });

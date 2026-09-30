@@ -15,13 +15,10 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
-    // Solo lo que el sitio usa, para que /_next/image no sirva de proxy de imágenes ajenas.
-    // Cloudinary se agrega en F1 con la ruta de la cuenta de la iglesia (/<cloud>/image/upload/…).
-    remotePatterns: [
-      { protocol: 'https', hostname: 'i.ytimg.com', pathname: '/vi/*/hqdefault.jpg' },
-    ],
-    qualities: [75],
-    maximumDiskCacheSize: 200 * 1024 * 1024,
+    // Cargador propio: Cloudinary redimensiona sus fotos y YouTube sirve sus miniaturas; el
+    // servidor de Hostinger no optimiza imágenes (ahorra CPU y no queda un proxy abierto).
+    loader: 'custom',
+    loaderFile: './src/lib/image-loader.ts',
   },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
