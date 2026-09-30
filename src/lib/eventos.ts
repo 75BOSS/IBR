@@ -33,11 +33,15 @@ const SELECT = `SELECT e.id, e.slug, e.titulo, e.resumen, e.cuerpo, e.categoria,
   LEFT JOIN rangos_edad r ON r.id = e.rango_edad_id`;
 
 /** Próximos (o en curso) publicados, del más cercano al más lejano. */
-export function listUpcomingEventos(limit: number): Promise<Evento[]> {
+export function listUpcomingEventos(
+  limit: number,
+  { rangoId = null }: { rangoId?: number | null } = {},
+): Promise<Evento[]> {
   return query<Evento>(
     `${SELECT} WHERE e.publicado = 1 AND COALESCE(e.fecha_fin, e.fecha_inicio) >= NOW() - INTERVAL 1 DAY
+        AND (? IS NULL OR e.rango_edad_id = ?)
       ORDER BY e.destacado DESC, e.fecha_inicio LIMIT ?`,
-    [limit],
+    [rangoId, rangoId, limit],
   );
 }
 

@@ -14,6 +14,7 @@ export const PUBLIC_NAV = [
 /** Enlaces que no caben en el menú principal: van en el pie de página. */
 export const FOOTER_EXTRA_NAV = [
   { href: '/nosotros', label: 'Nosotros' },
+  { href: '/ministerios', label: 'Ministerios' },
   { href: '/eventos', label: 'Eventos' },
   { href: '/oracion', label: 'Pedir oración' },
   { href: '/contacto', label: 'Contacto' },
@@ -22,7 +23,7 @@ export const FOOTER_EXTRA_NAV = [
 
 /**
  * Menú del panel. `ready: false` se muestra deshabilitado con la etiqueta «Pronto» hasta que
- * el módulo exista (se cambia a true al terminar cada módulo de F1).
+ * el módulo exista (se cambia a true al terminar cada módulo).
  */
 export const ADMIN_NAV: {
   href: string;
@@ -37,6 +38,7 @@ export const ADMIN_NAV: {
   { href: '/admin/grupos', label: 'Grupos', icon: 'users', ready: true },
   { href: '/admin/reuniones', label: 'Reuniones', icon: 'clock', ready: true },
   { href: '/admin/ubicaciones', label: 'Lugares', icon: 'mapPin', ready: true },
+  { href: '/admin/ministerios', label: 'Ministerios', icon: 'heartHandshake', ready: true },
   { href: '/admin/predicas', label: 'Prédicas', icon: 'play', ready: true },
   { href: '/admin/eventos', label: 'Eventos', icon: 'calendar', ready: true },
   { href: '/admin/peticiones', label: 'Peticiones', icon: 'handHeart', ready: true },

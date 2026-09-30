@@ -21,7 +21,14 @@ export type Reunion = {
 };
 
 /** Reuniones con su lugar y ministerio. `soloActivas` para el sitio público. */
-export async function listReuniones({ soloActivas }: { soloActivas: boolean }): Promise<Reunion[]> {
+export async function listReuniones({
+  soloActivas,
+  rangoId = null,
+}: {
+  soloActivas: boolean;
+  /** Solo las de un ministerio (página del ministerio). */
+  rangoId?: number | null;
+}): Promise<Reunion[]> {
   return query<Reunion>(
     `SELECT r.id, r.nombre, r.descripcion, r.dia_semana, r.hora_inicio, r.hora_fin, r.ubicacion_id,
             r.rango_edad_id, r.en_linea, r.orden, r.activo,
@@ -31,8 +38,8 @@ export async function listReuniones({ soloActivas }: { soloActivas: boolean }): 
        FROM reuniones r
        LEFT JOIN ubicaciones u ON u.id = r.ubicacion_id
        LEFT JOIN rangos_edad re ON re.id = r.rango_edad_id
-      WHERE ? = 0 OR r.activo = 1
+      WHERE (? = 0 OR r.activo = 1) AND (? IS NULL OR r.rango_edad_id = ?)
       ORDER BY r.dia_semana = 7 DESC, r.dia_semana, r.hora_inicio, r.orden`,
-    [soloActivas ? 1 : 0],
+    [soloActivas ? 1 : 0, rangoId, rangoId],
   );
 }

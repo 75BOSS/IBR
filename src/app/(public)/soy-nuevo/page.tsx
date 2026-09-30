@@ -3,9 +3,9 @@ import { Card } from '@/components/Card';
 import { Icon, type IconName } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { rangoOptions } from '@/lib/catalogs';
-import { query } from '@/lib/db';
-import { SoyNuevoForm } from './SoyNuevoForm';
+import { listMinisterios } from '@/lib/ministerios';
 import { pageMetadata } from '@/lib/seo';
+import { SoyNuevoForm } from './SoyNuevoForm';
 
 export const revalidate = 300;
 
@@ -37,17 +37,7 @@ const EXPECT: { icon: IconName; title: string; text: string }[] = [
 export default async function SoyNuevoPage() {
   const [rangos, ministerios] = await Promise.all([
     rangoOptions(),
-    query<{
-      id: number;
-      nombre: string;
-      nombre_ministerio: string | null;
-      descripcion: string | null;
-      color: string | null;
-      edad_min: number | null;
-      edad_max: number | null;
-    }>(
-      'SELECT id, nombre, nombre_ministerio, descripcion, color, edad_min, edad_max FROM rangos_edad WHERE activo = 1 ORDER BY orden',
-    ),
+    listMinisterios({ soloActivos: true }),
   ]);
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
@@ -103,7 +93,7 @@ export default async function SoyNuevoPage() {
             {ministerios.map((m) => (
               <li key={m.id}>
                 <Link
-                  href={`/grupos?edad=${m.id}`}
+                  href={`/ministerios/${m.slug}`}
                   className="flex h-full flex-col gap-1 rounded-2xl border-t-4 bg-surface p-4 ring-1 ring-line/70 hover:shadow-card"
                   style={{ borderTopColor: m.color ?? 'var(--color-brand)' }}
                 >
@@ -117,7 +107,7 @@ export default async function SoyNuevoPage() {
                   </span>
                   {m.descripcion && <span className="text-sm text-ink-soft">{m.descripcion}</span>}
                   <span className="mt-auto pt-2 text-sm font-semibold text-brand-strong">
-                    Ver grupos →
+                    Conocer más →
                   </span>
                 </Link>
               </li>
