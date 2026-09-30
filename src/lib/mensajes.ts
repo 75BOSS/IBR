@@ -6,7 +6,8 @@ export type Peticion = {
   nombre: string | null;
   telefono: string | null;
   email: string | null;
-  texto: string;
+  /** null = petición privada que esta cuenta no puede leer (solo pastores/rol admin). */
+  texto: string | null;
   es_privada: boolean;
   atendida: boolean;
   atendida_en: Date | null;
@@ -14,16 +15,25 @@ export type Peticion = {
   creado_en: Date;
 };
 
-export function listPeticiones(atendida: boolean): Promise<Peticion[]> {
+/**
+ * Peticiones de una pestaña. Las privadas solo las leen los pastores (rol admin): para el rol
+ * editor, el texto y los datos de contacto no salen de la BD.
+ */
+export function listPeticiones(atendida: boolean, verPrivadas: boolean): Promise<Peticion[]> {
   return query<Peticion>(
-    `SELECT p.id, p.nombre, p.telefono, p.email, p.texto, p.es_privada, p.atendida, p.atendida_en,
+    `SELECT p.id,
+            CASE WHEN ? OR p.es_privada = 0 THEN p.nombre END AS nombre,
+            CASE WHEN ? OR p.es_privada = 0 THEN p.telefono END AS telefono,
+            CASE WHEN ? OR p.es_privada = 0 THEN p.email END AS email,
+            CASE WHEN ? OR p.es_privada = 0 THEN p.texto END AS texto,
+            p.es_privada, p.atendida, p.atendida_en,
             u.nombre AS atendida_por, p.creado_en
        FROM peticiones p
        LEFT JOIN usuarios_admin u ON u.id = p.atendida_por
       WHERE p.atendida = ?
       ORDER BY COALESCE(p.atendida_en, p.creado_en) DESC
       LIMIT 300`,
-    [atendida],
+    [verPrivadas, verPrivadas, verPrivadas, verPrivadas, atendida],
   );
 }
 

@@ -21,7 +21,10 @@ export default async function PeticionesPage({
 }) {
   const admin = await requireAdmin();
   const atendidas = (await searchParams).ver === 'atendidas';
-  const [rows, counts] = await Promise.all([listPeticiones(atendidas), countPeticiones()]);
+  const [rows, counts] = await Promise.all([
+    listPeticiones(atendidas, admin.rol === 'admin'),
+    countPeticiones(),
+  ]);
 
   const columns: Column<Peticion>[] = [
     {
@@ -30,7 +33,13 @@ export default async function PeticionesPage({
       primary: true,
       cell: (p) => (
         <span className="flex flex-col gap-2">
-          <span className="whitespace-pre-line">{p.texto}</span>
+          {p.texto !== null ? (
+            <span className="whitespace-pre-line">{p.texto}</span>
+          ) : (
+            <span className="text-ink-soft italic">
+              Petición privada: solo la pueden leer los pastores (administradores).
+            </span>
+          )}
           <span className="flex flex-wrap gap-1.5">
             {p.es_privada ? (
               <Tag tone="accent">
@@ -48,7 +57,9 @@ export default async function PeticionesPage({
       header: 'De',
       className: 'md:w-56',
       cell: (p) =>
-        p.nombre || p.telefono || p.email ? (
+        p.texto === null ? (
+          <span className="text-ink-soft">Reservado</span>
+        ) : p.nombre || p.telefono || p.email ? (
           <ContactLinks
             nombre={p.nombre}
             telefono={p.telefono}
@@ -107,7 +118,7 @@ export default async function PeticionesPage({
       <PageHeader
         eyebrow="Panel"
         title="Peticiones de oración"
-        intro="Lo que llega desde «Pedir oración». Las privadas son solo para los pastores. Marca cada una cuando ya se oró o se dio seguimiento."
+        intro="Lo que llega desde «Pedir oración». Las privadas solo las leen los pastores (cuentas de administrador). Marca cada una cuando ya se oró o se dio seguimiento."
       />
       <FilterTabs
         label="Filtrar peticiones"

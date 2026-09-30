@@ -38,26 +38,33 @@ export async function sendPeticion(_prev: FormState, formData: FormData): Promis
     return { ...guard.state, values: guard.state.status === 'error' ? values : undefined };
   const d = parsed.data;
   await execute(
-    'INSERT INTO peticiones (nombre, telefono, email, texto, es_privada, ip) VALUES (?, ?, ?, ?, ?, INET6_ATON(?))',
-    [d.nombre, d.telefono, d.email, d.texto, d.es_privada, guard.ip],
+    `INSERT INTO peticiones (nombre, telefono, email, texto, es_privada, acepta_datos, ip)
+     VALUES (?, ?, ?, ?, ?, ?, INET6_ATON(?))`,
+    [d.nombre, d.telefono, d.email, d.texto, d.es_privada, d.acepta_datos, guard.ip],
   );
   const config = await getSiteConfig();
+  // Una petición privada solo la leen los pastores (rol admin) en el panel: el texto y los
+  // datos no viajan por correo, que puede ser una casilla compartida.
   await sendMail({
     to: config.email_avisos,
-    subject: `Nueva petición de oración${d.nombre ? ` de ${d.nombre}` : ''}${d.es_privada ? ' (privada)' : ''}`,
-    text: [
-      d.es_privada
-        ? 'Petición PRIVADA: solo para los pastores.'
-        : 'Se puede compartir en la reunión de oración.',
-      '',
-      d.texto,
-      '',
-      d.nombre ? `Nombre: ${d.nombre}` : 'Anónima',
-      d.telefono ? `WhatsApp: ${formatPhoneEc(d.telefono)}` : null,
-      d.email ? `Correo: ${d.email}` : null,
-      '',
-      `Panel: ${siteUrl()}/admin/peticiones`,
-    ]
+    subject: d.es_privada
+      ? 'Nueva petición de oración privada'
+      : `Nueva petición de oración${d.nombre ? ` de ${d.nombre}` : ''}`,
+    text: (d.es_privada
+      ? [
+          'Llegó una petición PRIVADA: solo la pueden leer los pastores (administradores) en el panel.',
+        ]
+      : [
+          'Se puede compartir en la reunión de oración.',
+          '',
+          d.texto,
+          '',
+          d.nombre ? `Nombre: ${d.nombre}` : 'Anónima',
+          d.telefono ? `WhatsApp: ${formatPhoneEc(d.telefono)}` : null,
+          d.email ? `Correo: ${d.email}` : null,
+        ]
+    )
+      .concat(['', `Panel: ${siteUrl()}/admin/peticiones`])
       .filter((l) => l !== null)
       .join('\n'),
   });
@@ -82,8 +89,9 @@ export async function sendContacto(_prev: FormState, formData: FormData): Promis
     return { ...guard.state, values: guard.state.status === 'error' ? values : undefined };
   const d = parsed.data;
   await execute(
-    'INSERT INTO contactos (nombre, email, telefono, mensaje, ip) VALUES (?, ?, ?, ?, INET6_ATON(?))',
-    [d.nombre, d.email, d.telefono, d.mensaje, guard.ip],
+    `INSERT INTO contactos (nombre, email, telefono, mensaje, acepta_datos, ip)
+     VALUES (?, ?, ?, ?, ?, INET6_ATON(?))`,
+    [d.nombre, d.email, d.telefono, d.mensaje, d.acepta_datos, guard.ip],
   );
   const config = await getSiteConfig();
   await sendMail({
