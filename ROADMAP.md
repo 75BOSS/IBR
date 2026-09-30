@@ -8,8 +8,8 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 
 ## F0 — Cimientos (1 semana)
 
-- [ ] Repo GitHub `pixelia/ibr-web`, ramas `main` y `dev`, `.env.example`, README corto.
-- [ ] `create-next-app` (TS, Tailwind, App Router, `src/`), ESLint, Prettier.
+- [x] Repo GitHub `pixelia/ibr-web`, ramas `main` y `dev`, `.env.example`, README corto. _(repo real: `75BOSS/IBR`; ver ESTADO.md 2026-09-30)_
+- [x] `create-next-app` (TS, Tailwind, App Router, `src/`), ESLint, Prettier.
 - [ ] `src/lib/db.ts` con pool `mysql2` y helper `query<T>()`; `scripts/migrate.ts`.
 - [ ] Aplicar `sql/ESQUEMA.sql` en la BD de Hostinger (vacía) y correr `MIGRACION-PHP.md` §2 (importar datos heredados).
 - [ ] Auth admin: `iron-session`, tabla `usuarios_admin`, login, middleware que protege `/admin/*`, seed del primer admin por script.
