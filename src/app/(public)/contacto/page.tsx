@@ -35,7 +35,7 @@ export default async function ContactoPage() {
         <div className="flex flex-col gap-4">
           <Card tone="brand" emphasis="featured" as="section">
             <h2 className="font-display text-h3 font-semibold">La forma más rápida</h2>
-            <p className="mt-1 text-surface/80">Respondemos por WhatsApp en horario de oficina.</p>
+            <p className="mt-1 text-surface/80">Te respondemos por WhatsApp lo antes posible.</p>
             <ul className="mt-4 flex flex-col gap-3">
               {config.whatsapp && (
                 <li>

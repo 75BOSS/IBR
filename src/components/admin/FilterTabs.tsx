@@ -6,7 +6,7 @@ export type FilterTab = { label: string; href: string; count?: number; active: b
 export function FilterTabs({ tabs, label }: { tabs: FilterTab[]; label: string }) {
   return (
     <nav aria-label={label}>
-      <ul className="flex flex-wrap gap-1 rounded-xl bg-sunken p-1 md:w-max">
+      <ul className="flex flex-wrap gap-1 rounded-xl bg-sunken p-1 md:w-fit">
         {tabs.map((tab) => (
           <li key={tab.href}>
             <Link

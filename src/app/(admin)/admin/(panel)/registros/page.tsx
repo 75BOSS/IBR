@@ -129,7 +129,7 @@ export default async function RegistrosPage({
           </>
         }
       />
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:justify-between">
         <FilterTabs
           label="Filtrar por estado"
           tabs={REGISTRO_ESTADOS.map((e) => ({
