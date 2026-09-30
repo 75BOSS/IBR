@@ -58,7 +58,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [x] `/nosotros` completo: historia, visión, en qué creemos, equipo.
 - [x] Eventos con inscripción: `inscripciones`, cupo, confirmación por correo, contador de cupo con polling/SSE cada 15 s, página por evento con OG para compartir.
 - [x] Ministerios por rango de edad: `/ministerios/[slug]` con sus reuniones y grupos.
-- [ ] `/servir`: `areas_servicio` + `voluntarios`.
+- [x] `/servir`: `areas_servicio` + `voluntarios`.
 - [ ] Suscripción a agenda semanal (`suscriptores`) + envío manual desde admin.
 - [ ] Aviso al líder por WhatsApp Cloud API cuando entra una solicitud a su grupo (patrón webhook ya usado en Pixelia).
 - [ ] Noticias / categorías en eventos (Noticias · Oración · Comunidad · Música · Capacitación).
