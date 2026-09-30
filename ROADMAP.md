@@ -32,7 +32,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [x] `/predicas`: grilla desde `predicas`, filtro por serie y predicador, `YouTubeEmbed`. Botón "En vivo" que aparece si `config.en_vivo_activo=1` o dentro del horario de culto.
 - [ ] `/dar`: cuentas bancarias, QR, texto pastoral. Sin pasarela en F1.
 - [x] `/oracion`: formulario corto → `peticiones` (es_privada).
-- [ ] `/contacto`: formulario → `contactos`, redes, mapa, WhatsApp.
+- [x] `/contacto`: formulario → `contactos`, redes, mapa, WhatsApp.
 - [ ] Páginas legales: `/privacidad` (política de datos, obligatoria por el consentimiento).
 - [ ] `sitemap.xml`, `robots.txt`, Metadata/OG por página, favicon, manifest básico.
 

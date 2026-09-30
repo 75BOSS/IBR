@@ -1,21 +1,10 @@
 import Link from 'next/link';
 import { BrandMark } from '@/components/BrandMark';
-import { Icon, type IconName } from '@/components/Icon';
+import { Icon } from '@/components/Icon';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import type { SiteConfig } from '@/lib/config';
-import { PUBLIC_NAV } from '@/lib/nav';
+import { FOOTER_EXTRA_NAV, PUBLIC_NAV, socialLinks } from '@/lib/nav';
 import { formatPhoneEc } from '@/lib/whatsapp';
-
-const SOCIALS: {
-  key: 'instagram' | 'tiktok' | 'youtube' | 'facebook';
-  label: string;
-  icon: IconName;
-}[] = [
-  { key: 'instagram', label: 'Instagram', icon: 'instagram' },
-  { key: 'youtube', label: 'YouTube', icon: 'youtube' },
-  { key: 'tiktok', label: 'TikTok', icon: 'tiktok' },
-  { key: 'facebook', label: 'Facebook', icon: 'facebook' },
-];
 
 function FooterHeading({ children }: { children: React.ReactNode }) {
   return (
@@ -26,7 +15,7 @@ function FooterHeading({ children }: { children: React.ReactNode }) {
 }
 
 export function SiteFooter({ config }: { config: SiteConfig }) {
-  const socials = SOCIALS.filter((s) => config[s.key]);
+  const socials = socialLinks(config);
   const hasContact = Boolean(config.whatsapp || config.telefono || config.email);
   const year = new Date().getFullYear();
 
@@ -120,9 +109,9 @@ export function SiteFooter({ config }: { config: SiteConfig }) {
           <FooterHeading>Síguenos</FooterHeading>
           <ul className="flex flex-wrap gap-x-6 gap-y-1 lg:flex-col lg:gap-1">
             {socials.map((s) => (
-              <li key={s.key}>
+              <li key={s.label}>
                 <a
-                  href={config[s.key] ?? undefined}
+                  href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex min-h-10 items-center gap-2.5 rounded-lg hover:underline"
@@ -141,18 +130,13 @@ export function SiteFooter({ config }: { config: SiteConfig }) {
         <div className="container-page flex flex-col gap-3 py-5 text-sm text-footer-muted md:flex-row md:items-center md:justify-between">
           <nav aria-label="Pie de página">
             <ul className="flex flex-wrap gap-x-4 gap-y-1">
-              {PUBLIC_NAV.map((item) => (
+              {[...PUBLIC_NAV, ...FOOTER_EXTRA_NAV].map((item) => (
                 <li key={item.href}>
                   <Link href={item.href} className="hover:text-footer-ink hover:underline">
                     {item.label}
                   </Link>
                 </li>
               ))}
-              <li>
-                <Link href="/privacidad" className="hover:text-footer-ink hover:underline">
-                  Privacidad
-                </Link>
-              </li>
             </ul>
           </nav>
           <p>
