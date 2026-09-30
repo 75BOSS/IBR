@@ -29,10 +29,11 @@ CREATE TABLE usuarios_admin (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Límite de envíos de formularios públicos: 5 por IP por formulario cada 10 min.
+-- También limita intentos de login por IP y por cuenta (src/lib/rate-limit.ts).
 CREATE TABLE rate_limits (
   id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  ip         VARBINARY(16) NOT NULL,                    -- INET6_ATON(ip)
-  formulario VARCHAR(40)   NOT NULL,                    -- 'soy_nuevo','oracion','contacto','unirme_grupo'
+  ip         VARBINARY(16) NOT NULL,                    -- clave: 16 primeros bytes de SHA-256("ip:<ip>" o "cuenta:<email>"); no se guarda la IP en claro
+  formulario VARCHAR(40)   NOT NULL,                    -- 'soy_nuevo','oracion','contacto','unirme_grupo','login_ip','login_cuenta'
   creado_en  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY idx_rl (ip, formulario, creado_en)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
