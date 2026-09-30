@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
-import { Button } from '@/components/Button';
+import { Button, ButtonLink } from '@/components/Button';
 import { PageHeader } from '@/components/PageHeader';
 
 /** Error inesperado en el panel (BD caída, variable faltante…): qué pasó y cómo seguir. */
@@ -39,9 +39,15 @@ export default function AdminError({
           </>
         }
       />
-      <Button onClick={retry} pending={retrying} pendingLabel="Reintentando…">
-        Reintentar
-      </Button>
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={retry} pending={retrying} pendingLabel="Reintentando…">
+          Reintentar
+        </Button>
+        {/* Este error reemplaza también la barra lateral: siempre hay una salida. */}
+        <ButtonLink href="/" variant="secondary">
+          Ir al sitio
+        </ButtonLink>
+      </div>
     </main>
   );
 }

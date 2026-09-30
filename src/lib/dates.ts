@@ -8,15 +8,28 @@ import { TIME_ZONE } from '@/lib/site';
 
 const DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/;
 
-/** '2026-09-27' → «27 de septiembre de 2026». Sin conversión de zona horaria. */
+/** Texto para una fecha vacía o imposible (ej. '0000-00-00' del sistema PHP heredado). */
+export const NO_DATE = '—';
+
+/**
+ * '2026-09-27' → «27 de septiembre de 2026». Sin conversión de zona horaria. Fechas cero o
+ * imposibles (mes 13, 30 de febrero, año < 1000) devuelven NO_DATE en vez de otra fecha.
+ */
 export function formatDateOnly(
   value: string,
   options: Intl.DateTimeFormatOptions = { dateStyle: 'long' },
 ): string {
   const match = DATE_ONLY.exec(value);
   if (!match) return value;
-  const [, y, m, d] = match;
-  const date = new Date(Date.UTC(Number(y), Number(m) - 1, Number(d)));
+  const [year, month, day] = match.slice(1).map(Number) as [number, number, number];
+  const date = new Date(0);
+  date.setUTCFullYear(year, month - 1, day); // setUTCFullYear no reinterpreta años 0–99
+  const valid =
+    year >= 1000 &&
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day;
+  if (!valid) return NO_DATE;
   return new Intl.DateTimeFormat('es-EC', { ...options, timeZone: 'UTC' }).format(date);
 }
 

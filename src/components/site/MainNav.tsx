@@ -2,23 +2,31 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { buttonClasses } from '@/components/button-styles';
 import { Icon } from '@/components/Icon';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { PUBLIC_NAV, isActivePath } from '@/lib/nav';
 
-/** Navegación principal: lista en escritorio, menú desplegable en celular y tablet. */
-export function MainNav({ whatsapp }: { whatsapp: string | null }) {
+/**
+ * Navegación principal: lista en escritorio, menú desplegable en celular y tablet. Recibe el
+ * logo para cerrar el menú también cuando se toca (aunque se quede en la misma ruta).
+ */
+export function MainNav({ whatsapp, logo }: { whatsapp: string | null; logo: ReactNode }) {
   const pathname = usePathname();
-  // El menú queda abierto solo en la ruta donde se abrió: cualquier navegación lo cierra.
-  const [openOn, setOpenOn] = useState<string | null>(null);
-  const open = openOn === pathname;
-  const close = () => setOpenOn(null);
+  const [open, setOpen] = useState(false);
+  const [openedAt, setOpenedAt] = useState(pathname);
+  // Ajuste de estado durante el render (patrón de React): cambiar de ruta cierra el menú, y
+  // volver atrás a la ruta donde se abrió no lo reabre.
+  if (openedAt !== pathname) {
+    setOpenedAt(pathname);
+    setOpen(false);
+  }
+  const close = () => setOpen(false);
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setOpenOn(null);
+    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setOpen(false);
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
@@ -27,6 +35,10 @@ export function MainNav({ whatsapp }: { whatsapp: string | null }) {
 
   return (
     <>
+      <div onClickCapture={close} className="mr-auto flex min-w-0">
+        {logo}
+      </div>
+
       <nav aria-label="Principal" className="hidden lg:block">
         <ul className="flex items-center gap-1 xl:gap-2">
           {links.map((item) => {
@@ -68,7 +80,7 @@ export function MainNav({ whatsapp }: { whatsapp: string | null }) {
         className="grid size-11 place-items-center rounded-xl text-brand-strong hover:bg-brand-soft lg:hidden"
         aria-expanded={open}
         aria-controls="menu-principal"
-        onClick={() => setOpenOn(open ? null : pathname)}
+        onClick={() => setOpen((value) => !value)}
       >
         <Icon name={open ? 'close' : 'menu'} className="size-6" />
         <span className="sr-only">{open ? 'Cerrar menú' : 'Abrir menú'}</span>

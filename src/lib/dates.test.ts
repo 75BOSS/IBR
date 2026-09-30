@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { formatDateOnly, formatDateTime, todayInChurchTz } from '@/lib/dates';
+import { NO_DATE, formatDateOnly, formatDateTime, todayInChurchTz } from '@/lib/dates';
 
 describe('fechas', () => {
   it('DATE se muestra sin correrse un día', () =>
@@ -14,4 +14,7 @@ describe('fechas', () => {
     assert.equal(todayInChurchTz(new Date(Date.UTC(2026, 8, 28, 1, 0))), '2026-09-27'));
   it('texto que no es fecha se devuelve igual', () =>
     assert.equal(formatDateOnly('pronto'), 'pronto'));
+  it('fecha cero del PHP → sin fecha', () => assert.equal(formatDateOnly('0000-00-00'), NO_DATE));
+  it('30 de febrero → sin fecha', () => assert.equal(formatDateOnly('2026-02-30'), NO_DATE));
+  it('año 0026 → sin fecha (no 1926)', () => assert.equal(formatDateOnly('0026-09-27'), NO_DATE));
 });

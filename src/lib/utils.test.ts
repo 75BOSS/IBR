@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { rateLimitIp } from '@/lib/ip';
 import { safeMapsEmbedUrl } from '@/lib/maps';
 import { safeAdminPath } from '@/lib/validators/auth';
 import { whatsappHref } from '@/lib/whatsapp';
@@ -67,6 +68,9 @@ describe('whatsappHref', () => {
     assert.equal(whatsappHref('03 212 3456'), 'https://wa.me/59332123456'));
   it('rechaza números que no son de Ecuador', () =>
     assert.equal(whatsappHref('+1 555 123 4567'), null));
+  it('rechaza un celular con un dígito de menos', () =>
+    assert.equal(whatsappHref('099123456'), null));
+  it('rechaza un fijo con un dígito de más', () => assert.equal(whatsappHref('0221234567'), null));
   it('sin número usable devuelve null', () => {
     assert.equal(whatsappHref(''), null);
     assert.equal(whatsappHref('123'), null);
@@ -89,4 +93,16 @@ describe('safeAdminPath (evita redirecciones abiertas)', () => {
   for (const [input, expected] of cases) {
     it(`${String(input)} → ${expected}`, () => assert.equal(safeAdminPath(input), expected));
   }
+});
+
+describe('rateLimitIp (clave del límite por IP)', () => {
+  it('IPv4 va tal cual', () => assert.equal(rateLimitIp('190.152.1.10'), '190.152.1.10'));
+  it('IPv4 mapeada en IPv6 se trata como IPv4', () =>
+    assert.equal(rateLimitIp('::ffff:190.152.1.10'), '190.152.1.10'));
+  it('IPv6 se agrupa por /64', () =>
+    assert.equal(rateLimitIp('2800:bf0:1:2:aaaa:bbbb:cccc:dddd'), '2800:0bf0:0001:0002::/64'));
+  it('IPv6 comprimida da el mismo bloque', () =>
+    assert.equal(rateLimitIp('2800:bf0:1:2::5'), '2800:0bf0:0001:0002::/64'));
+  it('IPv6 corta con :: al inicio del bloque', () =>
+    assert.equal(rateLimitIp('2800::1'), '2800:0000:0000:0000::/64'));
 });

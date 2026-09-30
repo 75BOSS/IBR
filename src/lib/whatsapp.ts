@@ -8,8 +8,8 @@ export function normalizeEcuadorWhatsapp(number: string | null | undefined): str
   if (digits.startsWith('00')) digits = digits.slice(2);
   if (digits.startsWith('5930')) digits = `593${digits.slice(4)}`;
   else if (digits.startsWith('0')) digits = `593${digits.slice(1)}`;
-  // 593 + 9 dígitos (celular) o + 8 dígitos (fijo con código de provincia).
-  return /^593\d{8,9}$/.test(digits) ? digits : null;
+  // Celular: 593 9XXXXXXXX. Fijo: 593 + código de provincia (2–7) + 7 dígitos.
+  return /^593(9\d{8}|[2-7]\d{7})$/.test(digits) ? digits : null;
 }
 
 /** Enlace wa.me con mensaje opcional; null si el número no es usable. */

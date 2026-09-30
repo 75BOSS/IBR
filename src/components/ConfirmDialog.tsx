@@ -103,14 +103,28 @@ function ConfirmForm({
 }) {
   const toast = useToast();
 
+  // ¿Este formulario sigue siendo el de la apertura vigente? (el diálogo pudo cerrarse y
+  // reabrirse, lo que monta otro formulario con otra key).
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
   // El cierre y el toast van dentro de la acción (después del await): si la acción borra la
   // fila que contiene este diálogo, el componente se desmonta pero el aviso igual aparece.
   const [state, formAction, pending] = useActionState<FormState, FormData>(
     async (prev, formData) => {
       const result = await action(prev, formData);
+      const visible = mounted.current && Boolean(dialog.current?.open);
       if (result.status === 'success') {
-        dialog.current?.close();
+        if (visible) dialog.current?.close();
         if (result.message) toast({ tone: 'success', message: result.message });
+      } else if (result.status === 'error' && result.message && !visible) {
+        // El diálogo se cerró mientras procesaba (ej. doble Escape): el error no se pierde.
+        toast({ tone: 'error', message: result.message });
       }
       return result;
     },

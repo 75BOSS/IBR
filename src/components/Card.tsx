@@ -5,7 +5,7 @@ export type CardTone = 'surface' | 'sunken' | 'brand' | 'accent';
 const tones: Record<CardTone, string> = {
   surface: 'bg-surface text-ink',
   sunken: 'bg-sunken text-ink',
-  brand: 'bg-brand-strong text-surface',
+  brand: 'on-dark bg-brand-strong text-surface',
   accent: 'bg-accent-soft text-ink',
 };
 
