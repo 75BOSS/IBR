@@ -64,13 +64,18 @@ export async function suscribirse(_prev: FormState, formData: FormData): Promise
     { account: d.email },
     { max: 2, windowMinutes: 60 },
   );
-  // Alta atómica: dos envíos simultáneos del mismo correo no chocan con la clave única. Cada
-  // «acepto» renueva la fecha del consentimiento junto con la IP.
+  // Alta atómica: dos envíos simultáneos del mismo correo no chocan con la clave única. Si aún
+  // no confirmó, cada «acepto» renueva la fecha del consentimiento junto con la IP. Un suscriptor
+  // activo no se toca: quien escribe su correo no le cambia el nombre del saludo ni el registro
+  // del consentimiento.
   await execute(
     `INSERT INTO suscriptores (email, nombre, token, activo, acepta_datos, consentimiento_en, ip)
      VALUES (?, ?, ?, 0, 1, NOW(), INET6_ATON(?))
-     ON DUPLICATE KEY UPDATE nombre = COALESCE(VALUES(nombre), nombre), acepta_datos = 1,
-                             consentimiento_en = NOW(), ip = VALUES(ip)`,
+     ON DUPLICATE KEY UPDATE
+       nombre = IF(activo = 1, nombre, COALESCE(VALUES(nombre), nombre)),
+       acepta_datos = 1,
+       consentimiento_en = IF(activo = 1, consentimiento_en, NOW()),
+       ip = IF(activo = 1, ip, VALUES(ip))`,
     [d.email, d.nombre, newSubscriberToken(), guard.ip],
   );
   const row = await queryOne<{ token: string; activo: boolean }>(

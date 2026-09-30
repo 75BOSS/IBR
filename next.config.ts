@@ -4,7 +4,8 @@ const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
-  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+  // Cámara solo para páginas propias (tablero de check-in con QR); nada de terceros.
+  { key: 'Permissions-Policy', value: 'camera=(self), microphone=(), geolocation=()' },
   // Solo en producción (el navegador la ignora en http). Sin includeSubDomains hasta confirmar
   // TLS en todos los subdominios de ibriglesia.com.
   ...(process.env.NODE_ENV === 'production'
@@ -26,6 +27,17 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
+  },
+  async redirects() {
+    return [
+      // Enlaces viejos (/eventos?categoria=noticia) ya compartidos: las categorías son rutas.
+      {
+        source: '/eventos',
+        has: [{ type: 'query', key: 'categoria', value: '(?<categoria>[a-z]+)' }],
+        destination: '/eventos/categoria/:categoria',
+        permanent: true,
+      },
+    ];
   },
 };
 

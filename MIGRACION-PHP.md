@@ -73,6 +73,7 @@ Script `scripts/importar-php.ts`:
 - Lee de la BD PHP (segunda conexión `LEGACY_DATABASE_URL`, solo lectura).
 - Escribe en la BD nueva con `INSERT ... ON DUPLICATE KEY UPDATE` para poder re-ejecutar.
 - Mantiene los `id` originales (no re-numerar: hay links y referencias en WhatsApp/impresos).
+- Normaliza los teléfonos al formato del sitio (`0991234567`, con `normalizeEcuadorWhatsapp()` y quitando el `593`): «Mi cuenta» y las búsquedas por WhatsApp comparan el texto exacto; un `+593 99…` o con espacios no se encontraría.
 - Registra en `sql/legado/importacion_log.md`: filas leídas, insertadas, descartadas y por qué.
 - Ejecutar primero en `dev`, revisar en `/admin`, luego en producción la noche antes del corte.
 

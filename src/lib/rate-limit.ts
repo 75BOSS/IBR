@@ -28,6 +28,9 @@ export type RateLimitForm =
   | 'agenda_baja'
   | 'codigo_ip'
   | 'codigo_telefono'
+  | 'codigo_telefono_dia'
+  | 'codigo_global'
+  | 'codigo_fallido'
   | 'codigo_verificar';
 
 export type RateLimitSubject = { ip: string } | { account: string };

@@ -180,12 +180,23 @@ export async function cancelarInscripcion(
       message: `Demasiados intentos. Espera ${minutesText(limit.retryAfterMinutes)} o escríbenos por WhatsApp.`,
     };
   }
-  const { affectedRows } = await execute(
-    `UPDATE inscripciones i JOIN eventos e ON e.id = i.evento_id
-        SET i.estado = 'cancelada'
-      WHERE i.codigo = ? AND i.estado = 'confirmada' AND e.fecha_inicio > NOW()`,
-    [codigo],
-  );
+  // Mismo orden de bloqueo que la inscripción y el panel (primero el evento, después la
+  // inscripción): así dos cambios a la vez esperan su turno en vez de trabarse entre sí.
+  const affectedRows = await withTransaction(async (tx) => {
+    const ref = await tx.queryOne<{ evento_id: number }>(
+      'SELECT evento_id FROM inscripciones WHERE codigo = ?',
+      [codigo],
+    );
+    if (!ref) return 0;
+    await tx.query('SELECT id FROM eventos WHERE id = ? FOR UPDATE', [ref.evento_id]);
+    const result = await tx.execute(
+      `UPDATE inscripciones i JOIN eventos e ON e.id = i.evento_id
+          SET i.estado = 'cancelada'
+        WHERE i.codigo = ? AND i.estado = 'confirmada' AND e.fecha_inicio > NOW()`,
+      [codigo],
+    );
+    return result.affectedRows;
+  });
   if (affectedRows === 0) {
     return {
       status: 'error',
@@ -230,8 +241,10 @@ export async function setInscripcionEstado(
     if (!evento || !insc)
       return { status: 'error', message: 'Esta inscripción ya no existe. Recarga la página.' };
     if (insc.estado === 'cancelada' && estado.value !== 'cancelada') {
+      // Lecturas con bloqueo: ven lo último confirmado aunque la transacción haya empezado
+      // antes de que otra inscripción terminara (lectura consistente de REPEATABLE READ).
       const taken = await tx.queryOne<{ n: number | string }>(
-        "SELECT COALESCE(SUM(personas), 0) AS n FROM inscripciones WHERE evento_id = ? AND estado <> 'cancelada'",
+        "SELECT COALESCE(SUM(personas), 0) AS n FROM inscripciones WHERE evento_id = ? AND estado <> 'cancelada' LOCK IN SHARE MODE",
         [ref.evento_id],
       );
       const ocupados = Number(taken?.n ?? 0);
@@ -242,7 +255,7 @@ export async function setInscripcionEstado(
         };
       }
       const repeated = await tx.queryOne<{ id: number }>(
-        "SELECT id FROM inscripciones WHERE evento_id = ? AND telefono = ? AND estado <> 'cancelada' AND id <> ?",
+        "SELECT id FROM inscripciones WHERE evento_id = ? AND telefono = ? AND estado <> 'cancelada' AND id <> ? LOCK IN SHARE MODE",
         [ref.evento_id, insc.telefono, parsed.data],
       );
       if (repeated) {
@@ -304,10 +317,17 @@ export async function checkIn(_prev: FormState, formData: FormData): Promise<For
       message: `${insc.nombre} ya registró su llegada${insc.checkin_en ? ` (${formatDateTime(insc.checkin_en, { hour: 'numeric', minute: '2-digit' })})` : ''}. No hace falta volver a escanear.`,
     };
   }
-  await execute(
+  const { affectedRows } = await execute(
     "UPDATE inscripciones SET estado = 'asistio', checkin_en = NOW() WHERE id = ? AND estado = 'confirmada'",
     [insc.id],
   );
+  if (affectedRows !== 1) {
+    // Otro ujier la registró (o se canceló) entre la lectura y la escritura.
+    return {
+      status: 'error',
+      message: `La inscripción de ${insc.nombre} cambió hace un momento. Vuelve a escanear para ver su estado.`,
+    };
+  }
   revalidatePath('/admin/eventos', 'layout');
   return {
     status: 'success',

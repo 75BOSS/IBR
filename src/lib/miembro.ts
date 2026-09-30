@@ -33,8 +33,11 @@ export function sameHash(a: string, b: string): boolean {
 }
 
 /**
- * ¿La iglesia ya tiene este WhatsApp? Solo a esos números se les envía un código: nadie puede
- * usar el sitio para mandar mensajes a números ajenos.
+ * ¿La iglesia ya tiene este WhatsApp? Solo a esos números se les envía un código. Ojo: los
+ * formularios públicos no verifican el número, así que alguien podría registrar uno ajeno; por
+ * eso además hay topes por número (5 códigos al día) y uno global diario en solicitarCodigo.
+ * Los teléfonos se guardan en formato local (0991234567): la importación del PHP debe
+ * normalizarlos igual (MIGRACION-PHP.md §2) o esas personas no recibirán su código.
  */
 export async function isKnownPhone(telefono: string): Promise<boolean> {
   const row = await queryOne<{ n: number }>(

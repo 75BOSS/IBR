@@ -39,6 +39,9 @@ export function CheckinBoard({ eventoId, initial }: { eventoId: number; initial:
   const [inputKey, setInputKey] = useState(0);
   const video = useRef<HTMLVideoElement>(null);
   const lastScan = useRef<{ code: string; at: number } | null>(null);
+  // QR que ya entraron en esta pantalla: si la persona deja el QR frente a la cámara, no se
+  // vuelve a enviar (y el «Bienvenido» no cambia a «ya registró su llegada»).
+  const admitted = useRef(new Set<string>());
 
   const refresh = useCallback(async () => {
     try {
@@ -52,7 +55,11 @@ export function CheckinBoard({ eventoId, initial }: { eventoId: number; initial:
   const [result, formAction, pending] = useActionState<FormState, FormData>(
     async (prev, formData) => {
       const next = await checkIn(prev, formData);
-      if (next.status === 'success') setInputKey((k) => k + 1);
+      if (next.status === 'success') {
+        setInputKey((k) => k + 1);
+        const scanned = formData.get('escaneado');
+        if (typeof scanned === 'string') admitted.current.add(scanned);
+      }
       await refresh();
       return next;
     },
@@ -69,6 +76,7 @@ export function CheckinBoard({ eventoId, initial }: { eventoId: number; initial:
       const fd = new FormData();
       fd.set('evento_id', String(eventoId));
       fd.set('codigo', code);
+      fd.set('escaneado', code);
       startTransition(() => formAction(fd));
     },
     [eventoId, formAction],
@@ -102,6 +110,7 @@ export function CheckinBoard({ eventoId, initial }: { eventoId: number; initial:
           const [found] = await detector.detect(video.current).catch(() => []);
           if (!found) return;
           const now = Date.now();
+          if (admitted.current.has(found.rawValue)) return;
           const last = lastScan.current;
           if (last && last.code === found.rawValue && now - last.at < SAME_CODE_PAUSE_MS) return;
           lastScan.current = { code: found.rawValue, at: now };
