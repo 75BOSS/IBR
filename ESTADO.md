@@ -4,9 +4,14 @@
 
 ## Fase actual
 
-**F0 — Cimientos: 6 de 9 checkboxes hechos.** Todo lo que no depende de Hostinger está implementado, probado en local (MySQL 8 + Chromium) y subido a `dev`.
+**F1 — Web que sirve: todo el desarrollo está hecho** (15 de 15 checkboxes de «Público» y «Admin»). Probado en local con MySQL 8 + Chromium y subido a `dev`.
 
-Falta, y depende de Cristian (ver «Necesito de Cristian»):
+Lo que falta para cerrar F1 es contenido y hosting, no código:
+
+- «Cierre F1»: contenido real (fotos, horarios, dirección, pastores, cuentas), apagar el PHP de grupos, DNS y redirección de `ibrcomunidad.com`.
+- La revisión a 360 px ya se hizo con datos de prueba; se repite con el contenido real antes del cambio de DNS.
+
+**F0** sigue con 3 checkboxes abiertos que dependen de Hostinger:
 
 - F0.4 — Aplicar el esquema en la BD de Hostinger e importar el PHP (necesita credenciales + dump del PHP).
 - F0.8 — Crear la web app en Hostinger apuntando a `dev` y primer deploy verde.
@@ -24,8 +29,10 @@ Lista consolidada. Nada de esto se sube al repo: los valores van en hPanel → W
 6. **Token API de Hostinger** (alcance mínimo: websites + DNS) para que Claude Code pueda desplegar y leer los logs de build.
 7. **Cloudinary** (plan gratuito): `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`. Se usa desde F1.
 8. **SMTP de Hostinger**: la casilla de correo que envía los avisos (`SMTP_USER`, `SMTP_PASS`). Se usa desde F1.
-9. **YouTube Data API key**: opcional. Sin ella, en F1 el título de la prédica se escribe a mano.
+9. **YouTube Data API key**: opcional. Sin ella, el título y la miniatura salen de oEmbed (sin fecha de publicación).
 10. **Decidir la visibilidad del repo.** `75BOSS/IBR` es **público**. No tiene secretos, pero conviene que sea privado.
+11. **Contenido real** para cargar desde el panel (`/admin/config`, `/admin/equipo`, `/admin/reuniones`…): foto de portada, dirección y mapa, WhatsApp oficial, correo que recibe los avisos (`email_avisos`), cuentas bancarias y QR, pastores con foto, horarios. Lo puede cargar la iglesia o me lo pasas y lo cargo yo.
+12. **Que la iglesia lea `/privacidad`** (política de datos en lenguaje sencillo, con la LOPDP). Confirmar que están de acuerdo con el texto y con el plazo de 15 días para responder pedidos de datos.
 
 Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «Probar SSE» y pegarme el resultado y la tabla de cabeceras (o dejarme el acceso y lo hago yo).
 
@@ -66,6 +73,18 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 | 2026-09-30 | `playwright-core` (dev) + `npm run revisar` para la revisión a 360/768/1280 | Comprobar las Reglas Pixelia (sin desborde horizontal) de forma repetible |
 | 2026-09-30 | Pruebas unitarias con `node:test` vía `tsx --test`, sin framework extra | Utilidades puras (YouTube, mapas, WhatsApp, redirecciones, fechas): 41 pruebas |
 | 2026-09-30 | `PageHeader`, `FormAlert`, `container-panel` y `on-dark` como piezas únicas; `buttonClasses` en un módulo sin `'use client'` | La revisión encontró encabezados y avisos copiados a mano con variantes, y el foco con contraste < 3:1 sobre fondos oscuros |
+| 2026-09-30 | Módulo extra **«Lugares»** (`/admin/ubicaciones`) | Reuniones, grupos y eventos eligen su lugar de `ubicaciones`; sin pantalla no había cómo crearlos. La dirección de una casa solo se publica si `publica = 1` |
+| 2026-09-30 | Módulo extra **«Mensajes»** (`/admin/mensajes`) | El ROADMAP guarda `contactos` pero no tenía dónde leerlos. Pestañas sin leer / leídos, igual que Peticiones |
+| 2026-09-30 | Migración `001_grupos_imagen_public_id` | `grupos` no tenía dónde guardar el `public_id` de Cloudinary para borrar la foto vieja. Primera migración real: no se edita `ESQUEMA.sql` una vez aplicado |
+| 2026-09-30 | Prédicas: con `YOUTUBE_API_KEY` se usa la Data API; sin ella, oEmbed (título + miniatura) | La key es opcional; oEmbed no pide credenciales. La respuesta se guarda en `predicas`, no se consulta en cada visita |
+| 2026-09-30 | `next/image` con `loaderFile` propio (`src/lib/image-loader.ts`): Cloudinary y YouTube se sirven desde su CDN, sin `/_next/image` | Hostinger no tiene que redimensionar imágenes (CPU) y no hay proxy abierto |
+| 2026-09-30 | `useToastAction` en vez de un efecto que mira el estado | Si la acción revalida y la fila desaparece (cambió de pestaña), el «Guardado» igual se muestra |
+| 2026-09-30 | Todos los formularios con `noValidate`; tras crear o borrar se redirige con `?aviso=creado|guardado|eliminado` (`FlashToast`) | La burbuja nativa del navegador tapaba nuestros mensajes (en inglés o sin explicar cómo arreglarlo) |
+| 2026-09-30 | La petición de oración puede ser anónima: el consentimiento se pide solo si deja nombre, WhatsApp o correo; es privada por defecto | Pedir datos para orar alejaría a quien más lo necesita; sin datos personales no hay nada que consentir |
+| 2026-09-30 | `whenValid()` en los `.refine()` entre campos y `emptyToNull` también para campos ausentes | Zod no corre las reglas del objeto si otro campo falló: los errores salían de a uno. Un campo opcional ausente daba un error en inglés |
+| 2026-09-30 | `pageMetadata()` (`src/lib/seo.ts`) arma el Open Graph completo de cada página, con `public/og-default.png` si no tiene imagen | Next reemplaza el `openGraph` del layout cuando la página define el suyo: los enlaces por WhatsApp salían sin imagen ni descripción |
+| 2026-09-30 | Íconos (favicon, `icon.png`, `apple-icon.png`, manifest 192/512/maskable) e imagen OG generados con Chromium y las fuentes reales | El favicon era el de Next. Reemplazables cuando la iglesia tenga logo |
+| 2026-09-30 | «Configuración» no aparece en el menú del rol editor (`adminOnly` en `ADMIN_NAV`) | La página ya exigía admin; el enlace solo llevaba a un aviso de «sin permiso» |
 
 ## Pendiente de confirmar con la iglesia (bloquea F1 contenido, no F0)
 
@@ -102,6 +121,14 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 - Pruebas finales: 51 unitarias. `npm run probar:login` con 9 comprobaciones de punta a punta. Escenarios de ataque verificados: cookie copiada revocada, logout forzado con cookie revocada, atacante con varias IPs frente al dueño en su dispositivo, ráfagas concurrentes y IPv6 del mismo /64. Revisión responsive sin desborde en todas las páginas.
 - Los 2 refutados quedan como notas para F1: validar `NEXT_PUBLIC_SITE_URL` (https en producción) antes de usarla en sitemap o correos, y decidir si la navegación pública oculta las páginas que no existen cuando el sitio salga a producción.
 
+## Qué se hizo — F1 (misma fecha, sesiones siguientes)
+
+- Piezas compartidas: `DataTable` (cabecera con color, filas-tarjeta en celular), `Checkbox`, `CrudForm`, `PublicForm` (honeypot + consentimiento + agradecimiento), `FilterTabs`, `StatusForm`, `ActionButton`, `ContactLinks`, `CopyButton`, `ImageField` (Cloudinary firmado, sin SDK), `sendMail` (Nodemailer; si falta SMTP lo registra y sigue).
+- Panel: Configuración, Equipo, Lugares, Reuniones, Prédicas, Eventos, Grupos (+ bandeja de solicitudes), Registros (+ agregar en persona y CSV), Peticiones, Mensajes y el Resumen con pendientes.
+- Sitio: portada real, Soy nuevo, Reuniones, Grupos (+ ficha y «Quiero unirme»), Prédicas (+ aviso «En vivo» por polling), Eventos (+ detalle), Dar, Pedir oración, Contacto, Privacidad, 404; `sitemap.xml`, `robots.txt`, manifest, íconos y Open Graph en todas.
+- Verificado de punta a punta en Chromium: los 4 formularios públicos (errores juntos, lo escrito se conserva, límite 5/10 min por IP y honeypot que no guarda), bandejas del panel (marcar, deshacer, borrar con confirmación, toasts, contadores) y la revisión 360/768/1280 de 30 rutas públicas y del panel sin desborde horizontal.
+- 76 pruebas unitarias (`npm test`), `npm run lint` y `npm run build` limpios.
+
 ## Descubrimientos / notas de sesión
 
 - `ESQUEMA.sql`, `db:migrate`, `db:seed-admin`, los helpers de `db.ts` y el login de punta a punta pasan tanto en **MySQL 8.0.46** como en **MariaDB 10.11.14**, ambos con la zona global en -05:00. En MySQL hay 21 avisos inofensivos de «display width deprecated» por `TINYINT(1)`. El SQL del código evita la sintaxis exclusiva de MySQL 8 (se usa `VALUES()` en `ON DUPLICATE KEY UPDATE`).
@@ -109,6 +136,8 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 - La compresión de Next no comprime `text/event-stream`, así que SSE no queda retenido por gzip.
 - El contenedor de Claude bloquea los dominios de YouTube, por eso la miniatura sale rota en las capturas locales. En Hostinger debería cargar.
 - Next.js inyecta su propio `role="alert"` (route announcer). En los tests hay que buscar el texto del mensaje, no el rol.
+- `getSiteConfig()` y las páginas con `revalidate` guardan caché 5 min también entre builds (`.next/cache`): un cambio hecho directo en phpMyAdmin tarda hasta 5 min en verse. Lo que se guarda desde el panel se ve al instante (`revalidateTag`).
+- Para escribir texto con tildes desde la terminal: `mysql --default-character-set=utf8mb4`. Sin eso, el cliente guarda «jÃ³venes». phpMyAdmin no tiene ese problema.
 
 ## Cómo probar en local (contenedor de Claude)
 
@@ -119,8 +148,8 @@ Para probar en MariaDB sin chocar con MySQL: `apt-get download mariadb-server-co
 ## Qué hacer en la próxima sesión
 
 1. Ejecutar PASO 0 de `CLAUDE.md`.
-2. Si ya hay credenciales de Hostinger: F0.8 (web app → `dev`), `npm run db:migrate` contra la BD nueva, crear el primer admin y correr `/admin/diagnostico` (F0.9). Anotar los resultados aquí.
+2. Si ya hay credenciales de Hostinger: F0.8 (web app → `dev`), `npm run db:migrate` contra la BD nueva (aplica `000` y `001`), crear el primer admin y correr `/admin/diagnostico` (F0.9). Anotar los resultados aquí. Cargar `NEXT_PUBLIC_SITE_URL` con `https://` (sitemap, OG y correos la usan).
 3. Si ya está el dump del PHP: reconciliar `ESQUEMA.sql` §«Tablas heredadas» (MIGRACION-PHP.md §1) **antes** de aplicarlo en Hostinger, y escribir `scripts/importar-php.ts`.
 4. Al cerrar F0: borrar `/api/ping-sse` y `/admin/diagnostico`.
-5. F1: arrancar por `/admin/config` y `/admin/equipo`. Crear el componente de tabla del panel (cabecera con color y filas-tarjeta en celular) con el primer listado real, no antes. En `/admin/config`, validar el WhatsApp con `normalizeEcuadorWhatsapp()` y llamar a `revalidateTag(CONFIG_TAG)` al guardar.
-6. Filtrar `ADMIN_NAV` por rol (el editor no debe ver Configuración ni Usuarios) cuando existan esos módulos.
+5. Con el contenido real cargado: repetir `npm run revisar` a 360/768 sobre `dev.ibriglesia.com` y probar un envío real de cada formulario (llega el correo a `email_avisos`).
+6. Después del cierre de F1, arrancar F2 por `/nosotros` y eventos con inscripción.
