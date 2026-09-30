@@ -42,7 +42,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [ ] `/admin/grupos`: CRUD completo (reemplaza al PHP), toggle público, asignar líder y ubicación; bandeja de `solicitudes_grupo` con estados.
 - [x] `/admin/reuniones`: CRUD horarios. _(+ `/admin/ubicaciones` «Lugares», ver ESTADO.md)_
 - [x] `/admin/predicas`: pegar link de YouTube → se extrae `youtube_id`, se trae título/miniatura vía YouTube Data API (o manual si no hay key).
-- [ ] `/admin/eventos`: CRUD básico (sin inscripción aún), imagen en Cloudinary, `publicado`.
+- [x] `/admin/eventos`: CRUD básico (sin inscripción aún), imagen en Cloudinary, `publicado`.
 - [ ] `/admin/peticiones`: lista, marcar atendida.
 - [ ] Rate limit + honeypot en todos los formularios públicos.
 
