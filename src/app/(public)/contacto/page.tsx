@@ -1,4 +1,3 @@
-import type { Metadata } from 'next';
 import { Card } from '@/components/Card';
 import { Icon } from '@/components/Icon';
 import { MapEmbed } from '@/components/MapEmbed';
@@ -8,15 +7,16 @@ import { getSiteConfig } from '@/lib/config';
 import { socialLinks } from '@/lib/nav';
 import { formatPhoneEc } from '@/lib/whatsapp';
 import { ContactoForm } from './ContactoForm';
+import { pageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: 'Contacto',
   description:
     'Escríbenos por WhatsApp, correo o desde este formulario. También encuentras la dirección y el mapa del auditorio.',
-  openGraph: { title: 'Contacto · Iglesia Bíblica Riobamba' },
-};
+  path: '/contacto',
+});
 
 export default async function ContactoPage() {
   const config = await getSiteConfig();

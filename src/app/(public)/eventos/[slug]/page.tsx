@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/seo';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -36,16 +37,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const event = await getEvento({ slug: (await params).slug, soloPublicado: true });
   if (!event) return { title: 'Evento no encontrado' };
   const description = event.resumen ?? `${eventWhen(event)} · Iglesia Bíblica Riobamba`;
-  return {
+  return pageMetadata({
     title: event.titulo,
     description,
-    openGraph: {
-      type: 'article',
-      title: event.titulo,
-      description,
-      images: event.imagen_url ? [{ url: event.imagen_url, width: 1200, height: 630 }] : undefined,
-    },
-  };
+    path: `/eventos/${event.slug}`,
+    image: event.imagen_url,
+    type: 'article',
+  });
 }
 
 export default async function EventoPage({ params }: Props) {

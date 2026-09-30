@@ -1,4 +1,3 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
 import { buttonClasses } from '@/components/button-styles';
 import { Card } from '@/components/Card';
@@ -11,15 +10,16 @@ import { getSiteConfig } from '@/lib/config';
 import { DAY_OPTIONS } from '@/lib/dates';
 import { grupoFacets, listGruposPublicos } from '@/lib/grupos';
 import type { GrupoPublico } from '@/lib/grupos-public';
+import { pageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: 'Grupos',
   description:
     'Encuentra un grupo pequeño cerca de tu casa y para tu edad en la Iglesia Bíblica Riobamba.',
-  openGraph: { title: 'Grupos · Iglesia Bíblica Riobamba' },
-};
+  path: '/grupos',
+});
 
 type Params = Record<string, string | string[] | undefined>;
 const text = (v: string | string[] | undefined) =>

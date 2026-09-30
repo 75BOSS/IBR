@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/seo';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -25,15 +26,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description =
     group.descripcion?.slice(0, 160) ??
     `${groupWhen(group)}${group.zona ? ` · ${group.zona}` : ''}`;
-  return {
+  return pageMetadata({
     title: group.nombre,
     description,
-    openGraph: {
-      title: group.nombre,
-      description,
-      images: group.imagen_url ? [group.imagen_url] : undefined,
-    },
-  };
+    path: `/grupos/${group.id}`,
+    image: group.imagen_url,
+  });
 }
 
 export default async function GrupoPage({ params }: Props) {

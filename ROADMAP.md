@@ -34,7 +34,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [x] `/oracion`: formulario corto → `peticiones` (es_privada).
 - [x] `/contacto`: formulario → `contactos`, redes, mapa, WhatsApp.
 - [x] Páginas legales: `/privacidad` (política de datos, obligatoria por el consentimiento).
-- [ ] `sitemap.xml`, `robots.txt`, Metadata/OG por página, favicon, manifest básico.
+- [x] `sitemap.xml`, `robots.txt`, Metadata/OG por página, favicon, manifest básico.
 
 ### Admin
 - [ ] `/admin` dashboard: registros nuevos esta semana, solicitudes pendientes, peticiones sin atender, próximos eventos.

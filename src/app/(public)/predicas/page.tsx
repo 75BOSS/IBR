@@ -1,4 +1,3 @@
-import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { buttonClasses } from '@/components/button-styles';
@@ -10,15 +9,16 @@ import { YouTubeEmbed } from '@/components/YouTubeEmbed';
 import { LiveBanner } from '@/components/site/LiveBanner';
 import { formatDateOnly } from '@/lib/dates';
 import { type Predica, listPredicas, predicaFacets } from '@/lib/predicas';
+import { pageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: 'Prédicas',
   description:
     'Prédicas de la Iglesia Bíblica Riobamba: mira las enseñanzas de cada domingo por serie y predicador.',
-  openGraph: { title: 'Prédicas · Iglesia Bíblica Riobamba' },
-};
+  path: '/predicas',
+});
 
 const pick = (value: string | string[] | undefined) =>
   typeof value === 'string' && value.trim() ? value.trim() : null;

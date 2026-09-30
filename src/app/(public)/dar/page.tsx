@@ -1,4 +1,3 @@
-import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Card } from '@/components/Card';
 import { CopyButton } from '@/components/CopyButton';
@@ -6,15 +5,16 @@ import { PageHeader } from '@/components/PageHeader';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { getSiteConfig } from '@/lib/config';
 import { type BankAccount, parseBankAccounts } from '@/lib/config-fields';
+import { pageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: 'Dar',
   description:
     'Diezmos y ofrendas para la Iglesia Bíblica Riobamba: cuentas bancarias y código QR para transferir.',
-  openGraph: { title: 'Dar · Iglesia Bíblica Riobamba' },
-};
+  path: '/dar',
+});
 
 const DEFAULT_INTRO =
   'Dar es una forma de adorar a Dios y de agradecerle por lo que nos da. Tu ofrenda sostiene la obra de la iglesia en Riobamba: la enseñanza de la Biblia, el cuidado de las familias y la ayuda a quienes lo necesitan.';

@@ -1,16 +1,16 @@
-import type { Metadata } from 'next';
 import { Card } from '@/components/Card';
 import { PageHeader } from '@/components/PageHeader';
 import { EventCard } from '@/components/site/EventCard';
 import { listPastEventos, listUpcomingEventos } from '@/lib/eventos';
+import { pageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: 'Eventos',
   description: 'Próximos eventos y actividades de la Iglesia Bíblica Riobamba.',
-  openGraph: { title: 'Eventos · Iglesia Bíblica Riobamba' },
-};
+  path: '/eventos',
+});
 
 export default async function EventosPage() {
   const [upcoming, past] = await Promise.all([listUpcomingEventos(30), listPastEventos(6)]);

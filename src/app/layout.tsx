@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Figtree, Fraunces } from 'next/font/google';
 import { ToastProvider } from '@/components/Toast';
+import { DEFAULT_OG_IMAGE, SITE_NAME } from '@/lib/seo';
 import { siteUrl } from '@/lib/site';
 import './globals.css';
 
@@ -29,7 +30,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'es_EC',
-    siteName: 'Iglesia Bíblica Riobamba',
+    siteName: SITE_NAME,
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

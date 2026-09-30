@@ -1,18 +1,18 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Card } from '@/components/Card';
 import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { OracionForm } from './OracionForm';
+import { pageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: 'Pedir oración',
   description:
     'Cuéntanos por qué quieres que oremos. Los pastores de la Iglesia Bíblica Riobamba leen cada petición.',
-  openGraph: { title: 'Pedir oración · Iglesia Bíblica Riobamba' },
-};
+  path: '/oracion',
+});
 
 export default function OracionPage() {
   return (

@@ -1,4 +1,3 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Card } from '@/components/Card';
 import { Icon } from '@/components/Icon';
@@ -9,15 +8,16 @@ import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { getSiteConfig } from '@/lib/config';
 import { DAY_NAMES, formatTime } from '@/lib/dates';
 import { type Reunion, listReuniones } from '@/lib/reuniones';
+import { pageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: 'Reuniones y horarios',
   description:
     'Horarios de culto y reuniones de la Iglesia Bíblica Riobamba, dirección y cómo llegar.',
-  openGraph: { title: 'Reuniones y horarios · Iglesia Bíblica Riobamba' },
-};
+  path: '/reuniones',
+});
 
 function timeRange(m: Reunion) {
   return `${formatTime(m.hora_inicio)}${m.hora_fin ? ` – ${formatTime(m.hora_fin)}` : ''}`;

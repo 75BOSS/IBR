@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/seo';
 import Image from 'next/image';
 import Link from 'next/link';
 import { buttonClasses } from '@/components/button-styles';
@@ -20,13 +21,15 @@ export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   const config = await getSiteConfig();
-  return {
-    title: { absolute: config.nombre_iglesia ?? CONFIG_DEFAULTS.nombre_iglesia },
+  return pageMetadata({
+    title: config.nombre_iglesia ?? CONFIG_DEFAULTS.nombre_iglesia,
+    absoluteTitle: true,
     description:
       config.home_hero_sub ??
       'Una iglesia en Riobamba donde se enseña la Biblia y se vive en comunidad. Conoce nuestros horarios, grupos y prédicas.',
-    openGraph: config.home_hero_imagen ? { images: [config.home_hero_imagen] } : undefined,
-  };
+    path: '/',
+    image: config.home_hero_imagen,
+  });
 }
 
 function SectionTitle({
