@@ -1,0 +1,174 @@
+import type { ConfigKey } from '@/lib/config';
+
+/**
+ * Qué se edita en /admin/config y cómo. Una sola definición para el formulario y la
+ * validación del servidor (no se aceptan claves fuera de esta lista).
+ */
+export type ConfigFieldKind =
+  | 'text'
+  | 'textarea'
+  | 'url'
+  | 'maps'
+  | 'phone'
+  | 'whatsapp'
+  | 'email'
+  | 'bool'
+  | 'youtubeChannel'
+  | 'image'
+  | 'accounts';
+
+export type ConfigField = {
+  key: ConfigKey;
+  label: string;
+  kind: ConfigFieldKind;
+  hint?: string;
+  placeholder?: string;
+  required?: boolean;
+  max?: number;
+};
+
+export type ConfigSection = { group: string; title: string; intro: string; fields: ConfigField[] };
+
+export const CONFIG_SECTIONS: ConfigSection[] = [
+  {
+    group: 'general',
+    title: 'Datos de la iglesia',
+    intro: 'Aparecen en el encabezado, el pie de página y cuando se comparte el sitio.',
+    fields: [
+      {
+        key: 'nombre_iglesia',
+        label: 'Nombre de la iglesia',
+        kind: 'text',
+        required: true,
+        max: 120,
+      },
+      { key: 'nombre_corto', label: 'Nombre corto', kind: 'text', max: 20, placeholder: 'ej. IBR' },
+      { key: 'vision', label: 'Visión', kind: 'textarea', max: 300 },
+      {
+        key: 'anio_fundacion',
+        label: 'Año de fundación',
+        kind: 'text',
+        max: 4,
+        placeholder: 'ej. 2008',
+      },
+    ],
+  },
+  {
+    group: 'contacto',
+    title: 'Contacto y ubicación',
+    intro: 'Dirección, mapa y medios de contacto que ve un visitante nuevo.',
+    fields: [
+      { key: 'direccion', label: 'Dirección del auditorio', kind: 'textarea', max: 255 },
+      {
+        key: 'referencia_llegada',
+        label: 'Cómo llegar (referencia)',
+        kind: 'textarea',
+        max: 255,
+        hint: 'Ej. «Frente al parque Guayaquil, portón verde».',
+      },
+      {
+        key: 'maps_embed_url',
+        label: 'Mapa de Google Maps',
+        kind: 'maps',
+        hint: 'En Google Maps: Compartir → Insertar un mapa → Copiar HTML, y pégalo aquí completo.',
+      },
+      { key: 'telefono', label: 'Teléfono', kind: 'phone', placeholder: 'ej. 032123456' },
+      {
+        key: 'whatsapp',
+        label: 'WhatsApp de la iglesia',
+        kind: 'whatsapp',
+        placeholder: 'ej. 0991234567',
+        hint: 'Lo usan todos los botones de WhatsApp del sitio.',
+      },
+      { key: 'whatsapp_canal_url', label: 'Enlace del canal de WhatsApp', kind: 'url' },
+      {
+        key: 'email',
+        label: 'Correo público',
+        kind: 'email',
+        placeholder: 'ej. hola@ibriglesia.com',
+      },
+      {
+        key: 'email_avisos',
+        label: 'Correo que recibe los avisos',
+        kind: 'email',
+        hint: 'Llegan aquí los registros de «Soy nuevo», las peticiones de oración y los mensajes de contacto.',
+      },
+    ],
+  },
+  {
+    group: 'redes',
+    title: 'Redes sociales',
+    intro: 'Se muestran en el pie de página. Deja vacío lo que no uses.',
+    fields: [
+      { key: 'instagram', label: 'Instagram', kind: 'url' },
+      { key: 'youtube', label: 'YouTube', kind: 'url' },
+      { key: 'tiktok', label: 'TikTok', kind: 'url' },
+      { key: 'facebook', label: 'Facebook', kind: 'url' },
+    ],
+  },
+  {
+    group: 'en_vivo',
+    title: 'Transmisión en vivo',
+    intro: 'Controla el botón «En vivo» de Prédicas.',
+    fields: [
+      {
+        key: 'youtube_channel_id',
+        label: 'ID del canal de YouTube',
+        kind: 'youtubeChannel',
+        placeholder: 'ej. UCxxxxxxxxxxxxxxxxxxxxxx',
+        hint: 'En YouTube: Configuración → Configuración avanzada → ID del canal (empieza con UC).',
+      },
+      {
+        key: 'en_vivo_activo',
+        label: 'Mostrar el botón «En vivo» ahora (además del horario de culto)',
+        kind: 'bool',
+      },
+    ],
+  },
+  {
+    group: 'dar',
+    title: 'Dar (diezmos y ofrendas)',
+    intro: 'Lo que aparece en la página «Dar».',
+    fields: [
+      { key: 'dar_intro', label: 'Texto pastoral', kind: 'textarea', max: 1000 },
+      { key: 'dar_cuentas', label: 'Cuentas bancarias', kind: 'accounts' },
+      { key: 'dar_qr_url', label: 'Código QR para transferir', kind: 'image' },
+    ],
+  },
+  {
+    group: 'home',
+    title: 'Portada del inicio',
+    intro: 'Lo primero que ve quien entra al sitio.',
+    fields: [
+      { key: 'home_hero_titulo', label: 'Título grande', kind: 'text', required: true, max: 80 },
+      { key: 'home_hero_sub', label: 'Texto de bienvenida', kind: 'textarea', max: 300 },
+      {
+        key: 'home_hero_imagen',
+        label: 'Foto de portada',
+        kind: 'image',
+        hint: 'Una foto real de la iglesia, horizontal, de al menos 1600 px de ancho.',
+      },
+    ],
+  },
+];
+
+/** Cuentas bancarias de /dar (config.dar_cuentas, JSON). */
+export type BankAccount = {
+  banco: string;
+  tipo: string;
+  numero: string;
+  titular: string;
+  ruc_ci: string;
+};
+export const MAX_BANK_ACCOUNTS = 4;
+
+export function parseBankAccounts(value: string | null | undefined): BankAccount[] {
+  try {
+    const parsed: unknown = JSON.parse(value ?? '[]');
+    return Array.isArray(parsed)
+      ? (parsed as BankAccount[]).filter((a) => a && a.banco && a.numero)
+      : [];
+  } catch {
+    return []; // JSON dañado a mano en phpMyAdmin: se muestra sin cuentas en vez de romper la página
+  }
+}

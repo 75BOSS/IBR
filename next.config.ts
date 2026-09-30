@@ -14,6 +14,10 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  experimental: {
+    // Fotos de hasta 8 MB desde el panel (Cloudinary); el resto de formularios es texto.
+    serverActions: { bodySizeLimit: '10mb' },
+  },
   images: {
     // Cargador propio: Cloudinary redimensiona sus fotos y YouTube sirve sus miniaturas; el
     // servidor de Hostinger no optimiza imágenes (ahorra CPU y no queda un proxy abierto).

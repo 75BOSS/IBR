@@ -39,7 +39,8 @@ export type SiteConfig = Record<ConfigKey, string | null>;
 /** Tag para revalidar desde el admin al guardar: revalidateTag(CONFIG_TAG). */
 export const CONFIG_TAG = 'config';
 
-async function loadSiteConfigFromDb(): Promise<SiteConfig> {
+/** Lectura directa, sin caché (panel de configuración). */
+export async function loadSiteConfigFromDb(): Promise<SiteConfig> {
   const config: SiteConfig = { ...CONFIG_DEFAULTS };
   const rows = await query<{ clave: string; valor: string | null }>(
     'SELECT clave, valor FROM config',

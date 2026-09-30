@@ -23,7 +23,7 @@ export const ADMIN_NAV: { href: string; label: string; icon: IconName; ready: bo
   { href: '/admin/eventos', label: 'Eventos', icon: 'calendar', ready: false },
   { href: '/admin/peticiones', label: 'Peticiones', icon: 'handHeart', ready: false },
   { href: '/admin/equipo', label: 'Equipo', icon: 'idCard', ready: false },
-  { href: '/admin/config', label: 'Configuración', icon: 'settings', ready: false },
+  { href: '/admin/config', label: 'Configuración', icon: 'settings', ready: true },
 ];
 
 /** ¿El enlace corresponde a la ruta actual? (la raíz solo coincide exacto). */
