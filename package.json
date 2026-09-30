@@ -10,7 +10,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "db:migrate": "tsx scripts/migrate.ts",
-    "db:seed-admin": "tsx scripts/seed-admin.ts"
+    "db:seed-admin": "tsx scripts/seed-admin.ts",
+    "revisar": "tsx scripts/revisar-responsive.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -32,6 +33,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.26",
     "eslint-config-prettier": "^10.1.8",
+    "playwright-core": "1.56.1",
     "prettier": "^3.9.9",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4",
