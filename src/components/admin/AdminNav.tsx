@@ -79,6 +79,13 @@ function UserBlock({ user }: AdminNavProps) {
       </div>
       <div className="flex flex-wrap gap-2">
         <Link
+          href="/admin/cuenta"
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2 text-sm text-sidebar-muted hover:text-sidebar-ink hover:underline"
+        >
+          <Icon name="idCard" className="size-4" />
+          Mi cuenta
+        </Link>
+        <Link
           href="/"
           className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2 text-sm text-sidebar-muted hover:text-sidebar-ink hover:underline"
         >

@@ -62,7 +62,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [ ] Suscripción a agenda semanal (`suscriptores`) + envío manual desde admin.
 - [ ] Aviso al líder por WhatsApp Cloud API cuando entra una solicitud a su grupo (patrón webhook ya usado en Pixelia).
 - [ ] Noticias / categorías en eventos (Noticias · Oración · Comunidad · Música · Capacitación).
-- [ ] Roles en admin: `admin` y `editor` (editor no toca config ni usuarios).
+- [x] Roles en admin: `admin` y `editor` (editor no toca config ni usuarios).
 
 ## F3 — Plataforma (según demanda)
 

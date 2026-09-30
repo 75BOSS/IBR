@@ -13,6 +13,7 @@ import { Button } from '@/components/Button';
 import type { ButtonVariant } from '@/components/button-styles';
 import { FormAlert } from '@/components/FormAlert';
 import { Icon, type IconName } from '@/components/Icon';
+import { SecretReveal } from '@/components/SecretReveal';
 import { useToast } from '@/components/Toast';
 import { type FormState, initialFormState } from '@/lib/form-state';
 
@@ -120,8 +121,11 @@ function ConfirmForm({
       const result = await action(prev, formData);
       const visible = mounted.current && Boolean(dialog.current?.open);
       if (result.status === 'success') {
-        if (visible) dialog.current?.close();
-        if (result.message) toast({ tone: 'success', message: result.message });
+        // Con un dato para mostrar una sola vez (secret), el diálogo queda abierto con él.
+        if (!result.secret) {
+          if (visible) dialog.current?.close();
+          if (result.message) toast({ tone: 'success', message: result.message });
+        }
       } else if (result.status === 'error' && result.message && !visible) {
         // El diálogo se cerró mientras procesaba (ej. doble Escape): el error no se pierde.
         toast({ tone: 'error', message: result.message });
@@ -139,6 +143,18 @@ function ConfirmForm({
     element.addEventListener('cancel', blockCancel);
     return () => element.removeEventListener('cancel', blockCancel);
   }, [dialog, pending]);
+
+  if (state.status === 'success' && state.secret) {
+    return (
+      <div className="p-[clamp(1.25rem,4vw,1.75rem)]">
+        <SecretReveal message={state.message} secret={state.secret}>
+          <Button className="self-end" onClick={() => dialog.current?.close()} autoFocus>
+            Listo
+          </Button>
+        </SecretReveal>
+      </div>
+    );
+  }
 
   return (
     <form action={formAction} className="flex flex-col gap-5 p-[clamp(1.25rem,4vw,1.75rem)]">

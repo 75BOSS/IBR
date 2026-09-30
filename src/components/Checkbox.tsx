@@ -41,9 +41,9 @@ export function Checkbox({
         </p>
       )}
       {hint && (
-        <p id={`${fieldId}-ayuda`} className="pl-8 text-sm text-ink-soft">
+        <div id={`${fieldId}-ayuda`} className="pl-8 text-sm text-ink-soft">
           {hint}
-        </p>
+        </div>
       )}
     </div>
   );

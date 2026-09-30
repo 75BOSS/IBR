@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { compare, hash } from 'bcryptjs';
 
 /** Costo bcrypt fijado en CLAUDE.md. */
@@ -87,4 +88,9 @@ export function passwordProblem(plain: string): string | null {
     return `La contraseña es demasiado larga (máximo ${MAX_BYTES} bytes). Usa una más corta.`;
   }
   return null;
+}
+
+/** Contraseña aleatoria de 24 caracteres (144 bits) para cuentas nuevas o restablecidas. */
+export function generatePassword(): string {
+  return randomBytes(18).toString('base64url');
 }

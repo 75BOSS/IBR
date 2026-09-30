@@ -8,10 +8,9 @@
  * --rol=admin|editor (por defecto admin). --generar crea una contraseña segura y la muestra
  * UNA sola vez: entrégala por un canal privado y pide que la cambien.
  */
-import { randomBytes } from 'node:crypto';
 import { parseArgs } from 'node:util';
 import type { ResultSetHeader } from 'mysql2';
-import { hashPassword, passwordProblem } from '@/lib/password';
+import { generatePassword, hashPassword, passwordProblem } from '@/lib/password';
 import { emailSchema } from '@/lib/validators/auth';
 import { describeTarget, fail, openScriptConnection } from './lib/script-db';
 
@@ -35,7 +34,7 @@ async function main() {
     fail('El rol debe ser admin o editor. Ej. --rol=editor');
   }
 
-  const generated = values.generar ? randomBytes(18).toString('base64url') : undefined;
+  const generated = values.generar ? generatePassword() : undefined;
   const password = generated ?? process.env.ADMIN_PASSWORD;
   if (!password) {
     fail('Falta la contraseña: usa --generar o define la variable ADMIN_PASSWORD al ejecutar.');

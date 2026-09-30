@@ -41,6 +41,7 @@ export const ADMIN_NAV: {
   { href: '/admin/peticiones', label: 'Peticiones', icon: 'handHeart', ready: true },
   { href: '/admin/mensajes', label: 'Mensajes', icon: 'mail', ready: true },
   { href: '/admin/equipo', label: 'Equipo', icon: 'idCard', ready: true },
+  { href: '/admin/usuarios', label: 'Usuarios', icon: 'lock', ready: true, adminOnly: true },
   { href: '/admin/config', label: 'Configuración', icon: 'settings', ready: true, adminOnly: true },
 ];
 

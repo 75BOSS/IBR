@@ -9,6 +9,11 @@ export type FormState<Field extends string = string> = {
   message?: string;
   fieldErrors?: Partial<Record<Field, string[]>>;
   values?: Partial<Record<Field, string>>;
+  /**
+   * Dato que se muestra una sola vez y no se guarda en ningún lado visible (ej. una contraseña
+   * generada). CrudForm y ConfirmDialog lo muestran con botón de copiar en vez de cerrar.
+   */
+  secret?: { label: string; value: string; hint?: string };
 };
 
 export const initialFormState: FormState = { status: 'idle' };

@@ -118,9 +118,9 @@ export function Field(props: FieldProps) {
         </p>
       )}
       {hint && (
-        <p id={hintId} className="text-sm text-ink-soft">
+        <div id={hintId} className="text-sm text-ink-soft">
           {hint}
-        </p>
+        </div>
       )}
     </div>
   );

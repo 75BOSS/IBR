@@ -18,7 +18,8 @@ export type RateLimitForm =
   | 'unirme_grupo'
   | 'login_ip'
   | 'login_cuenta'
-  | 'login_dispositivo';
+  | 'login_dispositivo'
+  | 'cambio_clave';
 
 export type RateLimitSubject = { ip: string } | { account: string };
 export type RateLimitOptions = { max?: number; windowMinutes?: number };

@@ -4,6 +4,7 @@ import { type ReactNode, useActionState } from 'react';
 import { Button, ButtonLink } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { FormAlert } from '@/components/FormAlert';
+import { SecretReveal } from '@/components/SecretReveal';
 import { type FormState, initialFormState } from '@/lib/form-state';
 
 export type CrudFormHelpers = {
@@ -37,6 +38,17 @@ export function CrudForm({
     e: state.fieldErrors ?? {},
     state,
   };
+  if (state.status === 'success' && state.secret) {
+    return (
+      <Card emphasis="featured" className="max-w-3xl">
+        <SecretReveal message={state.message} secret={state.secret}>
+          <ButtonLink href={cancelHref} className="self-start">
+            Listo, volver a la lista
+          </ButtonLink>
+        </SecretReveal>
+      </Card>
+    );
+  }
   return (
     <Card emphasis="featured" className="max-w-3xl">
       <form action={formAction} className="flex flex-col gap-5" noValidate>
