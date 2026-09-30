@@ -18,6 +18,7 @@ export type EnvName =
   | 'WHATSAPP_TOKEN'
   | 'WHATSAPP_PHONE_NUMBER_ID'
   | 'WHATSAPP_TEMPLATE_SOLICITUD'
+  | 'WHATSAPP_TEMPLATE_CODIGO'
   | 'WHATSAPP_API_URL';
 
 export class MissingEnvError extends Error {

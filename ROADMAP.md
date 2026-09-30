@@ -66,7 +66,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 
 ## F3 — Plataforma (según demanda)
 
-- [ ] Cuenta de miembro (login con celular + código por WhatsApp): mis grupos, mis inscripciones.
+- [x] Cuenta de miembro (login con celular + código por WhatsApp): mis grupos, mis inscripciones.
 - [x] Check-in por QR en eventos con tablero para ujieres — evaluar Supabase Realtime vs polling según prueba SSE de F0.
 - [ ] Formación: cursos por módulos con inscripción (modelo Alpha / bautismo / escuela de líderes).
 - [ ] PWA instalable + notificaciones push (OneSignal o Web Push).

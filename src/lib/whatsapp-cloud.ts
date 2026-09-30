@@ -1,5 +1,5 @@
 import 'server-only';
-import { readEnv } from '@/lib/env';
+import { type EnvName, readEnv } from '@/lib/env';
 import { normalizeEcuadorWhatsapp } from '@/lib/whatsapp';
 
 const DEFAULT_API = 'https://graph.facebook.com/v21.0';
@@ -7,48 +7,75 @@ const DEFAULT_API = 'https://graph.facebook.com/v21.0';
 export type WhatsAppResult =
   { sent: true } | { sent: false; reason: 'sin-config' | 'numero-invalido' | 'error' };
 
-/** Cuerpo de la API para una plantilla con parámetros de texto en el cuerpo. */
-export function templatePayload(to: string, template: string, params: string[]) {
+/** Plantillas del sitio: cada una se nombra con su variable de entorno (ver .env.example). */
+export type WhatsAppTemplate = Extract<
+  EnvName,
+  'WHATSAPP_TEMPLATE_SOLICITUD' | 'WHATSAPP_TEMPLATE_CODIGO'
+>;
+
+/**
+ * Cuerpo de la API. `buttonCode`: las plantillas de autenticación de Meta llevan el código
+ * también en su botón «Copiar código».
+ */
+export function templatePayload(
+  to: string,
+  template: string,
+  params: string[],
+  buttonCode?: string,
+) {
+  const components: object[] = [
+    {
+      type: 'body',
+      parameters: params.map((text) => ({ type: 'text', text: text.slice(0, 1000) })),
+    },
+  ];
+  if (buttonCode) {
+    components.push({
+      type: 'button',
+      sub_type: 'url',
+      index: '0',
+      parameters: [{ type: 'text', text: buttonCode }],
+    });
+  }
   return {
     messaging_product: 'whatsapp',
     to,
     type: 'template',
-    template: {
-      name: template,
-      language: { code: 'es' },
-      components: [
-        {
-          type: 'body',
-          parameters: params.map((text) => ({ type: 'text', text: text.slice(0, 1000) })),
-        },
-      ],
-    },
+    template: { name: template, language: { code: 'es' }, components },
   };
 }
 
+export function isWhatsAppConfigured(template: WhatsAppTemplate): boolean {
+  return Boolean(
+    readEnv('WHATSAPP_TOKEN') && readEnv('WHATSAPP_PHONE_NUMBER_ID') && readEnv(template),
+  );
+}
+
 /**
- * Envía una plantilla aprobada por WhatsApp Cloud API. Igual que el correo, es un aviso extra:
- * si falta configurar o falla, se registra en el log y lo que la persona envió ya está guardado.
+ * Envía una plantilla aprobada por WhatsApp Cloud API. Si falta configurar o falla, se
+ * registra en el log y devuelve el motivo; lo que la persona envió ya está guardado.
  * Se espera como máximo 8 s para no dejar colgado el formulario.
  */
-export async function sendWhatsAppTemplate(
-  to: string | null | undefined,
-  params: string[],
-): Promise<WhatsAppResult> {
+export async function sendWhatsAppTemplate(message: {
+  to: string | null | undefined;
+  template: WhatsAppTemplate;
+  params: string[];
+  buttonCode?: string;
+}): Promise<WhatsAppResult> {
   const token = readEnv('WHATSAPP_TOKEN');
   const phoneId = readEnv('WHATSAPP_PHONE_NUMBER_ID');
-  const template = readEnv('WHATSAPP_TEMPLATE_SOLICITUD');
+  const template = readEnv(message.template);
   if (!token || !phoneId || !template) return { sent: false, reason: 'sin-config' };
-  const number = normalizeEcuadorWhatsapp(to);
+  const number = normalizeEcuadorWhatsapp(message.to);
   if (!number) {
-    console.warn('[whatsapp] el número del destinatario no es de Ecuador o está vacío:', to);
+    console.warn('[whatsapp] el número del destinatario no es de Ecuador o está vacío.');
     return { sent: false, reason: 'numero-invalido' };
   }
   try {
     const res = await fetch(`${readEnv('WHATSAPP_API_URL') ?? DEFAULT_API}/${phoneId}/messages`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(templatePayload(number, template, params)),
+      body: JSON.stringify(templatePayload(number, template, message.params, message.buttonCode)),
       signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) {

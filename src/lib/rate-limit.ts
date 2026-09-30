@@ -24,7 +24,10 @@ export type RateLimitForm =
   | 'inscripcion_cancelar'
   | 'servir'
   | 'agenda'
-  | 'agenda_baja';
+  | 'agenda_baja'
+  | 'codigo_ip'
+  | 'codigo_telefono'
+  | 'codigo_verificar';
 
 export type RateLimitSubject = { ip: string } | { account: string };
 export type RateLimitOptions = { max?: number; windowMinutes?: number };

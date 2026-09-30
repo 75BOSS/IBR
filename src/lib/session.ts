@@ -18,11 +18,20 @@ export type TrustedDevice = {
   emails: string[];
 };
 
+/** Sesión de un miembro en /mi-cuenta (entró con su WhatsApp y un código). */
+export type MemberSession = {
+  /** WhatsApp verificado, en formato local (0991234567), igual que en las tablas. */
+  telefono: string;
+};
+
 export const SESSION_COOKIE = 'ibr_admin';
 /** 12 horas: un voluntario publica en una sentada; en compus compartidas la sesión caduca sola. */
 export const SESSION_TTL_SECONDS = 12 * 60 * 60;
 export const DEVICE_COOKIE = 'ibr_dispositivo';
 export const DEVICE_TTL_SECONDS = 180 * 24 * 60 * 60;
+export const MEMBER_COOKIE = 'ibr_miembro';
+/** 30 días: la persona consulta de vez en cuando desde su propio celular. */
+export const MEMBER_TTL_SECONDS = 30 * 24 * 60 * 60;
 
 function secret(): string {
   const password = requireEnv('SESSION_SECRET');
@@ -59,4 +68,8 @@ export function sessionOptions(): SessionOptions {
 
 export function deviceOptions(): SessionOptions {
   return cookieOptions(DEVICE_COOKIE, DEVICE_TTL_SECONDS);
+}
+
+export function memberOptions(): SessionOptions {
+  return cookieOptions(MEMBER_COOKIE, MEMBER_TTL_SECONDS);
 }

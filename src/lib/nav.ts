@@ -20,6 +20,7 @@ export const FOOTER_EXTRA_NAV = [
   { href: '/agenda', label: 'Agenda semanal' },
   { href: '/oracion', label: 'Pedir oración' },
   { href: '/contacto', label: 'Contacto' },
+  { href: '/mi-cuenta', label: 'Mi cuenta' },
   { href: '/privacidad', label: 'Privacidad' },
 ] as const;
 

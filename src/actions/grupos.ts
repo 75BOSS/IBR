@@ -192,12 +192,11 @@ export async function joinGroup(_prev: FormState, formData: FormData): Promise<F
   });
   // Plantilla «nueva_solicitud_grupo»: {{1}} líder, {{2}} persona, {{3}} grupo, {{4}} su WhatsApp.
   if (group.lider_telefono) {
-    await sendWhatsAppTemplate(group.lider_telefono, [
-      group.lider_nombre ?? 'líder',
-      d.nombre,
-      group.nombre,
-      formatPhoneEc(d.telefono),
-    ]);
+    await sendWhatsAppTemplate({
+      to: group.lider_telefono,
+      template: 'WHATSAPP_TEMPLATE_SOLICITUD',
+      params: [group.lider_nombre ?? 'líder', d.nombre, group.nombre, formatPhoneEc(d.telefono)],
+    });
   }
   revalidatePath('/admin/grupos/solicitudes');
   return { status: 'success', message: JOIN_OK };

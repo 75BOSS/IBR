@@ -164,7 +164,9 @@ export default async function PrivacidadPage() {
           <Section id="cookies" title="Cookies y contenido de otros sitios">
             <p>
               Este sitio no usa cookies de publicidad ni de seguimiento. Solo el panel del equipo
-              usa una cookie para mantener la sesión abierta.
+              usa una cookie para mantener la sesión abierta, y «Mi cuenta» otra para recordar que
+              ya confirmaste tu número con el código que te enviamos por WhatsApp (el código vence
+              en 10 minutos y no lo guardamos).
             </p>
             <p>
               Los videos de YouTube se cargan únicamente cuando pulsas «reproducir» y el mapa lo
