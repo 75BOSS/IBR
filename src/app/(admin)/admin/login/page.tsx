@@ -7,9 +7,7 @@ import { LoginForm } from './LoginForm';
 
 export const metadata: Metadata = { title: 'Iniciar sesión' };
 
-const notices: Record<string, string> = {
-  salida: 'Cerraste sesión. ¡Hasta pronto!',
-};
+const notices = new Map([['salida', 'Cerraste sesión en todos tus dispositivos. ¡Hasta pronto!']]);
 
 export default async function LoginPage({
   searchParams,
@@ -19,7 +17,7 @@ export default async function LoginPage({
   const { next, aviso } = await searchParams;
   if (await getCurrentAdmin()) redirect(safeAdminPath(next));
 
-  const notice = aviso ? notices[aviso] : undefined;
+  const notice = aviso ? notices.get(aviso) : undefined;
   const target = next ? safeAdminPath(next) : undefined;
 
   return (

@@ -1,5 +1,6 @@
 /**
- * Crea (o reactiva y cambia la contraseña de) un usuario del panel.
+ * Crea (o reactiva y cambia la contraseña de) un usuario del panel. Si ya existía, cierra
+ * todas sus sesiones abiertas (sube sesion_version).
  *
  *   npm run db:seed-admin -- --email=pastor@ibriglesia.com --nombre="Nombre Apellido" --generar
  *   ADMIN_PASSWORD='frase larga y secreta' npm run db:seed-admin -- --email=... --nombre=...
@@ -49,11 +50,13 @@ async function main() {
       `INSERT INTO usuarios_admin (nombre, email, password_hash, rol, activo)
        VALUES (?, ?, ?, ?, 1)
        ON DUPLICATE KEY UPDATE nombre = VALUES(nombre), password_hash = VALUES(password_hash),
-                               rol = VALUES(rol), activo = 1`,
+                               rol = VALUES(rol), activo = 1,
+                               sesion_version = sesion_version + 1`,
       [nombre, email.data, passwordHash, values.rol],
     );
     // affectedRows: 1 = creado, 2 = ya existía y se actualizó.
-    const action = result.affectedRows === 1 ? 'creado' : 'actualizado y reactivado';
+    const action =
+      result.affectedRows === 1 ? 'creado' : 'actualizado y reactivado (se cerraron sus sesiones)';
     console.log(
       `✓ Usuario ${email.data} (${values.rol}) ${action} en ${describeTarget(connection)}.`,
     );

@@ -9,6 +9,9 @@ import { type AdminSession, sessionOptions } from '@/lib/session';
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   if (pathname === '/admin/login') return NextResponse.next();
+  // Server actions: un 307 aquí rompe la respuesta de la acción (el cliente espera RSC).
+  // Su autorización es requireAdmin(), obligatoria en la primera línea de cada acción.
+  if (request.headers.has('next-action')) return NextResponse.next();
 
   const response = NextResponse.next();
   const session = await getIronSession<AdminSession>(

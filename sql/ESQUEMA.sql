@@ -1,7 +1,10 @@
 -- ============================================================================
 -- ESQUEMA.sql — Web IBR (Iglesia Bíblica Riobamba)
 -- MySQL 8 / MariaDB 10.6+ (Hostinger). utf8mb4. Fechas en UTC.
--- Versión: 0.1 (2026-09-03) — F0/F1. Las tablas F2/F3 van en sql/migraciones/.
+-- Versión: 0.2 (2026-09-30) — F0/F1. Las tablas F2/F3 van en sql/migraciones/.
+--   0.2: usuarios_admin.sesion_version (revocar sesiones). Se editó la base porque
+--        aún no se había aplicado en ninguna BD real; desde el primer deploy, todo
+--        cambio va en sql/migraciones/.
 --
 -- IMPORTANTE: la sección "TABLAS HEREDADAS" es una PROPUESTA de estructura
 -- destino. Antes de aplicarla hay que reconciliarla con el dump real del
@@ -23,6 +26,7 @@ CREATE TABLE usuarios_admin (
   password_hash VARCHAR(100)  NOT NULL,                 -- bcryptjs cost 12
   rol           ENUM('admin','editor') NOT NULL DEFAULT 'editor',
   activo        TINYINT(1)    NOT NULL DEFAULT 1,
+  sesion_version INT UNSIGNED NOT NULL DEFAULT 0,         -- +1 al cerrar sesión o cambiar contraseña: invalida todas las cookies
   ultimo_login  DATETIME      NULL,
   creado_en     DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
   actualizado_en DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

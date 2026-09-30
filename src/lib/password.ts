@@ -15,8 +15,29 @@ export function hashPassword(plain: string): Promise<string> {
   return hash(plain, BCRYPT_COST);
 }
 
-export function verifyPassword(plain: string, passwordHash: string | null): Promise<boolean> {
-  return compare(plain, passwordHash ?? DUMMY_HASH);
+/**
+ * bcrypt cuesta ~0,4 s de CPU. Se limita cuántas comparaciones corren a la vez para que una
+ * ráfaga de intentos no deje sin respuesta al único proceso del sitio.
+ */
+const MAX_CONCURRENT_COMPARES = 3;
+let runningCompares = 0;
+
+export class PasswordCheckBusyError extends Error {
+  constructor() {
+    super('Hay demasiadas verificaciones de contraseña en curso.');
+    this.name = 'PasswordCheckBusyError';
+  }
+}
+
+/** Compara contra el hash (o contra el de relleno si el correo no existe). */
+export async function verifyPassword(plain: string, passwordHash: string | null): Promise<boolean> {
+  if (runningCompares >= MAX_CONCURRENT_COMPARES) throw new PasswordCheckBusyError();
+  runningCompares += 1;
+  try {
+    return await compare(plain, passwordHash ?? DUMMY_HASH);
+  } finally {
+    runningCompares -= 1;
+  }
 }
 
 /** null si la contraseña sirve; si no, qué falta y cómo arreglarlo. */

@@ -3,13 +3,18 @@
  * Si llegan de a uno, SSE funciona; si llegan todos juntos al final, el proxy almacena la
  * respuesta y lo «en vivo» será polling. Borrar al cerrar F0 (ver ESTADO.md).
  */
+import { getCurrentAdmin } from '@/lib/auth';
+
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 const TOTAL_EVENTS = 10;
 const INTERVAL_MS = 2000;
 
-export function GET(request: Request) {
+export async function GET(request: Request) {
+  // Solo para el panel: evita que cualquiera abra conexiones de 20 s.
+  if (!(await getCurrentAdmin())) return new Response(null, { status: 401 });
+
   const encoder = new TextEncoder();
   let timer: ReturnType<typeof setInterval> | undefined;
 
