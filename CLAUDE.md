@@ -103,7 +103,7 @@ sql/
 - **Estilos de botón** en Server Components: `buttonClasses()` de `@/components/button-styles` (no de `Button.tsx`, que es cliente).
 - **Fechas**: `DATETIME` llega como `Date` (UTC) → `formatDateTime()`; `DATE` llega como `'YYYY-MM-DD'` → `formatDateOnly()`; hoy en Ecuador → `todayInChurchTz()` (`src/lib/dates.ts`).
 - **WhatsApp**: guardar y mostrar con `normalizeEcuadorWhatsapp()` / `whatsappHref()` (`src/lib/whatsapp.ts`).
-- **Login y límites**: `reserveAttempt()` reserva el intento antes del trabajo caro y `release()` lo anula si no debe contar. La IP sale de `getClientIp()` (cuenta `TRUSTED_PROXY_HOPS` desde la derecha de X-Forwarded-For). Cerrar sesión o cambiar contraseña sube `usuarios_admin.sesion_version` y corta todas las sesiones.
+- **Login y límites**: `reserveAttempt()` reserva el intento antes del trabajo caro (con un candado `GET_LOCK` por clave: el tope es exacto) y `release()` lo anula si no debe contar. La IP sale de `getClientIp()` (cuenta `TRUSTED_PROXY_HOPS` desde la derecha de X-Forwarded-For; IPv6 se agrupa por /64). Cerrar sesión o cambiar contraseña sube `usuarios_admin.sesion_version` y corta todas las sesiones.
 - **Middleware**: deja pasar las server actions (`next-action`); por eso `requireAdmin()` es obligatorio dentro de cada acción del panel.
 - **Scripts de terminal** importan `@/lib/db-config` y `@/lib/env`, nunca `@/lib/db` (es `server-only`).
 
@@ -139,6 +139,7 @@ npm run format           # Prettier
 npm run db:migrate       # aplica sql/ESQUEMA.sql y sql/migraciones pendientes (-- --estado | -- --marcar-base)
 npm run db:seed-admin -- --email=x@y.com --nombre="Nombre" [--rol=editor] [--generar]
 npm run revisar -- --base=http://localhost:3000 --rutas=/,/grupos   # capturas 360/768/1280 + desborde horizontal
+REVISAR_EMAIL=… REVISAR_PASSWORD=… npm run probar:login -- --base=http://localhost:3000   # acceso al panel de punta a punta
 ```
 
 ## Configuración de la web app en Hostinger
