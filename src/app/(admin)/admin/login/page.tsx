@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+import { BrandMark } from '@/components/BrandMark';
 import { getCurrentAdmin } from '@/lib/auth';
 import { safeAdminPath } from '@/lib/validators/auth';
 import { LoginForm } from './LoginForm';
@@ -25,9 +26,7 @@ export default async function LoginPage({
     <main className="grid min-h-dvh grid-rows-[auto_1fr] lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:grid-rows-1">
       <section className="flex flex-col justify-between gap-6 bg-sidebar px-[clamp(1.25rem,5vw,4rem)] py-[clamp(1.25rem,5vw,4rem)] text-sidebar-ink">
         <div className="flex items-center gap-3">
-          <span className="grid size-10 place-items-center rounded-xl bg-accent font-display text-lg font-bold text-surface md:size-12 md:text-xl">
-            IBR
-          </span>
+          <BrandMark size="lg" />
           <span className="text-sm leading-tight font-semibold tracking-wide text-sidebar-muted uppercase">
             Iglesia Bíblica
             <br />

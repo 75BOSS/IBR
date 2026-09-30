@@ -1,0 +1,52 @@
+import { Icon } from '@/components/Icon';
+import { whatsappHref } from '@/lib/whatsapp';
+
+type Props = {
+  /** Número de config.whatsapp (5939XXXXXXXX o 09XXXXXXXX). Sin número no se muestra nada. */
+  number: string | null | undefined;
+  /** Mensaje prellenado, ej. "Hola, quiero saber más de los grupos". */
+  message?: string;
+  label?: string;
+  /** inline: botón en el flujo · floating: botón fijo abajo a la derecha. */
+  variant?: 'inline' | 'floating';
+  className?: string;
+};
+
+/** Botón de WhatsApp único del proyecto (abre el chat en una pestaña nueva). */
+export function WhatsAppButton({
+  number,
+  message,
+  label = 'Escríbenos por WhatsApp',
+  variant = 'inline',
+  className = '',
+}: Props) {
+  const href = whatsappHref(number, message);
+  if (!href) return null;
+
+  if (variant === 'floating') {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${label} (se abre en una pestaña nueva)`}
+        className={`fixed right-[clamp(0.75rem,3vw,1.5rem)] bottom-[clamp(0.75rem,3vw,1.5rem)] z-30 grid size-13 place-items-center rounded-full bg-whatsapp text-surface shadow-pop transition-transform hover:scale-105 md:size-15 ${className}`}
+      >
+        <Icon name="whatsapp" className="size-7 md:size-8" />
+      </a>
+    );
+  }
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-whatsapp px-4 text-[0.95rem] font-semibold text-surface transition-colors hover:brightness-95 ${className}`}
+    >
+      <Icon name="whatsapp" className="size-5" />
+      <span>{label}</span>
+      <span className="sr-only"> (se abre en una pestaña nueva)</span>
+    </a>
+  );
+}
