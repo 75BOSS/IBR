@@ -14,13 +14,28 @@ export function HoneypotField() {
   );
 }
 
-/** Consentimiento obligatorio para guardar datos personales (se guarda con fecha e IP). */
-export function ConsentField({ error }: { error?: string | string[] }) {
+/**
+ * Consentimiento para guardar datos personales (se guarda con fecha e IP). Es obligatorio salvo
+ * en formularios que se pueden enviar sin datos personales (ej. petición anónima).
+ */
+export function ConsentField({
+  error,
+  required = true,
+  hint,
+  defaultChecked,
+}: {
+  error?: string | string[];
+  required?: boolean;
+  hint?: string;
+  defaultChecked?: boolean;
+}) {
   return (
     <Checkbox
       name="acepta_datos"
-      required
+      defaultChecked={defaultChecked}
+      required={required}
       error={error}
+      hint={hint}
       label={
         <>
           Acepto que la iglesia guarde estos datos para contactarme. Puedes leer cómo los cuidamos

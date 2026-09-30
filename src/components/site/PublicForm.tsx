@@ -18,6 +18,7 @@ export function PublicForm({
   submitLabel,
   hidden = {},
   withConsent = true,
+  consentOptionalHint,
   thanks,
   children,
 }: {
@@ -25,6 +26,8 @@ export function PublicForm({
   submitLabel: string;
   hidden?: Record<string, string>;
   withConsent?: boolean;
+  /** Si se da, el consentimiento no es obligatorio y se explica cuándo marcarlo. */
+  consentOptionalHint?: string;
   /** Qué más decir después del mensaje de éxito (ej. próximos pasos). */
   thanks?: ReactNode;
   children: (helpers: CrudFormHelpers) => ReactNode;
@@ -57,7 +60,14 @@ export function PublicForm({
       ))}
       <HoneypotField />
       {children(helpers)}
-      {withConsent && <ConsentField error={helpers.e.acepta_datos} />}
+      {withConsent && (
+        <ConsentField
+          error={helpers.e.acepta_datos}
+          required={!consentOptionalHint}
+          hint={consentOptionalHint}
+          defaultChecked={state.values?.acepta_datos === '1'}
+        />
+      )}
       <Button
         type="submit"
         variant="accent"

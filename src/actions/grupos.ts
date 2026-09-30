@@ -137,7 +137,7 @@ const JOIN_OK = '¡Listo! El líder del grupo te escribirá pronto por WhatsApp.
 
 /** «Quiero unirme» (público): Zod → honeypot → límite por IP → insert → aviso al líder. */
 export async function joinGroup(_prev: FormState, formData: FormData): Promise<FormState> {
-  const values = valuesOf(formData, ['nombre', 'telefono', 'mensaje']);
+  const values = valuesOf(formData, ['nombre', 'telefono', 'mensaje', 'acepta_datos']);
   const parsed = unirmeSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
     return {

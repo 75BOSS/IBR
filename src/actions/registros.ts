@@ -26,7 +26,7 @@ const label = (list: readonly { value: string; label: string }[], value: string 
 
 /** «Soy nuevo» (público): Zod → honeypot → límite por IP → insert → aviso por correo. */
 export async function registerNewcomer(_prev: FormState, formData: FormData): Promise<FormState> {
-  const values = valuesOf(formData, REGISTRO_FIELDS);
+  const values = valuesOf(formData, [...REGISTRO_FIELDS, 'acepta_datos']);
   const parsed = soyNuevoSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
     return {

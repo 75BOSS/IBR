@@ -3,11 +3,12 @@ import { normalizeEcuadorWhatsapp } from '@/lib/whatsapp';
 
 /**
  * Piezas Zod compartidas. Los mensajes dicen qué pasó y cómo arreglarlo (Reglas Pixelia).
- * FormData entrega '' para campos vacíos: los opcionales lo convierten en null.
+ * FormData entrega '' para campos vacíos y nada para los que el formulario no muestra: los
+ * opcionales convierten ambos en null (antes un campo ausente daba un error en inglés).
  */
 
 const emptyToNull = (value: unknown) =>
-  typeof value === 'string' && value.trim() === '' ? null : value;
+  value === undefined || (typeof value === 'string' && value.trim() === '') ? null : value;
 
 export function requiredText(label: string, max: number) {
   return z
@@ -127,6 +128,16 @@ export const fecha = z
   .regex(/^\d{4}-\d{2}-\d{2}$/, { error: 'Elige la fecha en el calendario.' });
 
 /** Convierte los fieldErrors de Zod al formato de FormState. */
+/**
+ * Para `.refine()` entre campos: Zod no corre las reglas del objeto si algún campo falló, así
+ * que la persona corregía un error y recién ahí le aparecía el siguiente. Con esto la regla se
+ * evalúa siempre que los campos de los que depende sean válidos, y se ven todos los errores juntos.
+ */
+export function whenValid(...fields: string[]) {
+  return (payload: z.core.ParsePayload) =>
+    !payload.issues.some((issue) => fields.includes(String(issue.path?.[0])));
+}
+
 export function fieldErrorsOf(error: z.ZodError): Record<string, string[]> {
   return z.flattenError(error).fieldErrors as Record<string, string[]>;
 }

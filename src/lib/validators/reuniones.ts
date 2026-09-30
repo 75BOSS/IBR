@@ -7,6 +7,7 @@ import {
   optionalId,
   optionalText,
   requiredText,
+  whenValid,
 } from '@/lib/validators/common';
 
 export const REUNION_FIELDS = [
@@ -36,4 +37,5 @@ export const reunionSchema = z
   .refine((r) => !r.hora_fin || r.hora_fin > r.hora_inicio, {
     path: ['hora_fin'],
     error: 'La hora de fin debe ser después de la hora de inicio.',
+    when: whenValid('hora_inicio', 'hora_fin'),
   });

@@ -6,6 +6,7 @@ import {
   optionalText,
   optionalUrl,
   requiredText,
+  whenValid,
 } from '@/lib/validators/common';
 
 export const EVENTO_CATEGORIAS = [
@@ -62,4 +63,5 @@ export const eventoSchema = z
   .refine((e) => !e.fecha_fin || e.fecha_fin > e.fecha_inicio, {
     path: ['fecha_fin'],
     error: 'El fin debe ser después del inicio.',
+    when: whenValid('fecha_inicio', 'fecha_fin'),
   });
