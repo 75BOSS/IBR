@@ -1,6 +1,5 @@
 'use client';
 
-import { useActionState } from 'react';
 import { saveConfig } from '@/actions/config';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
@@ -8,7 +7,7 @@ import { Checkbox } from '@/components/Checkbox';
 import { Field } from '@/components/Field';
 import { FormAlert } from '@/components/FormAlert';
 import { ImageField } from '@/components/ImageField';
-import { useFormStateToast } from '@/components/Toast';
+import { useToastAction } from '@/components/Toast';
 import type { SiteConfig } from '@/lib/config';
 import {
   type BankAccount,
@@ -17,7 +16,6 @@ import {
   MAX_BANK_ACCOUNTS,
   parseBankAccounts,
 } from '@/lib/config-fields';
-import { type FormState, initialFormState } from '@/lib/form-state';
 
 const inputTypes: Partial<Record<ConfigField['kind'], string>> = {
   url: 'url',
@@ -101,8 +99,7 @@ export function ConfigSectionForm({
   config: SiteConfig;
   uploadsEnabled: boolean;
 }) {
-  const [state, formAction] = useActionState<FormState, FormData>(saveConfig, initialFormState);
-  useFormStateToast(state);
+  const [state, formAction] = useToastAction(saveConfig);
 
   return (
     <Card title={section.title} as="section">

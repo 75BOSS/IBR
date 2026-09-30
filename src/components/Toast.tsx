@@ -1,9 +1,17 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import {
+  createContext,
+  useActionState,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Icon, type IconName } from '@/components/Icon';
-import type { FormState } from '@/lib/form-state';
+import { type FormState, initialFormState } from '@/lib/form-state';
 
 type ToastTone = 'success' | 'error' | 'info';
 type ToastItem = { id: number; tone: ToastTone; message: string };
@@ -81,13 +89,21 @@ export function useToast(): ShowToast {
   return show;
 }
 
-/** Muestra el toast de éxito de un FormState cada vez que llega un resultado nuevo. */
-export function useFormStateToast(state: FormState): void {
+/**
+ * useActionState con toast de éxito. El aviso se muestra dentro de la acción (después del
+ * await), no en un efecto: si la acción revalida y el formulario desaparece de la pantalla
+ * (ej. la fila cambió de estado), el «Guardado» igual aparece.
+ */
+export function useToastAction(
+  action: (state: FormState, formData: FormData) => Promise<FormState>,
+) {
   const toast = useToast();
-  useEffect(() => {
-    if (state.status === 'success' && state.message)
-      toast({ tone: 'success', message: state.message });
-  }, [state, toast]);
+  return useActionState<FormState, FormData>(async (prev, formData) => {
+    const result = await action(prev, formData);
+    if (result.status === 'success' && result.message)
+      toast({ tone: 'success', message: result.message });
+    return result;
+  }, initialFormState);
 }
 
 /**

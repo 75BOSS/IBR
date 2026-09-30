@@ -92,7 +92,7 @@ sql/
 
 ## Patrones del proyecto (fijados en F0)
 
-- **Server action de formulario**: firma `(prev: FormState<Campo>, formData: FormData) => Promise<FormState<Campo>>`. En el panel, la primera línea es `await requireAdmin()` (el layout no protege las acciones). Zod con `safeParse` → `fieldErrors: z.flattenError(error).fieldErrors`; devolver `values` para no perder lo escrito; éxito → `{ status: 'success', message: 'Guardado' }` + `revalidatePath`/`revalidateTag`. En el cliente: `useActionState(action, initialFormState)` + `useFormStateToast(state)` + `Field`/`Button type="submit"` (la carga es automática).
+- **Server action de formulario**: firma `(prev: FormState<Campo>, formData: FormData) => Promise<FormState<Campo>>`. En el panel, la primera línea es `await requireAdmin()` (el layout no protege las acciones). Zod con `safeParse` → `fieldErrors: z.flattenError(error).fieldErrors`; devolver `values` para no perder lo escrito; éxito → `{ status: 'success', message: 'Guardado' }` + `revalidatePath`/`revalidateTag`. En el cliente: `useToastAction(action)` (toast «Guardado» dentro de la acción, funciona aunque el formulario se desmonte al revalidar) o `CrudForm` para crear/editar + `Field`/`Button type="submit"` (la carga es automática).
 - **Formularios**: siempre `noValidate` (los mensajes son los nuestros, junto al campo, no el globito del navegador); `required` en `Field` solo marca el asterisco y la accesibilidad. Crear → `redirect('/admin/x?aviso=creado')` y la lista muestra `<FlashToast code={aviso} />`.
 - **Borrar o desactivar**: siempre `ConfirmDialog` con una action que devuelve `FormState`.
 - **Formularios públicos**: Zod → honeypot → `consumeRateLimit('<form>', { ip: await getClientIp() })` → insert → aviso.

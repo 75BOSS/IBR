@@ -17,7 +17,7 @@ export const PUBLIC_NAV = [
 export const ADMIN_NAV: { href: string; label: string; icon: IconName; ready: boolean }[] = [
   { href: '/admin', label: 'Resumen', icon: 'dashboard', ready: true },
   { href: '/admin/registros', label: 'Registros', icon: 'userPlus', ready: false },
-  { href: '/admin/grupos', label: 'Grupos', icon: 'users', ready: false },
+  { href: '/admin/grupos', label: 'Grupos', icon: 'users', ready: true },
   { href: '/admin/reuniones', label: 'Reuniones', icon: 'clock', ready: true },
   { href: '/admin/ubicaciones', label: 'Lugares', icon: 'mapPin', ready: true },
   { href: '/admin/predicas', label: 'Prédicas', icon: 'play', ready: true },

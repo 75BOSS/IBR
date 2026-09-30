@@ -1,0 +1,72 @@
+'use client';
+
+import { type ReactNode, useActionState } from 'react';
+import { Button } from '@/components/Button';
+import { FormAlert } from '@/components/FormAlert';
+import { Icon } from '@/components/Icon';
+import { ConsentField, HoneypotField } from '@/components/PublicFormExtras';
+import type { CrudFormHelpers } from '@/components/admin/CrudForm';
+import { type FormState, initialFormState } from '@/lib/form-state';
+
+/**
+ * Formulario público único (Quiero unirme, Soy nuevo, Oración, Contacto): trampa para bots,
+ * consentimiento opcional, error arriba, lo escrito se conserva y, al enviar, un mensaje de
+ * agradecimiento en lugar del formulario.
+ */
+export function PublicForm({
+  action,
+  submitLabel,
+  hidden = {},
+  withConsent = true,
+  thanks,
+  children,
+}: {
+  action: (state: FormState, formData: FormData) => Promise<FormState>;
+  submitLabel: string;
+  hidden?: Record<string, string>;
+  withConsent?: boolean;
+  /** Qué más decir después del mensaje de éxito (ej. próximos pasos). */
+  thanks?: ReactNode;
+  children: (helpers: CrudFormHelpers) => ReactNode;
+}) {
+  const [state, formAction] = useActionState<FormState, FormData>(action, initialFormState);
+
+  if (state.status === 'success') {
+    return (
+      <div
+        role="status"
+        className="flex flex-col items-start gap-3 rounded-2xl bg-success-soft p-[clamp(1.25rem,4vw,2rem)] text-success"
+      >
+        <Icon name="check" className="size-8" />
+        <p className="font-display text-h3 font-semibold">{state.message}</p>
+        {thanks && <div className="text-ink">{thanks}</div>}
+      </div>
+    );
+  }
+
+  const helpers: CrudFormHelpers = {
+    v: (key, stored) => state.values?.[key] ?? (stored == null ? '' : String(stored)),
+    e: state.fieldErrors ?? {},
+    state,
+  };
+  return (
+    <form action={formAction} className="relative flex flex-col gap-5" noValidate>
+      {state.status === 'error' && state.message && <FormAlert>{state.message}</FormAlert>}
+      {Object.entries(hidden).map(([name, value]) => (
+        <input key={name} type="hidden" name={name} value={value} />
+      ))}
+      <HoneypotField />
+      {children(helpers)}
+      {withConsent && <ConsentField error={helpers.e.acepta_datos} />}
+      <Button
+        type="submit"
+        variant="accent"
+        size="lg"
+        pendingLabel="Enviando…"
+        className="md:self-start"
+      >
+        {submitLabel}
+      </Button>
+    </form>
+  );
+}
