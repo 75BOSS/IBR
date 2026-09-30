@@ -10,7 +10,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 
 - [x] Repo GitHub `pixelia/ibr-web`, ramas `main` y `dev`, `.env.example`, README corto. _(repo real: `75BOSS/IBR`; ver ESTADO.md 2026-09-30)_
 - [x] `create-next-app` (TS, Tailwind, App Router, `src/`), ESLint, Prettier.
-- [ ] `src/lib/db.ts` con pool `mysql2` y helper `query<T>()`; `scripts/migrate.ts`.
+- [x] `src/lib/db.ts` con pool `mysql2` y helper `query<T>()`; `scripts/migrate.ts`.
 - [ ] Aplicar `sql/ESQUEMA.sql` en la BD de Hostinger (vacía) y correr `MIGRACION-PHP.md` §2 (importar datos heredados).
 - [ ] Auth admin: `iron-session`, tabla `usuarios_admin`, login, middleware que protege `/admin/*`, seed del primer admin por script.
 - [ ] Layout público (header con 6 entradas: Inicio · Soy nuevo · Reuniones · Grupos · Prédicas · Dar; footer con redes, dirección, WhatsApp) y layout admin (sidebar).
