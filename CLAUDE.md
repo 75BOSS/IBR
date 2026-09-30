@@ -53,17 +53,22 @@ src/
     layout.tsx           # raíz: fuentes, metadata base, ToastProvider
     (public)/            # sitio público: layout con header/footer (lee la tabla config)
       page.tsx           # home
-      soy-nuevo/  reuniones/  grupos/  grupos/[id]/  predicas/  dar/  oracion/  eventos/  eventos/[slug]/  nosotros/  servir/  contacto/
+      soy-nuevo/  reuniones/  grupos/  grupos/[id]/  predicas/  dar/  oracion/  contacto/  privacidad/
+      eventos/  eventos/[slug]/  eventos/categoria/[categoria]/  inscripcion/[codigo]/   # QR, ver/cancelar
+      nosotros/  ministerios/  ministerios/[slug]/  servir/  agenda/  agenda/[token]/  mi-cuenta/
       [...ruta]/  not-found.tsx   # 404 del sitio con header/footer
     (admin)/admin/       # noindex; middleware exige cookie de sesión
       login/             # sin barra lateral
       error.tsx          # error inesperado del panel (Reintentar)
       (panel)/           # layout con requireAdmin() + AdminNav (barra lateral / cajón)
-        page.tsx (resumen)  registros/  grupos/  reuniones/  predicas/  eventos/  peticiones/  equipo/  config/
+        page.tsx (resumen)  registros/  grupos/  reuniones/  ubicaciones/  ministerios/  predicas/
+        eventos/ (+ [id]/inscritos, [id]/checkin)  peticiones/  mensajes/  servir/ (+ voluntarios)
+        agenda/  equipo/  usuarios/ (solo admin)  config/ (solo admin)  cuenta/ (cambiar contraseña)
+      registros-csv/  eventos-inscritos-csv/[id]/  eventos-checkin/[id]/   # rutas del panel (requireAdmin)
         componentes/     # catálogo de componentes (referencia, fuera del menú)
         diagnostico/     # TEMPORAL F0: prueba SSE + cabeceras del proxy (borrar al cerrar F0)
         [...ruta]/  not-found.tsx   # 404 dentro del panel
-    api/                 # solo lo que necesite endpoint público (ej. api/en-vivo, api/eventos/[id]/cupo)
+    api/                 # solo endpoints públicos del ROADMAP: api/en-vivo, api/eventos/[id]/cupo
       ping-sse/          # TEMPORAL F0
   middleware.ts          # filtra /admin/* sin cookie (la autorización real es requireAdmin)
   lib/
@@ -109,6 +114,9 @@ sql/
 - **Login y límites**: `reserveAttempt()` reserva el intento antes del trabajo caro (con un candado `GET_LOCK` por clave: el tope es exacto) y `release()` lo anula si no debe contar. La IP sale de `getClientIp()` (cuenta `TRUSTED_PROXY_HOPS` desde la derecha de X-Forwarded-For; IPv6 se agrupa por /64). Cerrar sesión o cambiar contraseña sube `usuarios_admin.sesion_version` y corta todas las sesiones.
 - **Middleware**: deja pasar las server actions (`next-action`); por eso `requireAdmin()` es obligatorio dentro de cada acción del panel.
 - **Scripts de terminal** importan `@/lib/db-config` y `@/lib/env`, nunca `@/lib/db` (es `server-only`).
+- **Decisiones que no pueden correr en paralelo** (cupo, último administrador): `withTransaction` + `SELECT … FOR UPDATE` sobre la fila que manda (el evento, los admins), siempre en el mismo orden.
+- **Correos que no deben delatar datos** (ej. si alguien ya está suscrito): se envían con `after()` para que la respuesta tarde lo mismo; los masivos llevan `unsubscribeUrl`.
+- **Avisos externos** (correo, WhatsApp Cloud API): se llaman después de guardar, nunca hacen fallar el formulario y registran el motivo si no salen.
 
 ## Reglas de código
 

@@ -4,18 +4,19 @@
 
 ## Fase actual
 
-**F1 — Web que sirve: todo el desarrollo está hecho** (15 de 15 checkboxes de «Público» y «Admin»). Probado en local con MySQL 8 + Chromium y subido a `dev`.
+**Todo el código de F1, F2 y F3 está hecho**, probado en local (MySQL 8 + Chromium) y subido a `dev`. F1 y F2 pasaron por una revisión de código independiente y sus hallazgos se corrigieron; la de F3 está en curso.
 
-Lo que falta para cerrar F1 es contenido y hosting, no código:
-
-- «Cierre F1»: contenido real (fotos, horarios, dirección, pastores, cuentas), apagar el PHP de grupos, DNS y redirección de `ibrcomunidad.com`.
-- La revisión a 360 px ya se hizo con datos de prueba; se repite con el contenido real antes del cambio de DNS.
+- **F1 — Web que sirve:** 15 de 15 checkboxes de código. Falta el «Cierre F1», que no es código: contenido real, apagar el PHP de grupos, DNS y redirección de `ibrcomunidad.com`.
+- **F2 — Comunidad:** 8 de 8 (Nosotros, inscripciones con cupo, ministerios, Servir, agenda semanal, WhatsApp al líder, categorías, roles).
+- **F3 — Plataforma:** 2 de 2 (cuenta de miembro con código por WhatsApp, check-in por QR).
 
 **F0** sigue con 3 checkboxes abiertos que dependen de Hostinger:
 
 - F0.4 — Aplicar el esquema en la BD de Hostinger e importar el PHP (necesita credenciales + dump del PHP).
 - F0.8 — Crear la web app en Hostinger apuntando a `dev` y primer deploy verde.
 - F0.9 — Correr la prueba SSE detrás del proxy de Hostinger (la ruta y la página de prueba ya están hechas).
+
+La revisión a 360/768/1280 px se hizo con datos de prueba (34 rutas del sitio y del panel, sin desborde); se repite con el contenido real antes del cambio de DNS.
 
 ## Necesito de Cristian
 
@@ -28,11 +29,16 @@ Lista consolidada. Nada de esto se sube al repo: los valores van en hPanel → W
 5. **`SESSION_SECRET`**: genera uno (o te lo genero) y cárgalo en Hostinger. Debe tener 32 caracteres aleatorios o más.
 6. **Token API de Hostinger** (alcance mínimo: websites + DNS) para que Claude Code pueda desplegar y leer los logs de build.
 7. **Cloudinary** (plan gratuito): `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`. Se usa desde F1.
-8. **SMTP de Hostinger**: la casilla de correo que envía los avisos (`SMTP_USER`, `SMTP_PASS`). Se usa desde F1.
+8. **SMTP de Hostinger**: la casilla de correo que envía los avisos (`SMTP_USER`, `SMTP_PASS`). Sin esto no salen los avisos, la confirmación de inscripciones ni la agenda semanal. Dime también el **límite de envíos por hora** de su plan (la agenda se manda a todos los suscriptores).
 9. **YouTube Data API key**: opcional. Sin ella, el título y la miniatura salen de oEmbed (sin fecha de publicación).
 10. **Decidir la visibilidad del repo.** `75BOSS/IBR` es **público**. No tiene secretos, pero conviene que sea privado.
 11. **Contenido real** para cargar desde el panel (`/admin/config`, `/admin/equipo`, `/admin/reuniones`…): foto de portada, dirección y mapa, WhatsApp oficial, correo que recibe los avisos (`email_avisos`), cuentas bancarias y QR, pastores con foto, horarios. Lo puede cargar la iglesia o me lo pasas y lo cargo yo.
-12. **Que la iglesia lea `/privacidad`** (política de datos en lenguaje sencillo, con la LOPDP). Confirmar que están de acuerdo con el texto y con el plazo de 15 días para responder pedidos de datos.
+12. **WhatsApp Cloud API de Meta** (opcional, F2/F3): una cuenta de WhatsApp Business verificada en Meta, el `WHATSAPP_TOKEN` (token permanente de un usuario del sistema) y el `WHATSAPP_PHONE_NUMBER_ID`. Hay que crear y aprobar dos plantillas en español:
+    - `nueva_solicitud_grupo` (categoría Utilidad): «Hola {{1}}, {{2}} quiere unirse al grupo «{{3}}». Su WhatsApp: {{4}}. Escríbele pronto.»
+    - `codigo_acceso` (categoría Autenticación, con botón «Copiar código»): el código de 6 dígitos para entrar a «Mi cuenta».
+    Sin esto, el aviso al líder sigue por correo y «Mi cuenta» dice que todavía no se pueden enviar códigos.
+13. **Textos de «Nosotros»** (historia, misión y «En qué creemos») y **áreas de servicio** con su responsable. La declaración de fe la debe escribir o aprobar la iglesia: no la inventé, y si está vacía la sección no aparece.
+14. **Que la iglesia lea `/privacidad`** (política de datos en lenguaje sencillo, con la LOPDP). Confirmar que están de acuerdo con el texto y con el plazo de 15 días para responder pedidos de datos.
 
 Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «Probar SSE» y pegarme el resultado y la tabla de cabeceras (o dejarme el acceso y lo hago yo).
 
@@ -86,6 +92,17 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 | 2026-09-30 | Íconos (favicon, `icon.png`, `apple-icon.png`, manifest 192/512/maskable) e imagen OG generados con Chromium y las fuentes reales | El favicon era el de Next. Reemplazables cuando la iglesia tenga logo |
 | 2026-09-30 | Peticiones privadas: solo el rol `admin` (pastores) lee el texto y los datos; para `editor` no salen de la BD (`CASE` en la consulta). El correo de aviso de una privada no lleva el texto | Lo promete `/oracion` y `/privacidad`; la revisión encontró que cualquier cuenta del panel las leía y que el correo (posible casilla compartida) llevaba el texto |
 | 2026-09-30 | Migración `002`: `acepta_datos` en `peticiones` y `contactos` (fecha = `creado_en`, IP = `ip`, como `solicitudes_grupo`) | CLAUDE.md pide guardar el consentimiento con fecha e IP; en una petición anónima queda en 0 |
+| 2026-09-30 | Usuarios del panel: contraseña aleatoria generada y mostrada una sola vez (`secret` en FormState); cambiar rol o desactivar corta sus sesiones; nadie se quita su propio rol de admin y el último admin no se puede degradar (transacción con bloqueo) | Evita contraseñas débiles elegidas por terceros y paneles sin administrador |
+| 2026-09-30 | Ministerios = `rangos_edad` (como decía ESQUEMA §3): se editan desde `/admin/ministerios`, no se borran (se desactivan) y el slug no cambia al editar | Grupos, registros y reuniones apuntan a ellos; los enlaces compartidos no se rompen |
+| 2026-09-30 | Inscripciones: cupo exacto con `SELECT … FOR UPDATE` sobre el evento (`withTransaction`), `personas` por inscripción, un WhatsApp por evento y código de 8 caracteres sin letras confusas | Probado: 4 personas simultáneas por 2 lugares → entran exactamente 2 |
+| 2026-09-30 | Contador de cupo y tablero de check-in por polling (15 s y 10 s) | Hostinger no permite WebSockets entrantes; con estos volúmenes no hace falta SSE ni Supabase Realtime |
+| 2026-09-30 | Agenda semanal con doble confirmación, botón (no enlace) para confirmar o darse de baja, cabecera List-Unsubscribe y reintento solo con quienes no la recibieron | Los antivirus de correo abren enlaces solos; nadie puede suscribir un correo ajeno; no se repiten correos |
+| 2026-09-30 | Categorías de eventos como rutas estáticas `/eventos/categoria/[categoria]` | Mantienen la caché de 5 min (con `?categoria=` la página se generaba en cada visita) |
+| 2026-09-30 | WhatsApp Cloud API opcional (`src/lib/whatsapp-cloud.ts`): plantillas aprobadas, 8 s máximo, sin credenciales no hace nada | Un aviso extra nunca debe hacer perder lo que la persona envió |
+| 2026-09-30 | «Mi cuenta» sin contraseña: código de 6 dígitos por WhatsApp, solo a números que la iglesia ya tiene, HMAC en BD, 10 min, 5 intentos; cookie propia `ibr_miembro` de 30 días | Nadie usa el sitio para mandar mensajes a números ajenos ni para saber quién es de la iglesia |
+| 2026-09-30 | Check-in con la cámara vía `BarcodeDetector` (Chrome/Android), sin librería; si el navegador no lo tiene, se escribe el código | Sin dependencias pesadas; los ujieres suelen usar Android |
+| 2026-09-30 | Dependencia nueva: `qrcode` (genera el QR como SVG en el servidor) | Pequeña y sin dependencias de UI; nada se carga en el navegador |
+| 2026-09-30 | Menú del panel agrupado (Personas, Contenido del sitio, Comunicación, Administración) y con desplazamiento interno | 17 módulos ya no cabían; «Cerrar sesión» quedaba fuera de vista |
 | 2026-09-30 | «Configuración» no aparece en el menú del rol editor (`adminOnly` en `ADMIN_NAV`) | La página ya exigía admin; el enlace solo llevaba a un aviso de «sin permiso» |
 
 ## Pendiente de confirmar con la iglesia (bloquea F1 contenido, no F0)
@@ -132,6 +149,16 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 - 76 pruebas unitarias (`npm test`), `npm run lint` y `npm run build` limpios.
 - Revisión independiente del código de F1: sin fallas de seguridad; 4 hallazgos corregidos (privadas visibles para editores, contador y lista de eventos del resumen con reglas distintas, consentimiento sin guardar en peticiones/contactos, un comentario fuera de lugar). La privacidad se probó con una cuenta editor y una admin.
 
+## Qué se hizo — F2 y F3 (misma fecha)
+
+- F2: usuarios del panel y «Mi cuenta» (cambiar contraseña), Nosotros, Ministerios (sitio y panel), inscripción a eventos con cupo, código, correo, contador en vivo, página personal para ver o cancelar e inscritos con CSV, Servir (áreas y voluntarios), agenda semanal por correo, categorías de eventos y aviso por WhatsApp al líder.
+- F3: check-in por QR con tablero para ujieres, y cuenta de miembro con código por WhatsApp (mis inscripciones, mis grupos, dónde sirvo).
+- Piezas compartidas nuevas: `withTransaction` (db.ts), `lib/csv.ts`, `lib/slug-db.ts` (uniqueSlug único), `lib/text.ts` (párrafos), `SecretReveal`, `optionalCupo`, `ActionButton` y `FilterTabs` en `src/components`.
+- Migraciones 002–010 aplicadas en la BD local (ver `sql/migraciones/`).
+- Probado de punta a punta en Chromium con un SMTP falso local y una API de WhatsApp falsa: correos (confirmación, agenda con List-Unsubscribe, reintento), plantillas de WhatsApp (número 593…, parámetros, botón del código), carrera por el último lugar, check-in (válido, repetido, otro evento, cancelado) y el flujo completo de «Mi cuenta».
+- Revisión independiente de F2: 11 hallazgos (ninguno de seguridad grave), todos corregidos en `f253576`.
+- 87 pruebas unitarias, lint y build limpios.
+
 ## Descubrimientos / notas de sesión
 
 - `ESQUEMA.sql`, `db:migrate`, `db:seed-admin`, los helpers de `db.ts` y el login de punta a punta pasan tanto en **MySQL 8.0.46** como en **MariaDB 10.11.14**, ambos con la zona global en -05:00. En MySQL hay 21 avisos inofensivos de «display width deprecated» por `TINYINT(1)`. El SQL del código evita la sintaxis exclusiva de MySQL 8 (se usa `VALUES()` en `ON DUPLICATE KEY UPDATE`).
@@ -140,6 +167,9 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 - El contenedor de Claude bloquea los dominios de YouTube, por eso la miniatura sale rota en las capturas locales. En Hostinger debería cargar.
 - Next.js inyecta su propio `role="alert"` (route announcer). En los tests hay que buscar el texto del mensaje, no el rol.
 - `getSiteConfig()` y las páginas con `revalidate` guardan caché 5 min también entre builds (`.next/cache`): un cambio hecho directo en phpMyAdmin tarda hasta 5 min en verse. Lo que se guarda desde el panel se ve al instante (`revalidateTag`).
+- `npm run build` genera en el momento las páginas en caché (inicio, reuniones, sitemap…) y para eso **necesita la BD**. En Hostinger el build corre donde la BD es accesible; si algún día falla con `ECONNREFUSED`, es eso.
+- `npm audit` marca `postcss` dentro de Next (solo se usa al compilar nuestro propio CSS). La corrección que propone es pasar a Next 16, que el stack no permite; no afecta al sitio en producción. Revisar cuando salga un parche para 15.x.
+- En el contenedor de Claude el MySQL local a veces se reinicia (recuperación «XA crash recovery»): `service mysql start` y listo.
 - Para escribir texto con tildes desde la terminal: `mysql --default-character-set=utf8mb4`. Sin eso, el cliente guarda «jÃ³venes». phpMyAdmin no tiene ese problema.
 
 ## Cómo probar en local (contenedor de Claude)
@@ -151,8 +181,9 @@ Para probar en MariaDB sin chocar con MySQL: `apt-get download mariadb-server-co
 ## Qué hacer en la próxima sesión
 
 1. Ejecutar PASO 0 de `CLAUDE.md`.
-2. Si ya hay credenciales de Hostinger: F0.8 (web app → `dev`), `npm run db:migrate` contra la BD nueva (aplica `000`, `001` y `002`), crear el primer admin y correr `/admin/diagnostico` (F0.9). Anotar los resultados aquí. Cargar `NEXT_PUBLIC_SITE_URL` con `https://` (sitemap, OG y correos la usan).
+2. Si ya hay credenciales de Hostinger: F0.8 (web app → `dev`), `npm run db:migrate` contra la BD nueva (aplica `000` a `010`), crear el primer admin y correr `/admin/diagnostico` (F0.9). Cargar `NEXT_PUBLIC_SITE_URL` con `https://` (sitemap, OG, correos y QR la usan).
 3. Si ya está el dump del PHP: reconciliar `ESQUEMA.sql` §«Tablas heredadas» (MIGRACION-PHP.md §1) **antes** de aplicarlo en Hostinger, y escribir `scripts/importar-php.ts`.
 4. Al cerrar F0: borrar `/api/ping-sse` y `/admin/diagnostico`.
-5. Con el contenido real cargado: repetir `npm run revisar` a 360/768 sobre `dev.ibriglesia.com` y probar un envío real de cada formulario (llega el correo a `email_avisos`).
-6. Después del cierre de F1, arrancar F2 por `/nosotros` y eventos con inscripción.
+5. Con SMTP real: mandar una agenda de prueba a un correo propio y revisar que no caiga en spam (SPF/DKIM del dominio en Hostinger).
+6. Con WhatsApp configurado: probar las dos plantillas con un número propio.
+7. Con el contenido real cargado: repetir `npm run revisar` a 360/768 sobre `dev.ibriglesia.com` y probar un envío real de cada formulario.
