@@ -20,12 +20,3 @@ export function listUsuarios(): Promise<Usuario[]> {
 export function getUsuario(id: number): Promise<Usuario | null> {
   return queryOne<Usuario>(`${SELECT} WHERE id = ?`, [id]);
 }
-
-/** Administradores activos sin contar a `exceptId` (para no dejar el panel sin administrador). */
-export async function countOtherActiveAdmins(exceptId: number): Promise<number> {
-  const row = await queryOne<{ n: number }>(
-    "SELECT COUNT(*) AS n FROM usuarios_admin WHERE rol = 'admin' AND activo = 1 AND id <> ?",
-    [exceptId],
-  );
-  return Number(row?.n ?? 0);
-}

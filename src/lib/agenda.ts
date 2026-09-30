@@ -39,10 +39,21 @@ export function listSuscriptores(): Promise<Suscriptor[]> {
   );
 }
 
-export function listActiveSuscriptores(): Promise<
+/**
+ * Suscriptores activos. Con `pendingForEnvio`, solo los que todavía no recibieron ese envío
+ * (para reintentar sin repetirle el correo a nadie).
+ */
+export function listActiveSuscriptores({
+  pendingForEnvio = null,
+}: { pendingForEnvio?: number | null } = {}): Promise<
   Pick<Suscriptor, 'email' | 'nombre' | 'token'>[]
 > {
-  return query('SELECT email, nombre, token FROM suscriptores WHERE activo = 1 ORDER BY id');
+  return query(
+    `SELECT email, nombre, token FROM suscriptores
+      WHERE activo = 1 AND (? IS NULL OR ultimo_envio_id IS NULL OR ultimo_envio_id < ?)
+      ORDER BY id`,
+    [pendingForEnvio, pendingForEnvio],
+  );
 }
 
 export type EnvioAgenda = {

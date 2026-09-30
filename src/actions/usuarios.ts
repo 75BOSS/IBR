@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { getSession, requireAdmin } from '@/lib/auth';
-import { execute, queryOne } from '@/lib/db';
+import { execute, queryOne, withTransaction } from '@/lib/db';
 import type { FormState } from '@/lib/form-state';
 import {
   PasswordCheckBusyError,
@@ -13,7 +13,7 @@ import {
 } from '@/lib/password';
 import { minutesText, reserveAttempt } from '@/lib/rate-limit';
 import { siteUrl } from '@/lib/site';
-import { countOtherActiveAdmins, getUsuario } from '@/lib/usuarios';
+import { getUsuario } from '@/lib/usuarios';
 import { fieldErrorsOf, id as idSchema, valuesOf } from '@/lib/validators/common';
 import { USUARIO_FIELDS, cambioClaveSchema, usuarioSchema } from '@/lib/validators/usuarios';
 
@@ -70,32 +70,50 @@ export async function saveUsuario(_prev: FormState, formData: FormData): Promise
     };
   }
 
-  const current = await getUsuario(editingId.data);
-  if (!current)
-    return { status: 'error', message: 'Este usuario ya no existe. Vuelve a la lista.' };
-  const losesAdmin = current.rol === 'admin' && current.activo && (d.rol !== 'admin' || !d.activo);
-  if (current.id === me.id && losesAdmin) {
-    return {
-      status: 'error',
-      message:
-        'No puedes quitarte el rol de administrador ni desactivar tu propia cuenta. Pídeselo a otro administrador.',
-      values,
-    };
-  }
-  if (losesAdmin && (await countOtherActiveAdmins(current.id)) === 0) {
-    return {
-      status: 'error',
-      message: 'Es el único administrador activo: el panel quedaría sin nadie que lo administre.',
-      values,
-    };
-  }
-  // Cambiar el rol o desactivar corta sus sesiones abiertas (el permiso nuevo rige de inmediato).
-  const cutSessions = current.rol !== d.rol || (current.activo && !d.activo);
-  await execute(
-    `UPDATE usuarios_admin SET nombre = ?, email = ?, rol = ?, activo = ?,
-            sesion_version = sesion_version + ? WHERE id = ?`,
-    [d.nombre, d.email, d.rol, d.activo, cutSessions ? 1 : 0, current.id],
-  );
+  // Transacción con las filas de administradores bloqueadas: si dos administradores se quitan el
+  // rol al mismo tiempo, el segundo ve el resultado del primero y el panel nunca queda sin admin.
+  const outcome = await withTransaction<FormState | 'ok'>(async (tx) => {
+    await tx.query("SELECT id FROM usuarios_admin WHERE rol = 'admin' AND activo = 1 FOR UPDATE");
+    const current = await tx.queryOne<{ id: number; rol: string; activo: boolean }>(
+      'SELECT id, rol, activo FROM usuarios_admin WHERE id = ? FOR UPDATE',
+      [editingId.data],
+    );
+    if (!current)
+      return { status: 'error', message: 'Este usuario ya no existe. Vuelve a la lista.' };
+    const losesAdmin =
+      current.rol === 'admin' && current.activo && (d.rol !== 'admin' || !d.activo);
+    if (current.id === me.id && losesAdmin) {
+      return {
+        status: 'error',
+        message:
+          'No puedes quitarte el rol de administrador ni desactivar tu propia cuenta. Pídeselo a otro administrador.',
+        values,
+      };
+    }
+    if (losesAdmin) {
+      const others = await tx.queryOne<{ n: number | string }>(
+        "SELECT COUNT(*) AS n FROM usuarios_admin WHERE rol = 'admin' AND activo = 1 AND id <> ?",
+        [current.id],
+      );
+      if (Number(others?.n ?? 0) === 0) {
+        return {
+          status: 'error',
+          message:
+            'Es el único administrador activo: el panel quedaría sin nadie que lo administre.',
+          values,
+        };
+      }
+    }
+    // Cambiar el rol o desactivar corta sus sesiones abiertas (el permiso nuevo rige de inmediato).
+    const cutSessions = current.rol !== d.rol || (current.activo && !d.activo);
+    await tx.execute(
+      `UPDATE usuarios_admin SET nombre = ?, email = ?, rol = ?, activo = ?,
+              sesion_version = sesion_version + ? WHERE id = ?`,
+      [d.nombre, d.email, d.rol, d.activo, cutSessions ? 1 : 0, current.id],
+    );
+    return 'ok';
+  });
+  if (outcome !== 'ok') return outcome;
   revalidatePath('/admin/usuarios');
   redirect('/admin/usuarios?aviso=guardado');
 }

@@ -146,12 +146,18 @@ function ConfirmForm({
 
   if (state.status === 'success' && state.secret) {
     return (
-      <div className="p-[clamp(1.25rem,4vw,1.75rem)]">
-        <SecretReveal message={state.message} secret={state.secret}>
-          <Button className="self-end" onClick={() => dialog.current?.close()} autoFocus>
-            Listo
-          </Button>
-        </SecretReveal>
+      // El diálogo sigue nombrado por titleId/descriptionId: aquí son el resultado y el dato.
+      <div className="flex flex-col gap-4 p-[clamp(1.25rem,4vw,1.75rem)]">
+        <h2 id={titleId} className="text-h3 font-semibold">
+          {state.message ?? title}
+        </h2>
+        <div id={descriptionId}>
+          <SecretReveal secret={state.secret}>
+            <Button className="self-end" onClick={() => dialog.current?.close()} autoFocus>
+              Listo
+            </Button>
+          </SecretReveal>
+        </div>
       </div>
     );
   }

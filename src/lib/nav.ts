@@ -11,7 +11,10 @@ export const PUBLIC_NAV = [
   { href: '/dar', label: 'Dar' },
 ] as const;
 
-/** Enlaces que no caben en el menú principal: van en el pie de página. */
+/**
+ * Enlaces que no caben en el menú principal: van en el pie de página. `private`: página
+ * personal que no va al sitemap (no se indexa).
+ */
 export const FOOTER_EXTRA_NAV = [
   { href: '/nosotros', label: 'Nosotros' },
   { href: '/ministerios', label: 'Ministerios' },
@@ -20,7 +23,7 @@ export const FOOTER_EXTRA_NAV = [
   { href: '/agenda', label: 'Agenda semanal' },
   { href: '/oracion', label: 'Pedir oración' },
   { href: '/contacto', label: 'Contacto' },
-  { href: '/mi-cuenta', label: 'Mi cuenta' },
+  { href: '/mi-cuenta', label: 'Mi cuenta', private: true },
   { href: '/privacidad', label: 'Privacidad' },
 ] as const;
 

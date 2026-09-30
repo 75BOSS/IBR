@@ -24,6 +24,7 @@ export type RateLimitForm =
   | 'inscripcion_cancelar'
   | 'servir'
   | 'agenda'
+  | 'agenda_correo'
   | 'agenda_baja'
   | 'codigo_ip'
   | 'codigo_telefono'

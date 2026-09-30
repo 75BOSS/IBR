@@ -14,7 +14,7 @@ import { EVENTO_FIELDS, eventoSchema } from '@/lib/validators/eventos';
 
 function revalidateEventos(slug?: string) {
   revalidatePath('/admin/eventos');
-  revalidatePath('/eventos');
+  revalidatePath('/eventos', 'layout'); // lista, categorías y detalle
   if (slug) revalidatePath(`/eventos/${slug}`);
   revalidatePath('/', 'layout'); // el inicio muestra los próximos eventos
 }

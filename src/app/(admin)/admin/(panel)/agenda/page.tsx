@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { deleteSuscriptor } from '@/actions/agenda';
+import { deleteSuscriptor, reintentarEnvio } from '@/actions/agenda';
 import { Card } from '@/components/Card';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { type Column, DataTable } from '@/components/DataTable';
@@ -109,6 +109,22 @@ export default async function AgendaAdminPage() {
                       {e.fallidos > 0 ? ` · ${e.fallidos} fallidos` : ''}
                       {e.enviado_por ? ` · por ${e.enviado_por}` : ''}
                     </span>
+                    {e.fallidos > 0 && (
+                      <span className="pt-1">
+                        <ConfirmDialog
+                          action={reintentarEnvio}
+                          fields={{ id: String(e.id) }}
+                          title="¿Reintentar este envío?"
+                          description="Se envía el mismo correo solo a los suscriptores que todavía no lo recibieron. A quienes ya les llegó no se les repite."
+                          triggerLabel="Reintentar con los que faltan"
+                          triggerIcon="mail"
+                          triggerVariant="secondary"
+                          confirmLabel="Sí, reintentar"
+                          pendingLabel="Enviando…"
+                          tone="primary"
+                        />
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

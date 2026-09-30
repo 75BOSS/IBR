@@ -8,6 +8,8 @@ export type Area = {
   descripcion: string | null;
   responsable_id: number | null;
   responsable: string | null;
+  /** El sitio solo nombra al responsable si está visible en Equipo. */
+  responsable_visible: boolean | null;
   imagen_url: string | null;
   imagen_public_id: string | null;
   activo: boolean;
@@ -16,7 +18,7 @@ export type Area = {
   nuevos: number;
 };
 
-const AREA_SELECT = `SELECT a.id, a.nombre, a.slug, a.descripcion, a.responsable_id, q.nombre AS responsable,
+const AREA_SELECT = `SELECT a.id, a.nombre, a.slug, a.descripcion, a.responsable_id, q.nombre AS responsable, q.visible AS responsable_visible,
        a.imagen_url, a.imagen_public_id, a.activo, a.orden,
        (SELECT COUNT(*) FROM voluntarios v WHERE v.area_id = a.id) AS voluntarios,
        (SELECT COUNT(*) FROM voluntarios v WHERE v.area_id = a.id AND v.estado = 'nuevo') AS nuevos

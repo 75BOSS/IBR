@@ -23,6 +23,11 @@ function getTransporter(): Transporter | null {
   return transporter;
 }
 
+/** ¿Hay SMTP configurado? (para no registrar un envío masivo que no puede salir). */
+export function isMailConfigured(): boolean {
+  return getTransporter() !== null;
+}
+
 export type MailResult =
   { sent: true } | { sent: false; reason: 'sin-smtp' | 'sin-destinatario' | 'error' };
 

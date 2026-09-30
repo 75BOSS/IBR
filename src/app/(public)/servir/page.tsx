@@ -59,7 +59,7 @@ export default async function ServirPage({
                   {p}
                 </p>
               ))}
-              {featured.responsable && (
+              {featured.responsable && featured.responsable_visible && (
                 <p className="mt-3 text-sm text-accent-soft">A cargo de {featured.responsable}</p>
               )}
               <a

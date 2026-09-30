@@ -209,14 +209,58 @@ export async function setInscripcionEstado(
   const estado = INSCRIPCION_ESTADOS.find((e) => e.value === formData.get('estado'));
   if (!parsed.success || !estado)
     return { status: 'error', message: 'No entendimos el cambio. Recarga la página.' };
-  const { affectedRows } = await execute(
-    `UPDATE inscripciones
-        SET estado = ?, checkin_en = CASE WHEN ? = 'asistio' THEN COALESCE(checkin_en, NOW()) END
-      WHERE id = ?`,
-    [estado.value, estado.value, parsed.data],
-  );
-  if (affectedRows === 0)
-    return { status: 'error', message: 'Esta inscripción ya no existe. Recarga la página.' };
+  // Volver a contar una inscripción cancelada ocupa lugares: se revisa el cupo y el WhatsApp
+  // repetido con el evento bloqueado, en el mismo orden que la inscripción pública (evento y
+  // luego inscripción), para que no se pase del cupo ni haya bloqueos cruzados.
+  const outcome = await withTransaction<FormState | 'ok'>(async (tx) => {
+    const ref = await tx.queryOne<{ evento_id: number }>(
+      'SELECT evento_id FROM inscripciones WHERE id = ?',
+      [parsed.data],
+    );
+    if (!ref)
+      return { status: 'error', message: 'Esta inscripción ya no existe. Recarga la página.' };
+    const evento = await tx.queryOne<{ cupo: number | null }>(
+      'SELECT cupo FROM eventos WHERE id = ? FOR UPDATE',
+      [ref.evento_id],
+    );
+    const insc = await tx.queryOne<{ estado: string; personas: number; telefono: string }>(
+      'SELECT estado, personas, telefono FROM inscripciones WHERE id = ? FOR UPDATE',
+      [parsed.data],
+    );
+    if (!evento || !insc)
+      return { status: 'error', message: 'Esta inscripción ya no existe. Recarga la página.' };
+    if (insc.estado === 'cancelada' && estado.value !== 'cancelada') {
+      const taken = await tx.queryOne<{ n: number | string }>(
+        "SELECT COALESCE(SUM(personas), 0) AS n FROM inscripciones WHERE evento_id = ? AND estado <> 'cancelada'",
+        [ref.evento_id],
+      );
+      const ocupados = Number(taken?.n ?? 0);
+      if (evento.cupo !== null && ocupados + insc.personas > evento.cupo) {
+        return {
+          status: 'error',
+          message: `No hay lugar: ya hay ${ocupados} de ${evento.cupo} lugares ocupados. Si quieres aceptarla, sube el cupo del evento.`,
+        };
+      }
+      const repeated = await tx.queryOne<{ id: number }>(
+        "SELECT id FROM inscripciones WHERE evento_id = ? AND telefono = ? AND estado <> 'cancelada' AND id <> ?",
+        [ref.evento_id, insc.telefono, parsed.data],
+      );
+      if (repeated) {
+        return {
+          status: 'error',
+          message: 'Ese WhatsApp ya tiene otra inscripción activa para este evento.',
+        };
+      }
+    }
+    await tx.execute(
+      `UPDATE inscripciones
+          SET estado = ?, checkin_en = CASE WHEN ? = 'asistio' THEN COALESCE(checkin_en, NOW()) END
+        WHERE id = ?`,
+      [estado.value, estado.value, parsed.data],
+    );
+    return 'ok';
+  });
+  if (outcome !== 'ok') return outcome;
   revalidatePath('/admin/eventos', 'layout');
   revalidatePath('/eventos', 'layout');
   return { status: 'success', message: `Marcada como «${estado.label}»` };

@@ -88,7 +88,11 @@ export async function withTransaction<T>(fn: (tx: Tx) => Promise<T>): Promise<T>
     await connection.commit();
     return result;
   } catch (error) {
-    await connection.rollback();
+    // Si el rollback también falla (ej. se cayó la conexión), se registra pero se propaga el
+    // error original, que es el que explica qué pasó.
+    await connection.rollback().catch((rollbackError: unknown) => {
+      console.error('[db] no se pudo deshacer la transacción:', rollbackError);
+    });
     throw error;
   } finally {
     connection.release();

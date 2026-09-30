@@ -3,7 +3,7 @@ import { passwordProblem } from '@/lib/password';
 import { emailSchema } from '@/lib/validators/auth';
 import { checkbox, requiredText, whenValid } from '@/lib/validators/common';
 
-export const USUARIO_FIELDS = ['nombre', 'email', 'rol'] as const;
+export const USUARIO_FIELDS = ['nombre', 'email', 'rol', 'activo'] as const;
 
 export const usuarioSchema = z.object({
   nombre: requiredText('el nombre', 120),
