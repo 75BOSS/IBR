@@ -7,7 +7,7 @@ Idioma del código: inglés en identificadores; español en UI, comentarios de d
 ## PASO 0 — Antes de escribir código
 
 1. Leer este archivo completo, luego `ROADMAP.md`, `ESTADO.md`, `sql/ESQUEMA.sql` y `MIGRACION-PHP.md`.
-2. Si existe código, leer `src/lib/db.ts`, `src/lib/auth.ts` y un módulo ya hecho (ej. `src/app/(admin)/admin/predicas`) y copiar sus patrones. No inventar una segunda forma de hacer lo mismo.
+2. Si existe código, leer `src/lib/db.ts`, `src/lib/auth.ts`, la sección «Patrones del proyecto» de abajo y un módulo ya hecho (ej. `src/app/(admin)/admin/(panel)/predicas`) y copiar sus patrones. No inventar una segunda forma de hacer lo mismo. El catálogo visual de componentes está en `/admin/componentes`.
 3. Actualizar `ESTADO.md` al terminar cada sesión: qué se hizo, qué quedó a medias, qué se descubrió.
 4. Nunca tocar tablas del sistema PHP heredado (`grupos`, `ubicaciones`, `registros`, `rangos_edad`) sin revisar `MIGRACION-PHP.md`.
 
@@ -50,23 +50,55 @@ Idioma del código: inglés en identificadores; español en UI, comentarios de d
 ```
 src/
   app/
-    (public)/            # sitio público, layout con header/footer de la iglesia
+    layout.tsx           # raíz: fuentes, metadata base, ToastProvider
+    (public)/            # sitio público: layout con header/footer (lee la tabla config)
       page.tsx           # home
       soy-nuevo/  reuniones/  grupos/  grupos/[id]/  predicas/  dar/  oracion/  eventos/  eventos/[slug]/  nosotros/  servir/  contacto/
-    (admin)/admin/       # panel, protegido por middleware
-      login/  page.tsx (dashboard)  registros/  grupos/  reuniones/  predicas/  eventos/  peticiones/  equipo/  config/
+      [...ruta]/  not-found.tsx   # 404 del sitio con header/footer
+    (admin)/admin/       # noindex; middleware exige cookie de sesión
+      login/             # sin barra lateral
+      error.tsx          # error inesperado del panel (Reintentar)
+      (panel)/           # layout con requireAdmin() + AdminNav (barra lateral / cajón)
+        page.tsx (resumen)  registros/  grupos/  reuniones/  predicas/  eventos/  peticiones/  equipo/  config/
+        componentes/     # catálogo de componentes (referencia, fuera del menú)
+        diagnostico/     # TEMPORAL F0: prueba SSE + cabeceras del proxy (borrar al cerrar F0)
+        [...ruta]/  not-found.tsx   # 404 dentro del panel
     api/                 # solo lo que necesite endpoint público (ej. api/en-vivo, api/eventos/[id]/cupo)
+      ping-sse/          # TEMPORAL F0
+  middleware.ts          # filtra /admin/* sin cookie (la autorización real es requireAdmin)
   lib/
-    db.ts                # pool mysql2 + helper query<T>()
-    auth.ts              # getSession(), requireAdmin()
+    db.ts                # pool mysql2 + query<T>(), queryOne<T>(), execute()  (server-only)
+    db-config.ts         # opciones de conexión compartidas con scripts (UTC, TINYINT(1)→boolean)
+    env.ts               # requireEnv(): error que explica dónde cargar la variable
+    auth.ts              # getSession(), getCurrentAdmin(), requireAdmin()
+    session.ts           # opciones de iron-session (usable en middleware)
+    password.ts  rate-limit.ts  request.ts (getClientIp)
+    config.ts            # getSiteConfig() con caché 5 min, CONFIG_TAG
+    nav.ts               # PUBLIC_NAV, ADMIN_NAV (ready:true al terminar cada módulo)
+    form-state.ts        # FormState: resultado estándar de server actions
     validators/          # esquemas Zod por entidad
-    mail.ts  cloudinary.ts  youtube.ts
-  components/            # ui compartida (Button, Field, Card, YouTubeEmbed, MapEmbed, WhatsAppButton)
-  actions/               # server actions por entidad: registros.ts, grupos.ts, predicas.ts...
+    youtube.ts  maps.ts  whatsapp.ts  site.ts   (mail.ts, cloudinary.ts en F1)
+    *.test.ts            # pruebas con node:test (npm test)
+  components/            # UI compartida: Button, Field, Card, Tag, Icon, Toast, ConfirmDialog,
+                         # YouTubeEmbed, MapEmbed, WhatsAppButton, BrandMark, Spinner; site/ y admin/
+  actions/               # server actions por entidad: auth.ts, registros.ts, grupos.ts, predicas.ts...
+scripts/                 # migrate.ts, seed-admin.ts, revisar-responsive.ts, lib/script-db.ts
 sql/
-  ESQUEMA.sql            # esquema completo, versionado
-  migraciones/           # 001_xxx.sql en orden; nunca editar una migración ya aplicada
+  ESQUEMA.sql            # esquema base (se aplica como migración 000_esquema_base)
+  migraciones/           # 001_xxx.sql en orden; nunca editar una migración ya aplicada (checksum)
+  legado/                # dumps del PHP: ignorados por git (datos personales)
 ```
+
+## Patrones del proyecto (fijados en F0)
+
+- **Server action de formulario**: firma `(prev: FormState<Campo>, formData: FormData) => Promise<FormState<Campo>>`. En el panel, la primera línea es `await requireAdmin()` (el layout no protege las acciones). Zod con `safeParse` → `fieldErrors: z.flattenError(error).fieldErrors`; devolver `values` para no perder lo escrito; éxito → `{ status: 'success', message: 'Guardado' }` + `revalidatePath`/`revalidateTag`. En el cliente: `useActionState(action, initialFormState)` + `useFormStateToast(state)` + `Field`/`Button type="submit"` (la carga es automática).
+- **Borrar o desactivar**: siempre `ConfirmDialog` con una action que devuelve `FormState`.
+- **Formularios públicos**: Zod → honeypot → `consumeRateLimit('<form>', { ip: await getClientIp() })` → insert → aviso.
+- **Menú del panel**: una sola lista `ADMIN_NAV` en `src/lib/nav.ts`; poner `ready: true` al terminar el módulo.
+- **Configuración**: leer con `getSiteConfig()`; al guardar en `/admin/config`, `revalidateTag(CONFIG_TAG)`.
+- **Colores y tipografía**: solo tokens de `src/app/globals.css` (`bg-surface`, `text-ink-soft`, `text-h2`…). Superficies oscuras: variantes `inverse` de `Button`/`Tag`, nunca pisar clases con `className`.
+- **Íconos**: `<Icon name="…">`; para uno nuevo se agrega su SVG al mapa de `src/components/Icon.tsx`.
+- **Scripts de terminal** importan `@/lib/db-config` y `@/lib/env`, nunca `@/lib/db` (es `server-only`).
 
 ## Reglas de código
 
@@ -92,10 +124,14 @@ sql/
 ## Comandos
 
 ```
-npm run dev        # local, puerto 3000
-npm run build      # lo que corre Hostinger
-npm run lint
-npm run db:migrate # aplica sql/migraciones pendientes (script propio en scripts/migrate.ts)
+npm run dev              # local, puerto 3000
+npm run build            # lo que corre Hostinger
+npm run lint             # ESLint sin warnings + tsc --noEmit
+npm test                 # pruebas node:test (src/**/*.test.ts)
+npm run format           # Prettier
+npm run db:migrate       # aplica sql/ESQUEMA.sql y sql/migraciones pendientes (-- --estado | -- --marcar-base)
+npm run db:seed-admin -- --email=x@y.com --nombre="Nombre" [--rol=editor] [--generar]
+npm run revisar -- --base=http://localhost:3000 --rutas=/,/grupos   # capturas 360/768/1280 + desborde horizontal
 ```
 
 ## Configuración de la web app en Hostinger
