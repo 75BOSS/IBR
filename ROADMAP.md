@@ -29,7 +29,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [x] `/reuniones`: horarios por día desde `reuniones`, dirección, mapa embebido, "cómo llegar", opción En línea.
 - [ ] `/soy-nuevo`: qué esperar, ministerios por rango de edad, formulario → `registros` (origen=web, decidio_seguir, como_llego, peticion, acepta_datos). Correo de aviso al responsable configurado.
 - [ ] `/grupos`: directorio público filtrable por zona (ubicación), día, rango de edad y tipo; solo grupos `publico=1 AND activo=1`. `/grupos/[id]`: ficha + "Quiero unirme" → `solicitudes_grupo` + aviso al líder por correo.
-- [ ] `/predicas`: grilla desde `predicas`, filtro por serie y predicador, `YouTubeEmbed`. Botón "En vivo" que aparece si `config.en_vivo_activo=1` o dentro del horario de culto.
+- [x] `/predicas`: grilla desde `predicas`, filtro por serie y predicador, `YouTubeEmbed`. Botón "En vivo" que aparece si `config.en_vivo_activo=1` o dentro del horario de culto.
 - [ ] `/dar`: cuentas bancarias, QR, texto pastoral. Sin pasarela en F1.
 - [ ] `/oracion`: formulario corto → `peticiones` (es_privada).
 - [ ] `/contacto`: formulario → `contactos`, redes, mapa, WhatsApp.
@@ -41,7 +41,7 @@ Cada fase termina con: deploy en `main`, `ESTADO.md` actualizado, checklist de l
 - [ ] `/admin/registros`: lista, filtro por origen/estado, cambiar estado, exportar CSV.
 - [ ] `/admin/grupos`: CRUD completo (reemplaza al PHP), toggle público, asignar líder y ubicación; bandeja de `solicitudes_grupo` con estados.
 - [x] `/admin/reuniones`: CRUD horarios. _(+ `/admin/ubicaciones` «Lugares», ver ESTADO.md)_
-- [ ] `/admin/predicas`: pegar link de YouTube → se extrae `youtube_id`, se trae título/miniatura vía YouTube Data API (o manual si no hay key).
+- [x] `/admin/predicas`: pegar link de YouTube → se extrae `youtube_id`, se trae título/miniatura vía YouTube Data API (o manual si no hay key).
 - [ ] `/admin/eventos`: CRUD básico (sin inscripción aún), imagen en Cloudinary, `publicado`.
 - [ ] `/admin/peticiones`: lista, marcar atendida.
 - [ ] Rate limit + honeypot en todos los formularios públicos.
