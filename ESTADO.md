@@ -4,7 +4,7 @@
 
 ## Fase actual
 
-**Todo el código de F1, F2 y F3 está hecho**, probado en local (MySQL 8 + Chromium) y subido a `dev`. F1 y F2 pasaron por una revisión de código independiente y sus hallazgos se corrigieron; la de F3 está en curso.
+**Todo el código de F1, F2 y F3 está hecho**, probado en local (MySQL 8 + Chromium) y subido a `dev`. F1, F2 y F3 pasaron por una revisión de código independiente y todos sus hallazgos se corrigieron.
 
 - **F1 — Web que sirve:** 15 de 15 checkboxes de código. Falta el «Cierre F1», que no es código: contenido real, apagar el PHP de grupos, DNS y redirección de `ibrcomunidad.com`.
 - **F2 — Comunidad:** 8 de 8 (Nosotros, inscripciones con cupo, ministerios, Servir, agenda semanal, WhatsApp al líder, categorías, roles).
@@ -104,6 +104,11 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 | 2026-09-30 | Dependencia nueva: `qrcode` (genera el QR como SVG en el servidor) | Pequeña y sin dependencias de UI; nada se carga en el navegador |
 | 2026-09-30 | Menú del panel agrupado (Personas, Contenido del sitio, Comunicación, Administración) y con desplazamiento interno | 17 módulos ya no cabían; «Cerrar sesión» quedaba fuera de vista |
 | 2026-09-30 | «Configuración» no aparece en el menú del rol editor (`adminOnly` en `ADMIN_NAV`) | La página ya exigía admin; el enlace solo llevaba a un aviso de «sin permiso» |
+| 2026-09-30 | «Mi cuenta»: a un número desconocido se le guarda un código señuelo y se responde igual que a uno conocido (el WhatsApp sale con `after()`); pedir otro código no anula los anteriores | La respuesta y el tiempo no revelan quién es de la iglesia; si WhatsApp tarda, el primer código sigue sirviendo |
+| 2026-09-30 | Topes de códigos: 3 cada 10 min y 5 por día por teléfono, 300 por día en todo el sitio, 10 intentos fallidos por día por teléfono (reservados antes de comparar) | Cada plantilla de WhatsApp cuesta; el tope diario limita el gasto aunque alguien pruebe muchos números |
+| 2026-09-30 | Orden de bloqueo fijo en inscripciones: primero el evento, después la inscripción (inscribirse, cancelar y cambiar estado desde el panel) | Evita bloqueos cruzados (deadlock) entre la persona que cancela y el panel |
+| 2026-09-30 | `Permissions-Policy: camera=(self)` | El tablero de check-in usa la cámara; ningún sitio de terceros puede pedirla |
+| 2026-09-30 | `/eventos?categoria=x` redirige (308) a `/eventos/categoria/x` | Los enlaces viejos ya compartidos por WhatsApp siguen funcionando |
 
 ## Pendiente de confirmar con la iglesia (bloquea F1 contenido, no F0)
 
@@ -157,6 +162,7 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 - Migraciones 002–010 aplicadas en la BD local (ver `sql/migraciones/`).
 - Probado de punta a punta en Chromium con un SMTP falso local y una API de WhatsApp falsa: correos (confirmación, agenda con List-Unsubscribe, reintento), plantillas de WhatsApp (número 593…, parámetros, botón del código), carrera por el último lugar, check-in (válido, repetido, otro evento, cancelado) y el flujo completo de «Mi cuenta».
 - Revisión independiente de F2: 11 hallazgos (ninguno de seguridad grave), todos corregidos en `f253576`.
+- Revisión independiente de F3: 11 hallazgos (cámara bloqueada por la cabecera, carrera en los intentos del código, enumeración de miembros, topes diarios, lectura vieja del cupo al reconfirmar, agenda que pisaba suscriptores activos, doble admisión en el escáner, deadlock al cancelar, enlaces viejos de categorías, teléfonos del PHP), todos corregidos en `d72df2f`.
 - 87 pruebas unitarias, lint y build limpios.
 
 ## Descubrimientos / notas de sesión
