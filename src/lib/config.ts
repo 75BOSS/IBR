@@ -31,6 +31,7 @@ export const CONFIG_DEFAULTS = {
   home_hero_titulo: 'Bienvenido a casa',
   home_hero_sub: null,
   home_hero_imagen: null,
+  home_hero_video: null,
   nosotros_historia: null,
   nosotros_mision: null,
   nosotros_creencias: null,
