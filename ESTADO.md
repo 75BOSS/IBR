@@ -1,6 +1,6 @@
 # ESTADO.md — Web IBR
 
-Última actualización: 2026-09-30 (sesión de Claude Code). Claude Code: actualizar este archivo al cierre de cada sesión.
+Última actualización: 2026-10-07 (sesión de Claude Code). Claude Code: actualizar este archivo al cierre de cada sesión.
 
 ## Fase actual
 
@@ -109,6 +109,11 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 | 2026-09-30 | Orden de bloqueo fijo en inscripciones: primero el evento, después la inscripción (inscribirse, cancelar y cambiar estado desde el panel) | Evita bloqueos cruzados (deadlock) entre la persona que cancela y el panel |
 | 2026-09-30 | `Permissions-Policy: camera=(self)` | El tablero de check-in usa la cámara; ningún sitio de terceros puede pedirla |
 | 2026-09-30 | `/eventos?categoria=x` redirige (308) a `/eventos/categoria/x` | Los enlaces viejos ya compartidos por WhatsApp siguen funcionando |
+| 2026-10-07 | Rediseño del sitio público tomando ideas de caminodevida.com, masvida.org, ciem.casadedios.org y supresencia.com (revisados con el navegador): titulares grandes, accesos de colores, carrusel, frase en movimiento, ministerios con foto, contadores | Cristian pidió «un sitio muy bonito»; las tipografías y la organización se veían básicas |
+| 2026-10-07 | Se mantienen Fraunces + Figtree, pero Fraunces se usa como titular (`font-headline`: peso 420, tamaño óptico alto, letras juntas) con cursiva «WONK» en terracota para el `<em>` de cada título | Las fuentes tienen carácter; lo básico era cómo se usaban (seminegrita a tamaño mediano) |
+| 2026-10-07 | Animaciones sin librerías: aparición al hacer scroll con CSS (`animation-timeline: view()`), marquesina y zoom con CSS, contadores y carrusel con un poco de JS propio. Sin GSAP, Lenis, Swiper ni pantalla de carga | Peso mínimo en datos móviles; sin JavaScript nada queda oculto; con «reducir movimiento» todo queda quieto |
+| 2026-10-07 | Menú público agrupado (`PUBLIC_MENU`: Conócenos, Conéctate, Recursos + Dar) con desplegables; reemplaza las 6 entradas fijas de F0 | Con F2 y F3 el sitio tiene 17 páginas; agrupadas, todas quedan a un clic sin saturar el encabezado |
+| 2026-10-07 | Portada sin foto: ilustración del Chimborazo al amanecer (`HeroArt`). Video corto opcional (`home_hero_video`, migración 011) | Se ve terminada antes de tener fotos reales; el volcán es la imagen de Riobamba |
 
 ## Pendiente de confirmar con la iglesia (bloquea F1 contenido, no F0)
 
@@ -165,7 +170,20 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 - Revisión independiente de F3: 11 hallazgos (cámara bloqueada por la cabecera, carrera en los intentos del código, enumeración de miembros, topes diarios, lectura vieja del cupo al reconfirmar, agenda que pisaba suscriptores activos, doble admisión en el escáner, deadlock al cancelar, enlaces viejos de categorías, teléfonos del PHP), todos corregidos en `d72df2f`.
 - 87 pruebas unitarias, lint y build limpios.
 
+## Qué se hizo — rediseño del sitio público (2026-10-07)
+
+- Se revisaron con el navegador cuatro sitios de referencia (secciones, tipografía, colores y animaciones) y se aplicaron las ideas que encajan con la IBR.
+- Base: paleta de acompañamiento (`sage`, `ochre`, `sky`, `rose`, `night`), escala `text-hero`/`text-display`/`text-section`/`text-lead`, utilidades `eyebrow`, `font-headline` y `reveal`, botones `shape: 'pill'`.
+- Piezas nuevas en `src/components/site`: `Carousel`, `Marquee`, `CountUp`, `HeroArt`, `EventCover`, `MinisterioCard` (+ `ministerioSpan`), `SectionHeading`; `EmphasizeLast` en `src/components/Emphasis.tsx`. `EventCard` tiene variantes `featured`/`tile`/`row`; `FilterTabs` tiene `variant="pills"`.
+- Encabezado con desplegables y menú del celular a pantalla completa; pie con el nombre grande y los grupos del menú.
+- Portada nueva; Nosotros con cifras (`src/lib/stats.ts`); Ministerios con tarjetas de foto; Eventos con portadas tipográficas; todas las páginas públicas con `PageHeader size="display"`.
+- Revisado a 360/768/1280 sin desborde (20 rutas). Se encontró y corrigió que el menú del celular no se podía tocar (ver notas).
+
 ## Descubrimientos / notas de sesión
+
+- `backdrop-filter` (el desenfoque del encabezado) convierte al elemento en el contenedor de sus hijos `position: fixed`: el menú del celular, que era `fixed`, quedaba encerrado en los 64 px del header y no se podía tocar. Ahora es `absolute top-full` con alto `100dvh` menos el header.
+- La aparición al hacer scroll es solo CSS (`animation-timeline: view()`). En las capturas con Playwright conviene `reducedMotion: 'reduce'`; si no, lo que está fuera de pantalla sale transparente.
+- Chromium del contenedor no confiaba en el CA del proxy para sitios externos: se agregó `/root/.ccr/agent-proxy-ca.crt` al almacén NSS (`certutil -A -d sql:/root/.pki/nssdb -n ccr-agent-proxy -t "C,," -i …`).
 
 - `ESQUEMA.sql`, `db:migrate`, `db:seed-admin`, los helpers de `db.ts` y el login de punta a punta pasan tanto en **MySQL 8.0.46** como en **MariaDB 10.11.14**, ambos con la zona global en -05:00. En MySQL hay 21 avisos inofensivos de «display width deprecated» por `TINYINT(1)`. El SQL del código evita la sintaxis exclusiva de MySQL 8 (se usa `VALUES()` en `ON DUPLICATE KEY UPDATE`).
 - `next start` pone `x-forwarded-for` solo si no llega, y **no limpia** lo que manda el visitante. Por eso `getClientIp()` toma la IP desde la derecha (`TRUSTED_PROXY_HOPS`). Cómo verificarlo en Hostinger: en `/admin/diagnostico`, `x-forwarded-for` debería terminar en tu IP real. Si hay dos IPs de Hostinger al final, poner `TRUSTED_PROXY_HOPS=2`. Revisar también que la respuesta traiga `Strict-Transport-Security`.

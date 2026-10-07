@@ -79,7 +79,7 @@ src/
     session.ts           # opciones de iron-session (usable en middleware)
     password.ts  rate-limit.ts  request.ts (getClientIp)
     config.ts            # getSiteConfig() con caché 5 min, CONFIG_TAG
-    nav.ts               # PUBLIC_NAV, ADMIN_NAV (ready:true al terminar cada módulo)
+    nav.ts               # PUBLIC_MENU (+ MENU_LINKS, LEGAL_NAV, PUBLIC_PAGES), ADMIN_NAV (ready:true al terminar cada módulo)
     form-state.ts        # FormState: resultado estándar de server actions
     validators/          # esquemas Zod por entidad
     youtube.ts  maps.ts  whatsapp.ts  dates.ts  site.ts   (mail.ts, cloudinary.ts en F1)
@@ -104,6 +104,7 @@ sql/
 - **Módulos que usa el cliente** no importan nada de servidor (bcrypt, `node:*`, `@/lib/db`): las constantes compartidas van en su propio archivo (ej. `src/lib/roles.ts`).
 - **Formularios públicos**: Zod → honeypot → `consumeRateLimit('<form>', { ip: await getClientIp() })` → insert → aviso.
 - **Menú del panel**: una sola lista `ADMIN_NAV` en `src/lib/nav.ts`; poner `ready: true` al terminar el módulo.
+- **Menú público**: `PUBLIC_MENU` (grupos con descripción por página) en `src/lib/nav.ts`; lo usan el encabezado, el menú del celular, el pie, la 404 y el sitemap (`PUBLIC_PAGES`). Página nueva → agregarla a su grupo.
 - **Configuración**: leer con `getSiteConfig()`; al guardar en `/admin/config`, `revalidateTag(CONFIG_TAG)`.
 - **Colores y tipografía**: solo tokens de `src/app/globals.css` (`bg-surface`, `text-ink-soft`, `text-h2`…). Superficies oscuras: variantes `inverse` de `Button`/`Tag` (`inverseOutline` para una acción visible sobre la portada o un panel de marca), nunca pisar clases con `className`.
 - **Íconos**: `<Icon name="…">`; para uno nuevo se agrega su SVG al mapa de `src/components/Icon.tsx`.
@@ -117,6 +118,7 @@ sql/
 - **Decisiones que no pueden correr en paralelo** (cupo, último administrador): `withTransaction` + `SELECT … FOR UPDATE` sobre la fila que manda (el evento, los admins), siempre en el mismo orden.
 - **Correos que no deben delatar datos** (ej. si alguien ya está suscrito): se envían con `after()` para que la respuesta tarde lo mismo; los masivos llevan `unsubscribeUrl`.
 - **Avisos externos** (correo, WhatsApp Cloud API): se llaman después de guardar, nunca hacen fallar el formulario y registran el motivo si no salen.
+- **Sitio público (diseño)**: título de página con `PageHeader size="display"`; títulos de sección con `SectionHeading`; un `<em>` dentro de un título sale en cursiva terracota (textos de la config: `EmphasizeLast`). Etiquetas con la utilidad `eyebrow`, titulares con `font-headline`. Botones de llamada a la acción con `shape: 'pill'`. Tarjetas que entran al hacer scroll: clase `reveal` (solo CSS). Fotos con zoom al pasar el mouse: `motion-safe:group-hover:scale-105`. Toda animación respeta «reducir movimiento» (`motion-safe:`/`motion-reduce:`) y nada queda oculto sin JavaScript.
 
 ## Reglas de código
 
