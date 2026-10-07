@@ -50,13 +50,31 @@
   --color-danger-soft: #f6e0d9;
   --color-whatsapp: #157a4b;
 
+  /* Tonos de acompañamiento del sitio (accesos, ministerios, portadas sin foto). Con texto
+     --color-ink encima (≥ 7:1); los «-strong» llevan texto claro (≥ 6:1). */
+  --color-sage: #c7d0bb;
+  --color-sage-strong: #3d5a45;
+  --color-ochre: #e6b45e;
+  --color-ochre-strong: #7a5200;
+  --color-sky: #b5c4d3;
+  --color-sky-strong: #2f4a63;
+  --color-rose: #e8c3b3;
+  --color-night: #10262c;
+
   /* Tipografía con carácter: Fraunces (títulos) + Figtree (texto). */
   --font-display: var(--font-fraunces), 'Iowan Old Style', Georgia, serif;
   --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
 
-  /* Escala fluida: se redimensiona entre 360 y 1280 px, no solo se reacomoda. */
-  --text-display: clamp(2.125rem, 1.35rem + 3.4vw, 3.75rem);
-  --text-display--line-height: 1.05;
+  /* Escala fluida: se redimensiona entre 360 y 1280 px, no solo se reacomoda.
+     hero: titular de la portada; display: título de cada página pública. */
+  --text-hero: clamp(3.25rem, 0.9rem + 10.4vw, 9rem);
+  --text-hero--line-height: 0.92;
+  --text-display: clamp(2.5rem, 1.25rem + 5.6vw, 5.5rem);
+  --text-display--line-height: 0.98;
+  --text-section: clamp(2rem, 1.2rem + 3.6vw, 4rem);
+  --text-section--line-height: 1.02;
+  --text-lead: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
+  --text-lead--line-height: 1.5;
   --text-h1: clamp(1.75rem, 1.3rem + 2vw, 2.75rem);
   --text-h1--line-height: 1.1;
   --text-h2: clamp(1.375rem, 1.1rem + 1.2vw, 2rem);
@@ -66,6 +84,11 @@
 
   --shadow-card: 0 1px 2px rgb(30 42 47 / 0.06), 0 10px 28px -14px rgb(30 42 47 / 0.28);
   --shadow-pop: 0 12px 40px -12px rgb(30 42 47 / 0.35);
+  --shadow-lift: 0 2px 4px rgb(30 42 47 / 0.06), 0 24px 48px -20px rgb(30 42 47 / 0.4);
+
+  --radius-frame: clamp(1.25rem, 0.8rem + 2vw, 2.5rem);
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @layer base {
@@ -88,6 +111,20 @@
     font-optical-sizing: auto;
     letter-spacing: -0.01em;
     text-wrap: balance;
+  }
+
+  /* Énfasis de los títulos («Bienvenido a <em>casa</em>»): Fraunces cursiva, suave y con sus
+     letras «traviesas» (eje WONK), en terracota. Sobre fondos oscuros, on-dark la aclara. */
+  :is(h1, h2, h3, .font-headline) em {
+    font-style: italic;
+    font-variation-settings:
+      'SOFT' 100,
+      'WONK' 1;
+    color: var(--title-em, var(--color-accent-strong));
+  }
+
+  p {
+    text-wrap: pretty;
   }
 
   /* Foco visible y consistente en todo el sitio (accesibilidad mínima de CLAUDE.md).
@@ -116,13 +153,85 @@
   }
 }
 
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(2.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes slow-zoom {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
 @theme {
   --animate-toast-in: toast-in 180ms ease-out;
+  --animate-marquee: marquee 70s linear infinite;
+  --animate-slow-zoom: slow-zoom 14s var(--ease-out-soft) both;
+}
+
+/*
+ * Aparición al hacer scroll, solo con CSS (animation-timeline: view()): sin JavaScript, el
+ * contenido nunca queda oculto. Navegadores sin soporte o con «reducir movimiento» lo muestran
+ * quieto desde el principio.
+ */
+@utility reveal {
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+
+/* Etiqueta sobre los títulos: versalitas espaciadas con una raya delante. */
+@utility eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  &::before {
+    content: '';
+    width: 2rem;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+}
+
+/* Titulares grandes de Fraunces: tamaño óptico alto, trazo suave y letras más juntas. */
+@utility font-headline {
+  font-family: var(--font-display);
+  font-weight: 420;
+  font-variation-settings: 'SOFT' 50;
+  letter-spacing: -0.035em;
 }
 
 /* Superficies oscuras (barra lateral, pie, franjas petróleo): anillo de foco claro (≥ 9:1). */
 @utility on-dark {
   --focus-ring: var(--color-accent-soft);
+  --title-em: var(--color-ochre);
 }
 
 /* Contenido de las páginas del panel: márgenes fluidos junto a la barra lateral. */

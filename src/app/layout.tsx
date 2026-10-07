@@ -8,7 +8,9 @@ import './globals.css';
 const fraunces = Fraunces({
   variable: '--font-fraunces',
   subsets: ['latin'],
-  axes: ['opsz', 'SOFT'],
+  // Variable: tamaño óptico, suavidad y letras «traviesas» (WONK) para la cursiva de los títulos.
+  axes: ['opsz', 'SOFT', 'WONK'],
+  style: ['normal', 'italic'],
   display: 'swap',
 });
 

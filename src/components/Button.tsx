@@ -3,7 +3,12 @@
 import Link from 'next/link';
 import type { ComponentProps, ReactNode } from 'react';
 import { useFormStatus } from 'react-dom';
-import { type ButtonSize, type ButtonVariant, buttonClasses } from '@/components/button-styles';
+import {
+  type ButtonSize,
+  type ButtonShape,
+  type ButtonVariant,
+  buttonClasses,
+} from '@/components/button-styles';
 import { Spinner } from '@/components/Spinner';
 
 // buttonClasses se importa de '@/components/button-styles' (llamable también en el servidor).
@@ -13,6 +18,7 @@ type ButtonProps = ComponentProps<'button'> & {
   variant?: ButtonVariant;
   size?: ButtonSize;
   block?: boolean;
+  shape?: ButtonShape;
   /** Fuerza el estado de carga. En botones submit se detecta solo con useFormStatus. */
   pending?: boolean;
   /** Texto mientras carga (ej. "Guardando…"). Por defecto se mantiene el texto normal. */
@@ -29,6 +35,7 @@ export function Button({
   variant,
   size,
   block,
+  shape,
   pending,
   pendingLabel,
   icon,
@@ -44,7 +51,7 @@ export function Button({
   return (
     <button
       type={type}
-      className={buttonClasses({ variant, size, block, className })}
+      className={buttonClasses({ variant, size, block, shape, className })}
       disabled={disabled || isPending}
       aria-busy={isPending || undefined}
       {...props}
@@ -59,6 +66,7 @@ type ButtonLinkProps = ComponentProps<typeof Link> & {
   variant?: ButtonVariant;
   size?: ButtonSize;
   block?: boolean;
+  shape?: ButtonShape;
   icon?: ReactNode;
 };
 
@@ -67,13 +75,14 @@ export function ButtonLink({
   variant,
   size,
   block,
+  shape,
   icon,
   className,
   children,
   ...props
 }: ButtonLinkProps) {
   return (
-    <Link className={buttonClasses({ variant, size, block, className })} {...props}>
+    <Link className={buttonClasses({ variant, size, block, shape, className })} {...props}>
       {icon}
       <span>{children}</span>
     </Link>

@@ -375,6 +375,49 @@ const icons = {
       </>
     ),
   },
+  chevronDown: {
+    kind: 'stroke',
+    body: (
+      <>
+        <path d="m6 9 6 6 6-6" />
+      </>
+    ),
+  },
+  arrowLeft: {
+    kind: 'stroke',
+    body: (
+      <>
+        <path d="m12 19-7-7 7-7" />
+        <path d="M19 12H5" />
+      </>
+    ),
+  },
+  arrowUpRight: {
+    kind: 'stroke',
+    body: (
+      <>
+        <path d="M7 7h10v10" />
+        <path d="M7 17 17 7" />
+      </>
+    ),
+  },
+  user: {
+    kind: 'stroke',
+    body: (
+      <>
+        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </>
+    ),
+  },
+  sparkle: {
+    kind: 'stroke',
+    body: (
+      <>
+        <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+      </>
+    ),
+  },
   chevronLeft: {
     kind: 'stroke',
     body: (

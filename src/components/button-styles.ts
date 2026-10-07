@@ -16,7 +16,7 @@ export type ButtonVariant =
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-xl font-semibold leading-none ' +
+  'inline-flex items-center justify-center gap-2 font-semibold leading-none ' +
   'transition-colors motion-safe:duration-150 select-none ' +
   'disabled:cursor-not-allowed disabled:opacity-60 aria-disabled:cursor-not-allowed aria-disabled:opacity-60';
 
@@ -42,16 +42,28 @@ const sizes: Record<ButtonSize, string> = {
   lg: 'min-h-12 px-5 text-base md:min-h-13 md:px-7 md:text-lg',
 };
 
+/** rounded: panel y formularios; pill: llamadas a la acción del sitio público. */
+export type ButtonShape = 'rounded' | 'pill';
+
 export function buttonClasses({
   variant = 'primary',
   size = 'md',
+  shape = 'rounded',
   block = false,
   className = '',
 }: {
   variant?: ButtonVariant;
   size?: ButtonSize;
+  shape?: ButtonShape;
   block?: boolean;
   className?: string;
 } = {}): string {
-  return [base, variants[variant], sizes[size], block ? 'w-full' : '', className].join(' ');
+  return [
+    base,
+    shape === 'pill' ? 'rounded-full' : 'rounded-xl',
+    variants[variant],
+    sizes[size],
+    block ? 'w-full' : '',
+    className,
+  ].join(' ');
 }
