@@ -1,71 +1,81 @@
 import Link from 'next/link';
-import { BrandMark } from '@/components/BrandMark';
+import { buttonClasses } from '@/components/button-styles';
+import { EmphasizeLast } from '@/components/Emphasis';
 import { Icon } from '@/components/Icon';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import type { SiteConfig } from '@/lib/config';
-import { FOOTER_EXTRA_NAV, PUBLIC_NAV, socialLinks } from '@/lib/nav';
+import { LEGAL_NAV, MENU_LINKS, PUBLIC_MENU, socialLinks } from '@/lib/nav';
 import { formatPhoneEc } from '@/lib/whatsapp';
 
 function FooterHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="font-sans text-xs font-bold tracking-[0.16em] text-footer-muted uppercase">
-      {children}
-    </h2>
-  );
+  return <h2 className="eyebrow text-footer-muted">{children}</h2>;
 }
 
+/** Pie del sitio: nombre grande con la visión, los grupos del menú, visítanos y contacto. */
 export function SiteFooter({ config }: { config: SiteConfig }) {
   const socials = socialLinks(config);
-  const hasContact = Boolean(config.whatsapp || config.telefono || config.email);
   const year = new Date().getFullYear();
 
   return (
     <footer className="mt-auto bg-footer text-footer-ink on-dark">
-      <div className="container-page grid gap-x-10 gap-y-8 py-[clamp(2.5rem,6vw,4.5rem)] md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
-        <div className="flex flex-col gap-4 md:col-span-2 lg:col-span-1">
-          <div className="flex items-center gap-3">
-            <BrandMark />
-            <p className="font-display text-lg leading-tight font-semibold md:text-xl">
-              {config.nombre_iglesia}
+      <div className="container-page flex flex-col gap-[clamp(2.5rem,6vw,4.5rem)] py-[clamp(3rem,8vw,6rem)]">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex max-w-3xl flex-col gap-4">
+            <p className="font-headline text-section text-footer-ink">
+              <EmphasizeLast text={config.nombre_iglesia ?? 'Iglesia Bíblica Riobamba'} />
             </p>
+            {config.vision && (
+              <p className="max-w-xl font-display text-h3 leading-snug text-footer-ink/85 italic">
+                «{config.vision}»
+              </p>
+            )}
           </div>
-          {config.vision && (
-            <p className="max-w-sm font-display text-h3 leading-snug text-footer-ink/90 italic">
-              «{config.vision}»
-            </p>
-          )}
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/soy-nuevo"
+              className={buttonClasses({
+                variant: 'accent',
+                size: 'lg',
+                shape: 'pill',
+              })}
+            >
+              Es mi primera vez
+            </Link>
+            {MENU_LINKS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={buttonClasses({
+                  variant: 'inverseOutline',
+                  size: 'lg',
+                  shape: 'pill',
+                })}
+              >
+                {item.label} <Icon name="arrowUpRight" className="size-5" />
+              </Link>
+            ))}
+          </div>
         </div>
 
-        <div className="flex flex-col gap-3">
-          <FooterHeading>Visítanos</FooterHeading>
-          {config.direccion ? (
-            <address className="flex gap-2 not-italic">
-              <Icon name="mapPin" className="mt-0.5 size-5 text-footer-muted" />
-              <span>
-                {config.direccion}
-                {config.referencia_llegada && (
-                  <span className="mt-1 block text-sm text-footer-muted">
-                    {config.referencia_llegada}
-                  </span>
-                )}
-              </span>
-            </address>
-          ) : (
-            <p className="text-footer-muted">Pronto publicaremos la dirección del auditorio.</p>
-          )}
-          <Link
-            href="/reuniones"
-            className="inline-flex items-center gap-1.5 font-semibold text-footer-ink underline decoration-accent decoration-2 underline-offset-4 hover:decoration-footer-ink"
-          >
-            Horarios y cómo llegar
-            <Icon name="arrowRight" className="size-4" />
-          </Link>
-        </div>
-
-        <div className="flex flex-col gap-3">
-          <FooterHeading>Contacto</FooterHeading>
-          {hasContact ? (
-            <ul className="flex flex-col gap-2.5">
+        <div className="grid gap-x-10 gap-y-10 border-t border-footer-ink/15 pt-[clamp(2rem,5vw,3.5rem)] xs:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
+          <div className="flex flex-col gap-4 xs:col-span-2 lg:col-span-1">
+            <FooterHeading>Visítanos</FooterHeading>
+            {config.direccion ? (
+              <address className="flex gap-2 not-italic">
+                <Icon name="mapPin" className="mt-0.5 size-5 text-footer-muted" />
+                <span>
+                  {config.direccion}
+                  {config.referencia_llegada && (
+                    <span className="mt-1 block text-sm text-footer-muted">
+                      {config.referencia_llegada}
+                    </span>
+                  )}
+                </span>
+              </address>
+            ) : (
+              <p className="text-footer-muted">Pronto publicaremos la dirección del auditorio.</p>
+            )}
+            <ul className="flex flex-col gap-2">
               {config.telefono && (
                 <li>
                   <a
@@ -88,60 +98,64 @@ export function SiteFooter({ config }: { config: SiteConfig }) {
                   </a>
                 </li>
               )}
-              {config.whatsapp && (
-                <li className="pt-1">
-                  <WhatsAppButton
-                    number={config.whatsapp}
-                    label="WhatsApp"
-                    message="Hola, les escribo desde la página web."
-                  />
-                </li>
-              )}
             </ul>
-          ) : (
-            <p className="text-footer-muted">
-              Escríbenos por nuestras redes mientras publicamos el contacto.
-            </p>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-3 md:col-span-2 lg:col-span-1">
-          <FooterHeading>Síguenos</FooterHeading>
-          <ul className="flex flex-wrap gap-x-6 gap-y-1 lg:flex-col lg:gap-1">
-            {socials.map((s) => (
-              <li key={s.label}>
+            <div className="flex flex-wrap items-center gap-2">
+              {config.whatsapp && (
+                <WhatsAppButton
+                  number={config.whatsapp}
+                  label="WhatsApp"
+                  message="Hola, les escribo desde la página web."
+                />
+              )}
+              {socials.map((s) => (
                 <a
+                  key={s.label}
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-10 items-center gap-2.5 rounded-lg hover:underline"
+                  className="grid size-11 place-items-center rounded-full ring-1 ring-footer-ink/25 transition-colors hover:bg-footer-ink/10"
                 >
                   <Icon name={s.icon} className="size-5" />
-                  {s.label}
-                  <span className="sr-only"> (se abre en una pestaña nueva)</span>
+                  <span className="sr-only">{s.label} (se abre en una pestaña nueva)</span>
                 </a>
-              </li>
-            ))}
-          </ul>
+              ))}
+            </div>
+          </div>
+
+          {PUBLIC_MENU.map((group) => (
+            <nav key={group.title} aria-label={group.title} className="flex flex-col gap-4">
+              <FooterHeading>{group.title}</FooterHeading>
+              <ul className="flex flex-col gap-2.5">
+                {group.items.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="font-display text-lg text-footer-ink/90 transition-colors hover:text-ochre hover:italic"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
         </div>
       </div>
 
       <div className="border-t border-footer-ink/15">
         <div className="container-page flex flex-col gap-3 py-5 text-sm text-footer-muted md:flex-row md:items-center md:justify-between">
-          <nav aria-label="Pie de página">
-            <ul className="flex flex-wrap gap-x-4 gap-y-1">
-              {[...PUBLIC_NAV, ...FOOTER_EXTRA_NAV].map((item) => (
-                <li key={item.href}>
-                  <Link href={item.href} className="hover:text-footer-ink hover:underline">
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
           <p>
             © {year} {config.nombre_corto ?? 'IBR'} · Sitio por Grupo Pixelia
           </p>
+          <ul className="flex flex-wrap gap-x-5 gap-y-1">
+            {LEGAL_NAV.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href} className="hover:text-footer-ink hover:underline">
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </footer>

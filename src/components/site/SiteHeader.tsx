@@ -5,7 +5,7 @@ import type { SiteConfig } from '@/lib/config';
 
 export function SiteHeader({ config }: { config: SiteConfig }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-line/70 bg-canvas/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-line/60 bg-canvas/90 backdrop-blur-md">
       <div className="container-page flex h-16 items-center gap-2 md:h-18 md:gap-3">
         <MainNav
           whatsapp={config.whatsapp}
@@ -13,10 +13,10 @@ export function SiteHeader({ config }: { config: SiteConfig }) {
             <Link href="/" className="flex min-w-0 items-center gap-2.5 rounded-lg">
               <BrandMark />
               <span className="min-w-0 leading-tight">
-                <span className="block truncate font-display text-[0.95rem] font-semibold text-brand-strong md:text-lg">
+                <span className="block truncate font-display text-[1.05rem] font-medium tracking-tight text-brand-strong md:text-xl">
                   Iglesia Bíblica
                 </span>
-                <span className="block text-[0.7rem] font-semibold tracking-[0.14em] text-ink-soft uppercase md:text-xs">
+                <span className="block text-[0.65rem] font-bold tracking-[0.28em] text-accent-strong uppercase md:text-[0.7rem]">
                   Riobamba
                 </span>
               </span>

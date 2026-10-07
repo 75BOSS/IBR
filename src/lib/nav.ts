@@ -1,31 +1,65 @@
 import type { IconName } from '@/components/Icon';
 import type { SiteConfig } from '@/lib/config';
 
-/** Navegación pública (ROADMAP F0: 6 entradas). Un solo lugar para header, menú móvil y footer. */
-export const PUBLIC_NAV = [
-  { href: '/', label: 'Inicio' },
-  { href: '/soy-nuevo', label: 'Soy nuevo' },
-  { href: '/reuniones', label: 'Reuniones' },
-  { href: '/grupos', label: 'Grupos' },
-  { href: '/predicas', label: 'Prédicas' },
-  { href: '/dar', label: 'Dar' },
-] as const;
+export type PublicNavItem = {
+  href: string;
+  label: string;
+  /** Una línea que explica la página (menú desplegable y menú del celular). */
+  description?: string;
+  /** Página personal: no va al sitemap (no se indexa). */
+  private?: boolean;
+};
 
 /**
- * Enlaces que no caben en el menú principal: van en el pie de página. `private`: página
- * personal que no va al sitemap (no se indexa).
+ * Navegación pública agrupada como la recorre un visitante: conocer la iglesia, dar el
+ * siguiente paso y los recursos de cada semana. Un solo lugar para el menú, el menú del celular,
+ * el pie de página y el sitemap.
  */
-export const FOOTER_EXTRA_NAV = [
-  { href: '/nosotros', label: 'Nosotros' },
-  { href: '/ministerios', label: 'Ministerios' },
-  { href: '/servir', label: 'Servir' },
-  { href: '/eventos', label: 'Eventos' },
-  { href: '/agenda', label: 'Agenda semanal' },
-  { href: '/oracion', label: 'Pedir oración' },
-  { href: '/contacto', label: 'Contacto' },
+export const PUBLIC_MENU: { title: string; items: PublicNavItem[] }[] = [
+  {
+    title: 'Conócenos',
+    items: [
+      { href: '/nosotros', label: 'Nosotros', description: 'Historia, visión y en qué creemos' },
+      { href: '/ministerios', label: 'Ministerios', description: 'Un lugar para cada edad' },
+      { href: '/reuniones', label: 'Reuniones', description: 'Horarios y cómo llegar' },
+      { href: '/contacto', label: 'Contacto', description: 'Escríbenos o llámanos' },
+    ],
+  },
+  {
+    title: 'Conéctate',
+    items: [
+      { href: '/soy-nuevo', label: 'Soy nuevo', description: 'Qué esperar en tu primera visita' },
+      { href: '/grupos', label: 'Grupos', description: 'Grupos en casas por toda la ciudad' },
+      { href: '/eventos', label: 'Eventos', description: 'Lo que viene en la iglesia' },
+      { href: '/servir', label: 'Servir', description: 'Sirve con tus dones en un equipo' },
+    ],
+  },
+  {
+    title: 'Recursos',
+    items: [
+      { href: '/predicas', label: 'Prédicas', description: 'Los mensajes de cada domingo' },
+      { href: '/agenda', label: 'Agenda semanal', description: 'Lo que viene, en tu correo' },
+      { href: '/oracion', label: 'Pedir oración', description: 'Los pastores oran por ti' },
+    ],
+  },
+];
+
+/** Enlaces sueltos del menú (sin desplegable). */
+export const MENU_LINKS: PublicNavItem[] = [{ href: '/dar', label: 'Dar' }];
+
+/** Enlaces del pie que no van en el menú principal. */
+export const LEGAL_NAV: PublicNavItem[] = [
   { href: '/mi-cuenta', label: 'Mi cuenta', private: true },
   { href: '/privacidad', label: 'Privacidad' },
-] as const;
+];
+
+/** Todas las páginas públicas fijas (sitemap, página 404). */
+export const PUBLIC_PAGES: PublicNavItem[] = [
+  { href: '/', label: 'Inicio' },
+  ...PUBLIC_MENU.flatMap((group) => group.items),
+  ...MENU_LINKS,
+  ...LEGAL_NAV,
+];
 
 export type AdminNavItem = {
   href: string;

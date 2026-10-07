@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { CATEGORIAS } from '@/app/(public)/eventos/CategoriaTabs';
 import { query } from '@/lib/db';
-import { FOOTER_EXTRA_NAV, PUBLIC_NAV } from '@/lib/nav';
+import { PUBLIC_PAGES } from '@/lib/nav';
 import { siteUrl } from '@/lib/site';
 
 export const revalidate = 3600;
@@ -19,7 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     query<{ id: number }>('SELECT id FROM grupos WHERE publico = 1 AND activo = 1'),
     query<{ slug: string }>('SELECT slug FROM rangos_edad WHERE activo = 1'),
   ]);
-  const pages = [...PUBLIC_NAV, ...FOOTER_EXTRA_NAV].filter((item) => !('private' in item));
+  const pages = PUBLIC_PAGES.filter((item) => !item.private);
   return [
     ...pages.map((item) => ({
       url: `${base}${item.href === '/' ? '' : item.href}`,
