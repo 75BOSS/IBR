@@ -3,6 +3,15 @@ import Link from 'next/link';
 import { Icon } from '@/components/Icon';
 import { type Ministerio, edadText, ministerioName } from '@/lib/ministerios';
 
+/** Fondo de los ministerios sin color propio: tonos de la marca, para que no salgan todos iguales. */
+const FALLBACK_TONES = [
+  'var(--color-brand-strong)',
+  'var(--color-electric)',
+  'var(--color-night)',
+  'var(--color-electric-strong)',
+  'var(--color-accent-strong)',
+];
+
 /**
  * Ministerio como tarjeta de foto (inicio y /ministerios). Sin foto, su color con la inicial
  * grande. El velo oscuro de abajo garantiza el contraste del nombre sobre cualquier foto.
@@ -23,9 +32,9 @@ export function MinisterioCard({
     <Link
       href={`/ministerios/${m.slug}`}
       className={`group relative isolate flex h-full flex-col justify-end overflow-hidden rounded-(--radius-frame) text-surface on-dark ${
-        featured ? 'min-h-[clamp(17rem,50vw,32rem)]' : 'min-h-[clamp(13rem,40vw,24rem)]'
+        featured ? 'min-h-[clamp(13rem,30vw,20rem)]' : 'min-h-[clamp(11rem,22vw,15rem)]'
       }`}
-      style={{ backgroundColor: m.color ?? 'var(--color-brand-strong)' }}
+      style={{ backgroundColor: m.color ?? FALLBACK_TONES[m.id % FALLBACK_TONES.length] }}
     >
       {m.imagen_url ? (
         <Image
@@ -38,7 +47,7 @@ export function MinisterioCard({
       ) : (
         <span
           aria-hidden="true"
-          className="absolute -top-8 -right-4 -z-20 font-display text-[clamp(12rem,8rem+18vw,20rem)] leading-none text-surface/20 italic transition-transform duration-700 ease-(--ease-out-soft) motion-safe:group-hover:-translate-x-3"
+          className="absolute -top-8 -right-4 -z-20 font-display text-[clamp(8rem,5rem+10vw,13rem)] leading-none text-surface/20 italic transition-transform duration-700 ease-(--ease-out-soft) motion-safe:group-hover:-translate-x-3"
         >
           {name.charAt(0)}
         </span>
@@ -55,8 +64,8 @@ export function MinisterioCard({
         <span
           className={`font-headline leading-none ${
             featured
-              ? 'text-[clamp(1.875rem,1.2rem+2.6vw,3.25rem)]'
-              : 'text-[clamp(1.375rem,1rem+1.8vw,2.5rem)]'
+              ? 'text-[clamp(1.625rem,1.2rem+1.6vw,2.5rem)]'
+              : 'text-[clamp(1.25rem,1rem+0.9vw,1.75rem)]'
           }`}
         >
           {name}

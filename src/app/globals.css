@@ -13,32 +13,35 @@
   --breakpoint-lg: 64rem;
   --breakpoint-xl: 80rem;
 
-  /* Superficies */
-  --color-canvas: #f4eee3; /* fondo de página */
-  --color-surface: #fbf7f0; /* tarjetas, campos */
-  --color-sunken: #ece4d4; /* paneles hundidos, filas alternas */
-  --color-line: #cfc4b0; /* divisores decorativos */
-  --color-field-border: #8c8373; /* bordes de controles (3.5:1) */
+  /* Colores de la marca IBR («Somos Familia», como en sus redes): azul marino, durazno, azul
+     eléctrico y el naranja de las letras manuscritas. Contraste verificado (AA). */
 
-  /* Texto */
-  --color-ink: #1e2a2f;
-  --color-ink-soft: #4f5d62;
+  /* Superficies: crema con un toque durazno, nunca blanco puro */
+  --color-canvas: #f5eee6; /* fondo de página */
+  --color-surface: #fbf7f2; /* tarjetas, campos */
+  --color-sunken: #efe4d6; /* paneles hundidos, filas alternas */
+  --color-line: #d8cbbb; /* divisores decorativos */
+  --color-field-border: #857a6c; /* bordes de controles (3.7:1) */
 
-  /* Marca: petróleo (confianza) + terracota (acción) */
-  --color-brand: #0e5e6f;
-  --color-brand-strong: #0a4654;
-  --color-brand-soft: #d5e6e8;
-  --color-accent: #b4532a;
-  --color-accent-strong: #94401d;
-  --color-accent-soft: #f3dfd2;
+  /* Texto: azul marino */
+  --color-ink: #0f2340;
+  --color-ink-soft: #46546b;
+
+  /* Marca: azul marino (confianza) + naranja (acción y énfasis) */
+  --color-brand: #1b3a6b;
+  --color-brand-strong: #102a4f;
+  --color-brand-soft: #dde5f2;
+  --color-accent: #b14d1a;
+  --color-accent-strong: #9c4214;
+  --color-accent-soft: #fbe3cf;
 
   /* Paneles oscuros */
-  --color-sidebar: #0b3a44;
-  --color-sidebar-ink: #e6efef;
-  --color-sidebar-muted: #9dbbbf;
-  --color-footer: #1b2b30;
-  --color-footer-ink: #e9e2d3;
-  --color-footer-muted: #a9b4b1;
+  --color-sidebar: #102a4f;
+  --color-sidebar-ink: #e8edf6;
+  --color-sidebar-muted: #a9b8d2;
+  --color-footer: #0a1a33;
+  --color-footer-ink: #f3ece4;
+  --color-footer-muted: #a9b4c6;
 
   /* Estados */
   --color-success: #1f6140;
@@ -50,16 +53,14 @@
   --color-danger-soft: #f6e0d9;
   --color-whatsapp: #157a4b;
 
-  /* Tonos de acompañamiento del sitio (accesos, ministerios, portadas sin foto). Con texto
-     --color-ink encima (≥ 7:1); los «-strong» llevan texto claro (≥ 6:1). */
-  --color-sage: #c7d0bb;
-  --color-sage-strong: #3d5a45;
-  --color-ochre: #e6b45e;
-  --color-ochre-strong: #7a5200;
-  --color-sky: #b5c4d3;
-  --color-sky-strong: #2f4a63;
-  --color-rose: #e8c3b3;
-  --color-night: #10262c;
+  /* Acompañamiento (accesos, ministerios, portadas sin foto). Los claros llevan texto
+     --color-ink (≥ 10:1); los oscuros, texto claro (≥ 6:1). */
+  --color-peach: #f8cba0;
+  --color-peach-strong: #8a4a1c;
+  --color-electric: #2c55c7;
+  --color-electric-strong: #1d3b8f;
+  --color-electric-soft: #cdd8f3;
+  --color-night: #0a1a33;
 
   /* Tipografía con carácter: Fraunces (títulos) + Figtree (texto). */
   --font-display: var(--font-fraunces), 'Iowan Old Style', Georgia, serif;
@@ -67,13 +68,13 @@
 
   /* Escala fluida: se redimensiona entre 360 y 1280 px, no solo se reacomoda.
      hero: titular de la portada; display: título de cada página pública. */
-  --text-hero: clamp(3.25rem, 0.9rem + 10.4vw, 9rem);
-  --text-hero--line-height: 0.92;
-  --text-display: clamp(2.5rem, 1.25rem + 5.6vw, 5.5rem);
-  --text-display--line-height: 0.98;
-  --text-section: clamp(2rem, 1.2rem + 3.6vw, 4rem);
-  --text-section--line-height: 1.02;
-  --text-lead: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
+  --text-hero: clamp(2.75rem, 1.5rem + 5.6vw, 6.25rem);
+  --text-hero--line-height: 0.95;
+  --text-display: clamp(2.25rem, 1.5rem + 3.4vw, 4.25rem);
+  --text-display--line-height: 1;
+  --text-section: clamp(1.875rem, 1.35rem + 2.3vw, 3.25rem);
+  --text-section--line-height: 1.05;
+  --text-lead: clamp(1.0625rem, 0.98rem + 0.4vw, 1.3125rem);
   --text-lead--line-height: 1.5;
   --text-h1: clamp(1.75rem, 1.3rem + 2vw, 2.75rem);
   --text-h1--line-height: 1.1;
@@ -231,7 +232,7 @@
 /* Superficies oscuras (barra lateral, pie, franjas petróleo): anillo de foco claro (≥ 9:1). */
 @utility on-dark {
   --focus-ring: var(--color-accent-soft);
-  --title-em: var(--color-ochre);
+  --title-em: var(--color-peach);
 }
 
 /* Contenido de las páginas del panel: márgenes fluidos junto a la barra lateral. */

@@ -18,7 +18,7 @@ export function GroupCard({ group }: { group: GrupoPublico }) {
   return (
     <Card
       as="article"
-      accentColor={group.rango_color ?? '#0e5e6f'}
+      accentColor={group.rango_color ?? 'var(--color-brand)'}
       className="group relative h-full"
     >
       <div className="flex h-full flex-col gap-2">

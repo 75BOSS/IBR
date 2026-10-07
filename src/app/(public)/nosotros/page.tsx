@@ -36,8 +36,8 @@ function Person({ person, featured }: { person: EquipoRow; featured: boolean }) 
       }`}
     >
       <span
-        className={`relative shrink-0 overflow-hidden rounded-full bg-sage ${
-          featured ? 'size-[clamp(6rem,22vw,8.5rem)]' : 'size-16'
+        className={`relative shrink-0 overflow-hidden rounded-full bg-electric-soft ${
+          featured ? 'size-[clamp(5rem,14vw,7rem)]' : 'size-16'
         }`}
       >
         {person.foto_url ? (
@@ -50,7 +50,7 @@ function Person({ person, featured }: { person: EquipoRow; featured: boolean }) 
           />
         ) : (
           <span
-            className={`grid size-full place-items-center font-display text-sage-strong italic ${
+            className={`grid size-full place-items-center font-display text-electric-strong italic ${
               featured ? 'text-[clamp(2.5rem,2rem+2vw,3.5rem)]' : 'text-2xl'
             }`}
           >
@@ -60,7 +60,7 @@ function Person({ person, featured }: { person: EquipoRow; featured: boolean }) 
       </span>
       <span className="flex min-w-0 flex-col gap-1">
         {featured && <span className="eyebrow text-accent-strong">{person.rol}</span>}
-        <span className={`font-headline text-ink ${featured ? 'text-h1' : 'text-lg'}`}>
+        <span className={`font-headline text-ink ${featured ? 'text-h2' : 'text-lg'}`}>
           {person.nombre}
         </span>
         {!featured && <span className="text-sm text-accent-strong">{person.rol}</span>}
@@ -94,7 +94,7 @@ export default async function NosotrosPage() {
   ].filter((f) => f.value > 0);
 
   return (
-    <div className="container-page flex flex-col gap-[clamp(3rem,8vw,6rem)] py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page flex flex-col gap-[clamp(3rem,7vw,5rem)] py-[clamp(2rem,6vw,4.5rem)]">
       <PageHeader
         size="display"
         eyebrow="Nosotros"
@@ -118,7 +118,7 @@ export default async function NosotrosPage() {
               >
                 <CountUp
                   value={f.value}
-                  className="font-headline text-[clamp(3rem,2rem+4.5vw,5.5rem)] leading-none text-brand-strong"
+                  className="font-headline text-[clamp(2.5rem,1.9rem+2.4vw,4rem)] leading-none text-brand-strong"
                 />
                 <span className="text-ink-soft">{f.label}</span>
               </li>
@@ -132,7 +132,7 @@ export default async function NosotrosPage() {
         className="grid gap-[clamp(1.5rem,4vw,3.5rem)] lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-start"
       >
         <div className="flex flex-col gap-3 lg:sticky lg:top-28">
-          <div className="relative aspect-[4/5] reveal overflow-hidden rounded-(--radius-frame) bg-brand-strong">
+          <div className="relative aspect-[5/4] reveal overflow-hidden rounded-(--radius-frame) bg-brand-strong">
             {config.nosotros_imagen ? (
               <Image
                 src={config.nosotros_imagen}
@@ -147,7 +147,7 @@ export default async function NosotrosPage() {
           </div>
           {config.vision && (
             <div className="rounded-(--radius-frame) bg-brand-strong p-[clamp(1.25rem,3vw,2rem)] text-surface on-dark">
-              <p className="eyebrow text-ochre">Visión</p>
+              <p className="eyebrow text-peach">Visión</p>
               <p className="mt-3 font-display text-h2 leading-snug italic">«{config.vision}»</p>
             </div>
           )}
@@ -186,7 +186,7 @@ export default async function NosotrosPage() {
             )}
           </div>
           {config.nosotros_mision && (
-            <div className="mt-2 rounded-(--radius-frame) bg-rose p-[clamp(1.25rem,3vw,2rem)]">
+            <div className="mt-2 rounded-(--radius-frame) bg-accent-soft p-[clamp(1.25rem,3vw,2rem)]">
               <p className="eyebrow text-accent-strong">Misión</p>
               <p className="mt-3 font-display text-h2 leading-snug whitespace-pre-line text-ink">
                 {config.nosotros_mision}

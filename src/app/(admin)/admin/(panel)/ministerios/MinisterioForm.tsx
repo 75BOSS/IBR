@@ -85,7 +85,7 @@ export function MinisterioForm({
               label="Color"
               name="color"
               type="color"
-              defaultValue={v('color', m?.color ?? '#0e5e6f')}
+              defaultValue={v('color', m?.color ?? '#1b3a6b')}
               hint="Identifica al ministerio en tarjetas y etiquetas."
               error={e.color}
               className="[&_input]:h-12 [&_input]:w-24 [&_input]:p-1"

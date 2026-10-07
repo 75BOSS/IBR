@@ -130,7 +130,7 @@ export function SiteFooter({ config }: { config: SiteConfig }) {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="font-display text-lg text-footer-ink/90 transition-colors hover:text-ochre hover:italic"
+                      className="font-display text-lg text-footer-ink/90 transition-colors hover:text-peach hover:italic"
                     >
                       {item.label}
                     </Link>

@@ -9,9 +9,9 @@ const categoryLabel = new Map<string, string>(EVENTO_CATEGORIAS.map((c) => [c.va
 const COVER_TONE: Record<Evento['categoria'], string> = {
   evento: 'bg-brand-strong',
   noticia: 'bg-accent-strong',
-  oracion: 'bg-sky-strong',
-  comunidad: 'bg-sage-strong',
-  musica: 'bg-ochre-strong',
+  oracion: 'bg-electric',
+  comunidad: 'bg-electric',
+  musica: 'bg-peach-strong',
   capacitacion: 'bg-night',
 };
 
@@ -59,7 +59,7 @@ export function EventCover({
             aria-hidden="true"
             className="absolute -top-[18%] -right-[12%] size-[75%] rounded-full bg-surface/10 transition-transform duration-700 ease-(--ease-out-soft) motion-safe:group-hover:scale-110"
           />
-          <span className="font-display text-[clamp(4.5rem,3rem+6vw,7.5rem)] leading-[0.8] font-light">
+          <span className="font-display text-[clamp(3.5rem,2.6rem+3vw,5.5rem)] leading-[0.8] font-light">
             {date.day}
           </span>
           <span className="mt-2 font-display text-h3 italic first-letter:uppercase">

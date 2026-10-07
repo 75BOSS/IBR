@@ -145,7 +145,7 @@ export default async function ReunionesPublicPage() {
           </Card>
 
           {online.length > 0 && (
-            <Card title="En línea" as="section" accentColor="#b4532a">
+            <Card title="En línea" as="section" accentColor="var(--color-accent)">
               <p className="text-ink-soft">
                 ¿No puedes venir? Transmitimos{' '}
                 {online.map((m) => m.nombre.toLowerCase()).join(', ')} por YouTube.

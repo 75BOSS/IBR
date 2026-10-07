@@ -33,7 +33,7 @@ export function SectionHeading({
     >
       <div className={`flex max-w-3xl flex-col gap-3 ${centered ? 'items-center' : ''}`}>
         {eyebrow && (
-          <p className={`eyebrow ${tone === 'inverse' ? 'text-ochre' : 'text-accent-strong'}`}>
+          <p className={`eyebrow ${tone === 'inverse' ? 'text-peach' : 'text-accent-strong'}`}>
             {eyebrow}
           </p>
         )}
@@ -55,7 +55,7 @@ export function SectionHeading({
         <Link
           href={link.href}
           className={`group inline-flex items-center gap-2 border-b-2 pb-1 font-semibold ${
-            tone === 'inverse' ? 'border-ochre text-surface' : 'border-accent text-brand-strong'
+            tone === 'inverse' ? 'border-peach text-surface' : 'border-accent text-brand-strong'
           }`}
         >
           {link.label}

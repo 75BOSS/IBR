@@ -52,28 +52,28 @@ const ACCESSES: {
     icon: 'clock',
     title: 'Horarios',
     text: 'Días, horas y cómo llegar.',
-    tone: 'bg-sage text-ink',
+    tone: 'bg-brand-strong text-surface on-dark',
   },
   {
     href: '/grupos',
     icon: 'users',
     title: 'Grupos',
     text: 'Un grupo en casa cerca de ti.',
-    tone: 'bg-ochre text-ink',
+    tone: 'bg-electric-soft text-ink',
   },
   {
     href: '/oracion',
     icon: 'handHeart',
     title: 'Pedir oración',
     text: 'Los pastores oran por ti.',
-    tone: 'bg-sky text-ink',
+    tone: 'bg-electric text-surface on-dark',
   },
   {
     href: '/predicas',
     icon: 'play',
     title: 'Prédicas',
     text: 'Los mensajes de cada domingo.',
-    tone: 'bg-brand-strong text-surface on-dark',
+    tone: 'bg-night text-surface on-dark',
   },
 ];
 
@@ -82,7 +82,7 @@ function AccessTile({ access }: { access: (typeof ACCESSES)[number] }) {
     <li className="reveal">
       <Link
         href={access.href}
-        className={`group flex h-full min-h-[clamp(9rem,22vw,12rem)] flex-col justify-between gap-6 rounded-[1.75rem] p-[clamp(1.125rem,2.5vw,1.75rem)] transition duration-300 ease-(--ease-out-soft) hover:-translate-y-1 hover:shadow-lift motion-reduce:hover:translate-y-0 ${access.tone}`}
+        className={`group flex h-full min-h-[clamp(8.5rem,16vw,10.5rem)] flex-col justify-between gap-6 rounded-[1.75rem] p-[clamp(1.125rem,2.5vw,1.75rem)] transition duration-300 ease-(--ease-out-soft) hover:-translate-y-1 hover:shadow-lift motion-reduce:hover:translate-y-0 ${access.tone}`}
       >
         <span className="flex items-start justify-between gap-3">
           <Icon name={access.icon} className="size-7 opacity-80" />
@@ -91,7 +91,7 @@ function AccessTile({ access }: { access: (typeof ACCESSES)[number] }) {
           </span>
         </span>
         <span className="flex flex-col gap-1">
-          <span className="font-headline text-[clamp(1.5rem,1.1rem+1.6vw,2.25rem)] leading-none">
+          <span className="font-headline text-[clamp(1.375rem,1.1rem+1vw,1.875rem)] leading-none">
             {access.title}
           </span>
           <span className="text-[0.95rem]">{access.text}</span>
@@ -136,7 +136,7 @@ export default async function HomePage() {
           )}
         </div>
 
-        <div className="relative isolate mt-[clamp(1.5rem,4vw,3rem)] flex min-h-[clamp(26rem,62vw,42rem)] flex-col justify-end overflow-hidden rounded-(--radius-frame) bg-brand-strong text-surface on-dark">
+        <div className="relative isolate mt-[clamp(1.5rem,4vw,3rem)] flex min-h-[clamp(22rem,45vw,34rem)] flex-col justify-end overflow-hidden rounded-(--radius-frame) bg-brand-strong text-surface on-dark">
           {config.home_hero_imagen ? (
             <Image
               src={config.home_hero_imagen}
@@ -165,8 +165,8 @@ export default async function HomePage() {
           <div className="absolute inset-0 -z-10 bg-gradient-to-t from-night/90 via-night/40 to-transparent" />
           <div className="flex flex-col gap-5 p-[clamp(1.25rem,4vw,3rem)] md:flex-row md:items-end md:justify-between">
             <div className="flex flex-col gap-2">
-              <p className="eyebrow text-ochre">Te esperamos</p>
-              <p className="flex flex-wrap gap-x-4 font-headline text-[clamp(1.5rem,1.1rem+1.6vw,2.5rem)] leading-tight">
+              <p className="eyebrow text-peach">Te esperamos</p>
+              <p className="flex flex-wrap gap-x-4 font-headline text-[clamp(1.375rem,1.1rem+1vw,2rem)] leading-tight">
                 {horarios.length > 0
                   ? horarios.map((h) => (
                       <span key={h} className="whitespace-nowrap">
@@ -204,7 +204,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <div className="container-page flex flex-col gap-[clamp(3.5rem,9vw,7rem)] py-[clamp(2.5rem,7vw,5rem)]">
+      <div className="container-page flex flex-col gap-[clamp(3rem,7vw,5.5rem)] py-[clamp(2.5rem,7vw,5rem)]">
         <LiveBanner />
 
         {/* Accesos rápidos: «Soy nuevo» grande y cuatro de colores. */}
@@ -213,18 +213,18 @@ export default async function HomePage() {
             <li className="reveal xs:col-span-2 lg:row-span-2">
               <Link
                 href="/soy-nuevo"
-                className="group relative isolate flex h-full min-h-[clamp(15rem,40vw,24rem)] flex-col justify-between gap-8 overflow-hidden rounded-[1.75rem] bg-accent p-[clamp(1.5rem,4vw,2.75rem)] text-surface transition duration-300 ease-(--ease-out-soft) on-dark hover:-translate-y-1 hover:shadow-lift motion-reduce:hover:translate-y-0"
+                className="group relative isolate flex h-full min-h-[clamp(14rem,32vw,20rem)] flex-col justify-between gap-6 overflow-hidden rounded-[1.75rem] bg-peach p-[clamp(1.5rem,3.5vw,2.5rem)] text-ink transition duration-300 ease-(--ease-out-soft) hover:-translate-y-1 hover:shadow-lift motion-reduce:hover:translate-y-0"
               >
                 <span
                   aria-hidden="true"
-                  className="absolute -right-16 -bottom-24 -z-10 size-80 rounded-full bg-accent-strong transition-transform duration-700 ease-(--ease-out-soft) motion-safe:group-hover:scale-110"
+                  className="absolute -right-16 -bottom-24 -z-10 size-80 rounded-full bg-accent-soft/70 transition-transform duration-700 ease-(--ease-out-soft) motion-safe:group-hover:scale-110"
                 />
-                <span className="eyebrow text-surface/85">Soy nuevo</span>
+                <span className="eyebrow text-accent-strong">Soy nuevo</span>
                 <span className="flex flex-col gap-4">
-                  <span className="font-headline text-[clamp(2.25rem,1.4rem+3.6vw,4.25rem)] leading-[0.95]">
+                  <span className="font-headline text-[clamp(2rem,1.4rem+2.6vw,3.5rem)] leading-[0.98]">
                     ¿Es tu <em>primera vez</em>?
                   </span>
-                  <span className="max-w-md text-lead text-surface/90">
+                  <span className="max-w-md text-lead text-ink/85">
                     Qué esperar el domingo, dónde dejar a los niños y cómo conectar con la familia.
                   </span>
                   <span className="inline-flex items-center gap-2 font-semibold">
@@ -251,7 +251,7 @@ export default async function HomePage() {
           <p className="eyebrow text-accent-strong">Quiénes somos</p>
           <h2
             id="somos"
-            className="max-w-4xl font-headline text-[clamp(1.75rem,1.15rem+2.8vw,3.5rem)] leading-[1.12] text-ink"
+            className="max-w-4xl font-headline text-[clamp(1.5rem,1.1rem+1.8vw,2.625rem)] leading-[1.15] text-ink"
           >
             {config.nosotros_mision ?? (
               <>
@@ -308,7 +308,7 @@ export default async function HomePage() {
 
       {config.vision && <Marquee text={config.vision} />}
 
-      <div className="container-page flex flex-col gap-[clamp(3.5rem,9vw,7rem)] py-[clamp(2.5rem,7vw,5rem)]">
+      <div className="container-page flex flex-col gap-[clamp(3rem,7vw,5.5rem)] py-[clamp(2.5rem,7vw,5rem)]">
         {ministerios.length > 0 && (
           <section
             aria-labelledby="ministerios"
@@ -348,7 +348,7 @@ export default async function HomePage() {
               <YouTubeEmbed videoId={predica.youtube_id} title={predica.titulo} />
             </div>
             <div className="flex flex-col gap-4">
-              <p className="eyebrow text-ochre">Última prédica</p>
+              <p className="eyebrow text-peach">Última prédica</p>
               <h2 id="ultima-predica" className="font-headline text-section">
                 {predica.titulo}
               </h2>
@@ -389,7 +389,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      <div className="container-page flex flex-col gap-[clamp(3.5rem,9vw,7rem)] py-[clamp(3rem,8vw,6rem)]">
+      <div className="container-page flex flex-col gap-[clamp(3rem,7vw,5.5rem)] py-[clamp(3rem,8vw,6rem)]">
         {pastores.length > 0 && (
           <section
             aria-labelledby="pastores"
@@ -411,18 +411,18 @@ export default async function HomePage() {
                   key={p.id}
                   className="flex reveal flex-col gap-5 rounded-(--radius-frame) bg-surface p-[clamp(1.25rem,3vw,2rem)] ring-1 ring-line/70 xs:flex-row xs:items-center"
                 >
-                  <span className="relative size-[clamp(6rem,22vw,8.5rem)] shrink-0 overflow-hidden rounded-full bg-sage">
+                  <span className="relative size-[clamp(5rem,14vw,7rem)] shrink-0 overflow-hidden rounded-full bg-electric-soft">
                     {p.foto_url ? (
                       <Image src={p.foto_url} alt="" fill sizes="136px" className="object-cover" />
                     ) : (
-                      <span className="grid size-full place-items-center font-display text-[clamp(2.5rem,2rem+2vw,3.5rem)] text-sage-strong italic">
+                      <span className="grid size-full place-items-center font-display text-[clamp(2.5rem,2rem+2vw,3.5rem)] text-electric-strong italic">
                         {p.nombre.replace(/^(Pastora?|Ps\.)\s+/i, '').charAt(0)}
                       </span>
                     )}
                   </span>
                   <span className="flex min-w-0 flex-col gap-1.5">
                     <span className="eyebrow text-accent-strong">{p.rol}</span>
-                    <span className="font-headline text-h1 text-ink">{p.nombre}</span>
+                    <span className="font-headline text-h2 text-ink">{p.nombre}</span>
                     {p.bio && <span className="line-clamp-3 text-ink-soft">{p.bio}</span>}
                   </span>
                 </li>
@@ -433,7 +433,7 @@ export default async function HomePage() {
 
         {/* Cierre: invitación grande y dos formas de seguir conectado. */}
         <section aria-labelledby="ser-parte" className="flex flex-col gap-3">
-          <div className="relative isolate flex min-h-[clamp(22rem,50vw,30rem)] reveal flex-col justify-end overflow-hidden rounded-(--radius-frame) bg-brand-strong text-surface on-dark">
+          <div className="relative isolate flex min-h-[clamp(18rem,36vw,24rem)] reveal flex-col justify-end overflow-hidden rounded-(--radius-frame) bg-brand-strong text-surface on-dark">
             {closingImage ? (
               <Image
                 src={closingImage}
@@ -470,10 +470,10 @@ export default async function HomePage() {
             </div>
           </div>
           <div className="grid gap-3 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-            <div className="flex reveal flex-col justify-between gap-6 rounded-(--radius-frame) bg-rose p-[clamp(1.5rem,4vw,2.5rem)] text-ink">
+            <div className="flex reveal flex-col justify-between gap-6 rounded-(--radius-frame) bg-accent-soft p-[clamp(1.5rem,4vw,2.5rem)] text-ink">
               <div className="flex flex-col gap-2">
                 <Icon name="mailOpen" className="size-8 text-accent-strong" />
-                <h3 className="font-headline text-h1">
+                <h3 className="font-headline text-h2">
                   La agenda de la semana, <em>en tu correo</em>
                 </h3>
                 <p className="max-w-md">
@@ -492,10 +492,10 @@ export default async function HomePage() {
                 Suscribirme
               </Link>
             </div>
-            <div className="flex reveal flex-col justify-between gap-6 rounded-(--radius-frame) bg-sage-strong p-[clamp(1.5rem,4vw,2.5rem)] text-surface on-dark">
+            <div className="flex reveal flex-col justify-between gap-6 rounded-(--radius-frame) bg-electric p-[clamp(1.5rem,4vw,2.5rem)] text-surface on-dark">
               <div className="flex flex-col gap-2">
-                <Icon name="message" className="size-8 text-ochre" />
-                <h3 className="font-headline text-h1">
+                <Icon name="message" className="size-8 text-peach" />
+                <h3 className="font-headline text-h2">
                   Únete a nuestros <em>canales</em>
                 </h3>
                 <p className="text-surface/85">Avisos, versículos y transmisiones en vivo.</p>

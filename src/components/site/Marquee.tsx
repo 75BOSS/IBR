@@ -8,7 +8,7 @@ import { Icon } from '@/components/Icon';
 export function Marquee({ text }: { text: string }) {
   const items = Array.from({ length: 4 }, (_, i) => i);
   return (
-    <div className="overflow-hidden py-[clamp(1.5rem,4vw,3rem)]">
+    <div className="overflow-hidden bg-brand-strong py-[clamp(1.25rem,3vw,2.25rem)]">
       <p className="sr-only">{text}</p>
       <div
         aria-hidden="true"
@@ -18,10 +18,13 @@ export function Marquee({ text }: { text: string }) {
           <div key={copy} className="flex shrink-0 items-center">
             {items.map((i) => (
               <span key={i} className="flex items-center">
-                <span className="px-[clamp(1rem,3vw,2.5rem)] font-display text-[clamp(2.75rem,1.4rem+6vw,7.5rem)] leading-none whitespace-nowrap text-ochre italic [font-variation-settings:'SOFT'_100,'WONK'_1]">
+                <span className="px-[clamp(1rem,3vw,2.5rem)] font-display text-[clamp(2rem,1.3rem+3.2vw,4.5rem)] leading-none whitespace-nowrap text-peach italic [font-variation-settings:'SOFT'_100,'WONK'_1]">
                   {text}
                 </span>
-                <Icon name="sparkle" className="size-[clamp(1.5rem,1rem+2vw,3rem)] text-accent" />
+                <Icon
+                  name="sparkle"
+                  className="size-[clamp(1.25rem,1rem+1vw,2rem)] text-electric-soft"
+                />
               </span>
             ))}
           </div>

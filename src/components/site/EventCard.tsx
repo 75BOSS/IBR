@@ -101,7 +101,7 @@ export function EventCard({
         </p>
         <h3
           className={`font-headline text-ink ${
-            featured ? 'text-[clamp(1.75rem,1.2rem+2.4vw,3rem)]' : 'text-h2'
+            featured ? 'text-[clamp(1.625rem,1.2rem+1.6vw,2.5rem)]' : 'text-h2'
           }`}
         >
           {link}
