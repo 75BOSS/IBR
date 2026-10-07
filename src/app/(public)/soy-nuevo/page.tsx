@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { Card } from '@/components/Card';
 import { Icon, type IconName } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
+import { FormDialog } from '@/components/site/FormDialog';
+import { FormPanel } from '@/components/site/FormPanel';
 import { rangoOptions } from '@/lib/catalogs';
 import { listMinisterios } from '@/lib/ministerios';
 import { pageMetadata } from '@/lib/seo';
@@ -121,23 +123,31 @@ export default async function SoyNuevoPage() {
         </section>
       )}
 
-      <section
-        aria-labelledby="dejanos-tus-datos"
-        className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
+      <FormPanel
+        titleId="dejanos-tus-datos"
+        eyebrow="Te acompañamos"
+        title={
+          <>
+            Queremos <em>conocerte</em>
+          </>
+        }
+        text="Déjanos tus datos y alguien de la iglesia te escribirá para darte la bienvenida, resolver tus dudas y ayudarte a encontrar un grupo. No te enviaremos publicidad."
       >
-        <div>
-          <h2 id="dejanos-tus-datos" className="font-headline text-h1 text-ink">
-            Queremos conocerte
-          </h2>
-          <p className="mt-2 max-w-prose text-ink-soft">
-            Déjanos tus datos y alguien de la iglesia te escribirá para darte la bienvenida,
-            resolver tus dudas y ayudarte a encontrar un grupo. No te enviaremos publicidad.
-          </p>
-        </div>
-        <Card emphasis="featured">
+        <FormDialog
+          id="mis-datos"
+          eyebrow="Soy nuevo"
+          title={
+            <>
+              Queremos <em>conocerte</em>
+            </>
+          }
+          description="Solo el nombre y el WhatsApp son obligatorios."
+          triggerLabel="Dejar mis datos"
+          triggerVariant="primary"
+        >
           <SoyNuevoForm rangos={rangos} />
-        </Card>
-      </section>
+        </FormDialog>
+      </FormPanel>
     </div>
   );
 }

@@ -118,6 +118,7 @@ sql/
 - **Decisiones que no pueden correr en paralelo** (cupo, último administrador): `withTransaction` + `SELECT … FOR UPDATE` sobre la fila que manda (el evento, los admins), siempre en el mismo orden.
 - **Correos que no deben delatar datos** (ej. si alguien ya está suscrito): se envían con `after()` para que la respuesta tarde lo mismo; los masivos llevan `unsubscribeUrl`.
 - **Avisos externos** (correo, WhatsApp Cloud API): se llaman después de guardar, nunca hacen fallar el formulario y registran el motivo si no salen.
+- **Formularios públicos en ventana emergente**: la página muestra un `FormPanel` (título, por qué llenarlo) y dentro un `FormDialog` con el formulario (`PublicForm`) como hijo. El formulario queda montado al cerrar (no se pierde lo escrito ni el agradecimiento) y se abre también con un enlace a `#id` (ej. `/servir?area=x#quiero-servir`, `/agenda#suscribirme`). Filtros y el acceso de «Mi cuenta» siguen en la página.
 - **Sitio público (diseño)**: título de página con `PageHeader size="display"`; títulos de sección con `SectionHeading`; un `<em>` dentro de un título sale en cursiva terracota (textos de la config: `EmphasizeLast`). Etiquetas con la utilidad `eyebrow`, titulares con `font-headline`. Botones de llamada a la acción con `shape: 'pill'`. Tarjetas que entran al hacer scroll: clase `reveal` (solo CSS). Fotos con zoom al pasar el mouse: `motion-safe:group-hover:scale-105`. Toda animación respeta «reducir movimiento» (`motion-safe:`/`motion-reduce:`) y nada queda oculto sin JavaScript.
 
 ## Reglas de código

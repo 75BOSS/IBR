@@ -2,6 +2,8 @@ import { Card } from '@/components/Card';
 import { Icon } from '@/components/Icon';
 import { MapEmbed } from '@/components/MapEmbed';
 import { PageHeader } from '@/components/PageHeader';
+import { FormDialog } from '@/components/site/FormDialog';
+import { FormPanel } from '@/components/site/FormPanel';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { getSiteConfig } from '@/lib/config';
 import { socialLinks } from '@/lib/nav';
@@ -34,9 +36,32 @@ export default async function ContactoPage() {
         intro="¿Tienes una pregunta, quieres visitarnos o necesitas hablar con un pastor? Escríbenos por donde prefieras."
       />
       <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <Card emphasis="featured" title="Envíanos un mensaje" as="section">
-          <ContactoForm />
-        </Card>
+        <FormPanel
+          titleId="envianos-un-mensaje"
+          eyebrow="Mensaje"
+          title={
+            <>
+              Envíanos un <em>mensaje</em>
+            </>
+          }
+          text="Te respondemos al correo o al WhatsApp que nos dejes, normalmente en uno o dos días."
+          stacked
+        >
+          <FormDialog
+            id="mensaje"
+            eyebrow="Contacto"
+            title={
+              <>
+                Envíanos un <em>mensaje</em>
+              </>
+            }
+            triggerLabel="Escribir mensaje"
+            triggerIcon="mail"
+            triggerVariant="primary"
+          >
+            <ContactoForm />
+          </FormDialog>
+        </FormPanel>
         <div className="flex flex-col gap-4">
           <Card tone="brand" emphasis="featured" as="section">
             <h2 className="font-display text-h3 font-medium">La forma más rápida</h2>

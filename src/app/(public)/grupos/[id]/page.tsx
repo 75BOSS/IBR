@@ -6,6 +6,8 @@ import { notFound } from 'next/navigation';
 import { Card } from '@/components/Card';
 import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
+import { FormDialog } from '@/components/site/FormDialog';
+import { FormPanel } from '@/components/site/FormPanel';
 import { Tag } from '@/components/Tag';
 import { groupWhen } from '@/components/site/GroupCard';
 import { getGrupoPublico } from '@/lib/grupos';
@@ -102,9 +104,38 @@ export default async function GrupoPage({ params }: Props) {
             </dl>
           </Card>
         </div>
-        <Card title="Quiero unirme" as="section" emphasis="featured">
-          <JoinGroupForm groupId={group.id} leader={group.lider_nombre} />
-        </Card>
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <FormPanel
+            titleId="quiero-unirme-titulo"
+            eyebrow="Quiero unirme"
+            title={
+              <>
+                Te <em>esperamos</em>
+              </>
+            }
+            text={
+              group.lider_nombre
+                ? `Déjanos tu WhatsApp y ${group.lider_nombre} te escribirá para darte la dirección y contarte cómo es.`
+                : 'Déjanos tu WhatsApp y el líder te escribirá para darte la dirección y contarte cómo es.'
+            }
+            stacked
+          >
+            <FormDialog
+              id="unirme"
+              eyebrow={group.nombre}
+              title={
+                <>
+                  Quiero <em>unirme</em>
+                </>
+              }
+              triggerLabel="Quiero unirme"
+              triggerIcon="users"
+              triggerVariant="primary"
+            >
+              <JoinGroupForm groupId={group.id} leader={group.lider_nombre} />
+            </FormDialog>
+          </FormPanel>
+        </div>
       </div>
     </div>
   );

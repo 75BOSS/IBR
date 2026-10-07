@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { Card } from '@/components/Card';
 import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
+import { FormDialog } from '@/components/site/FormDialog';
+import { FormPanel } from '@/components/site/FormPanel';
 import { OracionForm } from './OracionForm';
 import { pageMetadata } from '@/lib/seo';
 
@@ -28,9 +30,33 @@ export default function OracionPage() {
         intro="Escríbenos lo que tengas en el corazón. Los pastores leen cada petición y oramos por ella."
       />
       <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <Card emphasis="featured">
-          <OracionForm />
-        </Card>
+        <FormPanel
+          titleId="escribir-peticion"
+          eyebrow="Tu petición"
+          title={
+            <>
+              Escríbenos, <em>oramos contigo</em>
+            </>
+          }
+          text="Puedes enviarla con tu nombre o sin él. Si quieres, te escribimos para acompañarte."
+          tone="brand"
+          stacked
+        >
+          <FormDialog
+            id="peticion"
+            eyebrow="Oración"
+            title={
+              <>
+                ¿Cómo podemos <em>orar por ti</em>?
+              </>
+            }
+            description="Privada por defecto: solo la leen los pastores."
+            triggerLabel="Escribir mi petición"
+            triggerIcon="handHeart"
+          >
+            <OracionForm />
+          </FormDialog>
+        </FormPanel>
         <aside className="flex flex-col gap-4">
           <Card tone="brand" emphasis="featured">
             <p className="font-display text-h2 leading-snug font-semibold">

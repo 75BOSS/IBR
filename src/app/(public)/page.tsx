@@ -482,7 +482,7 @@ export default async function HomePage() {
                 </p>
               </div>
               <Link
-                href="/agenda"
+                href="/agenda#suscribirme"
                 className={buttonClasses({
                   variant: 'primary',
                   shape: 'pill',

@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { buttonClasses } from '@/components/button-styles';
 import { Card } from '@/components/Card';
+import { FormDialog } from '@/components/site/FormDialog';
+import { FormPanel } from '@/components/site/FormPanel';
 import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { eventWhen } from '@/components/site/EventCard';
@@ -154,35 +156,45 @@ export default async function EventoPage({ params }: Props) {
         </Card>
       </div>
       {cupo && (
-        <section
-          id="inscripcion"
-          aria-labelledby="inscripcion-titulo"
-          className="grid scroll-mt-24 gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
-        >
-          <div className="flex flex-col gap-3">
-            <h2 id="inscripcion-titulo" className="font-headline text-h1 text-brand-strong">
-              Inscríbete
-            </h2>
-            <p className="text-ink-soft">
-              Déjanos tus datos para reservar tu lugar. Recibirás un código para ver o cancelar tu
-              inscripción.
-            </p>
+        <FormPanel
+          titleId="inscripcion-titulo"
+          eyebrow="Inscripción"
+          title={
+            <>
+              Reserva <em>tu lugar</em>
+            </>
+          }
+          text="Déjanos tus datos y recibirás un código para ver o cancelar tu inscripción."
+          aside={
             <CupoCounter
               key={`${cupo.inscritos}-${cupo.abierto}`}
               eventoId={event.id}
               initial={cupo}
             />
-          </div>
-          {/* Siempre el mismo árbol: el formulario conserva su éxito aunque el cupo se cierre. */}
-          <Card emphasis="featured">
+          }
+        >
+          {/* Siempre montado: el formulario conserva su éxito aunque el cupo se cierre con ese
+              envío; solo el botón desaparece cuando ya no hay lugar. */}
+          <FormDialog
+            id="inscripcion"
+            eyebrow={event.titulo}
+            title={
+              <>
+                Reserva <em>tu lugar</em>
+              </>
+            }
+            triggerLabel="Inscribirme"
+            triggerVariant="primary"
+            showTrigger={cupo.abierto}
+          >
             <InscripcionForm
               eventoId={event.id}
               closedReason={
                 cupo.abierto ? null : (cupo.motivo ?? 'Las inscripciones están cerradas.')
               }
             />
-          </Card>
-        </section>
+          </FormDialog>
+        </FormPanel>
       )}
     </article>
   );

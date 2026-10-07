@@ -1,6 +1,8 @@
 import { Card } from '@/components/Card';
 import { Icon, type IconName } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
+import { FormDialog } from '@/components/site/FormDialog';
+import { FormPanel } from '@/components/site/FormPanel';
 import { pageMetadata } from '@/lib/seo';
 import { SuscripcionForm } from './SuscripcionForm';
 
@@ -44,9 +46,31 @@ export default function AgendaPage() {
             ))}
           </ul>
         </Card>
-        <Card emphasis="featured">
-          <SuscripcionForm />
-        </Card>
+        <FormPanel
+          titleId="suscribirme-titulo"
+          eyebrow="Gratis"
+          title={
+            <>
+              Recíbela <em>cada semana</em>
+            </>
+          }
+          text="Solo tu correo. Te llega un mensaje para confirmar y listo."
+        >
+          <FormDialog
+            id="suscribirme"
+            eyebrow="Agenda semanal"
+            title={
+              <>
+                Lo que viene, <em>en tu correo</em>
+              </>
+            }
+            triggerLabel="Quiero recibirla"
+            triggerIcon="mail"
+            triggerVariant="primary"
+          >
+            <SuscripcionForm />
+          </FormDialog>
+        </FormPanel>
       </div>
     </div>
   );

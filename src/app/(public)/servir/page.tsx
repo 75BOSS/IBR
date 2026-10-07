@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import { Card } from '@/components/Card';
 import { PageHeader } from '@/components/PageHeader';
+import { FormDialog } from '@/components/site/FormDialog';
+import { FormPanel } from '@/components/site/FormPanel';
 import { listAreas } from '@/lib/servir';
 import { pageMetadata } from '@/lib/seo';
 import { paragraphs } from '@/lib/text';
@@ -107,29 +109,36 @@ export default async function ServirPage({
       )}
 
       {areas.length > 0 && (
-        <section
-          id="quiero-servir"
-          aria-labelledby="quiero-servir-titulo"
-          className="grid scroll-mt-24 gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
+        <FormPanel
+          titleId="quiero-servir-titulo"
+          eyebrow="Da el paso"
+          title={
+            <>
+              Quiero <em>servir</em>
+            </>
+          }
+          text="Déjanos tus datos y el área que te interesa. Te escribiremos para conocerte y contarte los siguientes pasos."
         >
-          <div>
-            <h2 id="quiero-servir-titulo" className="font-headline text-h1 text-brand-strong">
-              Quiero servir
-            </h2>
-            <p className="mt-2 max-w-prose text-ink-soft">
-              Déjanos tus datos y el área que te interesa. Te escribiremos para conocerte y contarte
-              los siguientes pasos.
-            </p>
-          </div>
-          <Card emphasis="featured">
+          <FormDialog
+            id="quiero-servir"
+            eyebrow="Servir"
+            title={
+              <>
+                Quiero <em>servir</em>
+              </>
+            }
+            description="No necesitas experiencia: te acompañamos mientras aprendes."
+            triggerLabel="Quiero servir"
+            triggerVariant="primary"
+          >
             {/* key: al elegir otra área desde un enlace, el formulario arranca con esa área. */}
             <ServirForm
               key={preselected?.id ?? 'ninguna'}
               areas={areas.map((a) => ({ value: String(a.id), label: a.nombre }))}
               preselected={preselected ? String(preselected.id) : undefined}
             />
-          </Card>
-        </section>
+          </FormDialog>
+        </FormPanel>
       )}
     </div>
   );
