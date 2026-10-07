@@ -26,7 +26,15 @@ export default async function SuscripcionPage({ params }: { params: Promise<{ to
 
   return (
     <div className="container-page flex flex-col gap-6 py-[clamp(2rem,6vw,4.5rem)]">
-      <PageHeader eyebrow="Agenda semanal" title="Tu suscripción" />
+      <PageHeader
+        size="display"
+        eyebrow="Agenda semanal"
+        title={
+          <>
+            Tu <em>suscripción</em>
+          </>
+        }
+      />
       <Card emphasis="featured" className="max-w-xl">
         <p className="flex flex-wrap items-center gap-2">
           <span className="font-semibold break-all">{s.email}</span>

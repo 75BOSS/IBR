@@ -30,14 +30,19 @@ export default async function ServirPage({
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
       <PageHeader
+        size="display"
         eyebrow="Servir"
-        title="Hay un lugar para ti"
+        title={
+          <>
+            Hay un lugar <em>para ti</em>
+          </>
+        }
         intro="Servir es una forma de amar a Dios y a los demás. No necesitas experiencia: te acompañamos mientras aprendes."
       />
 
       {featured ? (
         <section aria-labelledby="areas" className="flex flex-col gap-4">
-          <h2 id="areas" className="text-h2 font-semibold text-brand-strong">
+          <h2 id="areas" className="font-headline text-h1 text-brand-strong">
             Dónde puedes servir
           </h2>
           <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
@@ -53,7 +58,7 @@ export default async function ServirPage({
                   />
                 </div>
               )}
-              <h3 className="font-display text-h2 font-semibold">{featured.nombre}</h3>
+              <h3 className="font-headline text-h1">{featured.nombre}</h3>
               {paragraphs(featured.descripcion).map((p, i) => (
                 <p key={i} className="mt-2 text-surface/85">
                   {p}
@@ -76,7 +81,7 @@ export default async function ServirPage({
                     key={a.id}
                     className="rounded-2xl border-l-4 border-accent bg-surface p-4 ring-1 ring-line/70"
                   >
-                    <h3 className="font-display text-h3 font-semibold text-ink">{a.nombre}</h3>
+                    <h3 className="font-display text-h3 font-medium text-ink">{a.nombre}</h3>
                     {a.descripcion && (
                       <p className="mt-1 line-clamp-3 text-ink-soft">{a.descripcion}</p>
                     )}
@@ -108,7 +113,7 @@ export default async function ServirPage({
           className="grid scroll-mt-24 gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
         >
           <div>
-            <h2 id="quiero-servir-titulo" className="text-h2 font-semibold text-brand-strong">
+            <h2 id="quiero-servir-titulo" className="font-headline text-h1 text-brand-strong">
               Quiero servir
             </h2>
             <p className="mt-2 max-w-prose text-ink-soft">

@@ -66,7 +66,12 @@ export default async function EventoPage({ params }: Props) {
       >
         <Icon name="chevronLeft" className="size-4" /> Todos los eventos
       </Link>
-      <PageHeader eyebrow={eventWhen(event)} title={event.titulo} intro={event.resumen} />
+      <PageHeader
+        size="display"
+        eyebrow={eventWhen(event)}
+        title={event.titulo}
+        intro={event.resumen}
+      />
       <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div className="flex flex-col gap-5">
           {event.imagen_url && (
@@ -155,7 +160,7 @@ export default async function EventoPage({ params }: Props) {
           className="grid scroll-mt-24 gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
         >
           <div className="flex flex-col gap-3">
-            <h2 id="inscripcion-titulo" className="text-h2 font-semibold text-brand-strong">
+            <h2 id="inscripcion-titulo" className="font-headline text-h1 text-brand-strong">
               Inscríbete
             </h2>
             <p className="text-ink-soft">

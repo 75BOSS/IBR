@@ -71,7 +71,15 @@ export default async function DarPage() {
 
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
-      <PageHeader eyebrow="Diezmos y ofrendas" title="Dar con alegría" />
+      <PageHeader
+        size="display"
+        eyebrow="Diezmos y ofrendas"
+        title={
+          <>
+            Dar con <em>alegría</em>
+          </>
+        }
+      />
       <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         <div className="flex flex-col gap-4">
           <Card tone="brand" emphasis="featured">
@@ -99,7 +107,7 @@ export default async function DarPage() {
         </div>
 
         <section aria-labelledby="cuentas" className="flex flex-col gap-4">
-          <h2 id="cuentas" className="text-h2 font-semibold text-ink">
+          <h2 id="cuentas" className="font-headline text-h1 text-ink">
             Transferencia o depósito
           </h2>
           {accounts.length > 0 ? (

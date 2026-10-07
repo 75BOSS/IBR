@@ -38,7 +38,7 @@ export default async function InscripcionPage({ params }: { params: Promise<{ co
 
   return (
     <div className="container-page flex flex-col gap-6 py-[clamp(2rem,6vw,4.5rem)]">
-      <PageHeader eyebrow="Mi inscripción" title={insc.evento_titulo} />
+      <PageHeader size="display" eyebrow="Mi inscripción" title={insc.evento_titulo} />
       <Card emphasis="featured" className="max-w-2xl">
         <dl className="grid gap-x-6 gap-y-3 xs:grid-cols-[auto_1fr]">
           <dt className="text-ink-soft">Estado</dt>

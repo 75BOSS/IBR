@@ -43,7 +43,7 @@ export function LiveBanner() {
       className="flex flex-col gap-4 rounded-2xl bg-accent-strong p-[clamp(1rem,3vw,1.5rem)] text-surface on-dark"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="flex items-center gap-2 font-display text-h3 font-semibold">
+        <p className="flex items-center gap-2 font-display text-h3 font-medium">
           <span className="relative flex size-3">
             <span className="absolute inline-flex size-full rounded-full bg-surface opacity-75 motion-safe:animate-ping" />
             <span className="relative inline-flex size-3 rounded-full bg-surface" />

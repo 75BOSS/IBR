@@ -45,7 +45,7 @@ export default async function GrupoPage({ params }: Props) {
       >
         <Icon name="chevronLeft" className="size-4" /> Todos los grupos
       </Link>
-      <PageHeader eyebrow={group.rango_edad ?? 'Grupo'} title={group.nombre} />
+      <PageHeader size="display" eyebrow={group.rango_edad ?? 'Grupo'} title={group.nombre} />
       <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div className="flex flex-col gap-5">
           {group.imagen_url && (

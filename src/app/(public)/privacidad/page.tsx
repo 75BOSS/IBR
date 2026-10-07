@@ -20,7 +20,7 @@ const UPDATED = '30 de septiembre de 2026';
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
     <section aria-labelledby={id} className="flex flex-col gap-3">
-      <h2 id={id} className="text-h2 font-semibold text-brand-strong">
+      <h2 id={id} className="font-headline text-h1 text-brand-strong">
         {title}
       </h2>
       <div className="flex flex-col gap-3 text-ink [&_li]:ml-5 [&_li]:list-disc [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-1.5">
@@ -42,8 +42,13 @@ export default async function PrivacidadPage() {
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
       <PageHeader
+        size="display"
         eyebrow="Tus datos"
-        title="Política de privacidad"
+        title={
+          <>
+            Política de <em>privacidad</em>
+          </>
+        }
         intro={`Última actualización: ${UPDATED}. La escribimos en palabras sencillas: si algo no queda claro, pregúntanos.`}
       />
       <div className="grid gap-[clamp(1.5rem,4vw,3rem)] lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:items-start">

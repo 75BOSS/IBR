@@ -13,6 +13,7 @@ export function CategoriaTabs({ active }: { active: string | null }) {
   return (
     <FilterTabs
       label="Filtrar por categoría"
+      variant="pills"
       tabs={[
         { label: 'Próximos', href: '/eventos', active: active === null },
         ...CATEGORIAS.map((c) => ({

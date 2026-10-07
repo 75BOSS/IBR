@@ -120,7 +120,7 @@ export default async function MinisterioPage({ params }: Props) {
 
         {eventos.length > 0 && (
           <section aria-labelledby="eventos-ministerio" className="flex flex-col gap-3">
-            <h2 id="eventos-ministerio" className="text-h2 font-semibold text-brand-strong">
+            <h2 id="eventos-ministerio" className="font-headline text-h1 text-brand-strong">
               Próximos eventos
             </h2>
             {eventos.map((e) => (
@@ -132,7 +132,7 @@ export default async function MinisterioPage({ params }: Props) {
 
       {grupos.length > 0 && (
         <section aria-labelledby="grupos-ministerio" className="flex flex-col gap-4">
-          <h2 id="grupos-ministerio" className="text-h2 font-semibold text-brand-strong">
+          <h2 id="grupos-ministerio" className="font-headline text-h1 text-brand-strong">
             Grupos en casas
           </h2>
           <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

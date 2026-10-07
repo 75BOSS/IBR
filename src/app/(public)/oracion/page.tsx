@@ -18,8 +18,13 @@ export default function OracionPage() {
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
       <PageHeader
+        size="display"
         eyebrow="Oración"
-        title="¿Cómo podemos orar por ti?"
+        title={
+          <>
+            ¿Cómo podemos <em>orar por ti</em>?
+          </>
+        }
         intro="Escríbenos lo que tengas en el corazón. Los pastores leen cada petición y oramos por ella."
       />
       <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">

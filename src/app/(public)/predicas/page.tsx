@@ -62,6 +62,7 @@ export default async function PredicasPage({
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
       <PageHeader
+        size="display"
         eyebrow="Enseñanza"
         title="Prédicas"
         intro="Escucha la Palabra cuando quieras. Cada domingo subimos la prédica completa."
@@ -80,7 +81,7 @@ export default async function PredicasPage({
           />
           <div className="flex flex-col gap-3">
             {featured.serie && <Tag tone="accent">Serie: {featured.serie}</Tag>}
-            <h2 id="predica-destacada" className="text-h2 font-semibold text-brand-strong">
+            <h2 id="predica-destacada" className="font-headline text-h1 text-brand-strong">
               {featured.titulo}
             </h2>
             <Meta p={featured} />
@@ -141,7 +142,7 @@ export default async function PredicasPage({
 
       {rest.length > 0 && (
         <section aria-labelledby="mas-predicas" className="flex flex-col gap-4">
-          <h2 id="mas-predicas" className="text-h2 font-semibold text-ink">
+          <h2 id="mas-predicas" className="font-headline text-h1 text-ink">
             {filtered ? 'Resultados' : 'Más prédicas'}
           </h2>
           <ul className="grid gap-x-8 gap-y-5 xl:grid-cols-2">

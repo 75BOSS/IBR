@@ -24,8 +24,13 @@ export default async function ContactoPage() {
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
       <PageHeader
+        size="display"
         eyebrow="Contacto"
-        title="Conversemos"
+        title={
+          <>
+            <em>Conversemos</em>
+          </>
+        }
         intro="¿Tienes una pregunta, quieres visitarnos o necesitas hablar con un pastor? Escríbenos por donde prefieras."
       />
       <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
@@ -34,7 +39,7 @@ export default async function ContactoPage() {
         </Card>
         <div className="flex flex-col gap-4">
           <Card tone="brand" emphasis="featured" as="section">
-            <h2 className="font-display text-h3 font-semibold">La forma más rápida</h2>
+            <h2 className="font-display text-h3 font-medium">La forma más rápida</h2>
             <p className="mt-1 text-surface/80">Te respondemos por WhatsApp lo antes posible.</p>
             <ul className="mt-4 flex flex-col gap-3">
               {config.whatsapp && (

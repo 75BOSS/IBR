@@ -35,8 +35,13 @@ export default async function MiCuentaPage() {
     return (
       <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
         <PageHeader
+          size="display"
           eyebrow="Mi cuenta"
-          title="Entra con tu WhatsApp"
+          title={
+            <>
+              Entra con tu <em>WhatsApp</em>
+            </>
+          }
           intro="Consulta tus inscripciones a eventos, los grupos a los que pediste unirte y dónde sirves. Sin contraseñas: te enviamos un código."
         />
         <Card emphasis="featured" className="max-w-xl">
@@ -54,8 +59,13 @@ export default async function MiCuentaPage() {
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
       <PageHeader
+        size="display"
         eyebrow="Mi cuenta"
-        title="Lo tuyo en la iglesia"
+        title={
+          <>
+            Lo tuyo en <em>la iglesia</em>
+          </>
+        }
         intro={`Entraste con ${formatPhoneEc(telefono)}.`}
         actions={
           <form action={salirMiembro}>

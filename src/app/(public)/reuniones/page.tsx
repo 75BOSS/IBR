@@ -36,8 +36,13 @@ export default async function ReunionesPublicPage() {
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
       <PageHeader
+        size="display"
         eyebrow="Te esperamos"
-        title="Reuniones y horarios"
+        title={
+          <>
+            Reuniones y <em>horarios</em>
+          </>
+        }
         intro="Ven tal como eres. Aquí están los días, las horas y cómo llegar."
       />
 
@@ -48,7 +53,7 @@ export default async function ReunionesPublicPage() {
               <p className="text-sm font-semibold tracking-widest text-accent-soft uppercase">
                 Reunión principal
               </p>
-              <h2 className="mt-2 text-h2 font-semibold">{main.nombre}</h2>
+              <h2 className="mt-2 font-headline text-h1">{main.nombre}</h2>
               <p className="mt-2 font-display text-[clamp(1.75rem,1.2rem+2.5vw,2.75rem)] leading-none">
                 {DAY_NAMES[main.dia_semana]} · {timeRange(main)}
               </p>
@@ -92,7 +97,7 @@ export default async function ReunionesPublicPage() {
                       {items.map((m) => (
                         <li key={m.id} className="flex flex-col gap-1">
                           <p className="flex flex-wrap items-baseline gap-x-3">
-                            <span className="font-display text-h3 font-semibold text-ink">
+                            <span className="font-display text-h3 font-medium text-ink">
                               {timeRange(m)}
                             </span>
                             <span className="font-semibold">{m.nombre}</span>

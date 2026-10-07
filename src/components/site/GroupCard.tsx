@@ -22,7 +22,7 @@ export function GroupCard({ group }: { group: GrupoPublico }) {
       className="group relative h-full"
     >
       <div className="flex h-full flex-col gap-2">
-        <h3 className="text-h3 font-semibold text-ink">
+        <h3 className="font-display text-h3 font-medium text-ink">
           <Link
             href={`/grupos/${group.id}`}
             className="group-hover:text-brand-strong group-hover:underline after:absolute after:inset-0"

@@ -42,8 +42,13 @@ export default async function SoyNuevoPage() {
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
       <PageHeader
+        size="display"
         eyebrow="Bienvenido"
-        title="¿Es tu primera vez?"
+        title={
+          <>
+            ¿Es tu <em>primera vez</em>?
+          </>
+        }
         intro="Nos alegra que estés aquí. Esto es lo que puedes esperar, y abajo puedes dejarnos tus datos para acompañarte."
       />
 
@@ -86,7 +91,7 @@ export default async function SoyNuevoPage() {
 
       {ministerios.length > 0 && (
         <section aria-labelledby="ministerios" className="flex flex-col gap-4">
-          <h2 id="ministerios" className="text-h2 font-semibold text-ink">
+          <h2 id="ministerios" className="font-headline text-h1 text-ink">
             Un lugar para cada edad
           </h2>
           <ul className="grid gap-3 xs:grid-cols-2 lg:grid-cols-5">
@@ -97,7 +102,7 @@ export default async function SoyNuevoPage() {
                   className="flex h-full flex-col gap-1 rounded-2xl border-t-4 bg-surface p-4 ring-1 ring-line/70 hover:shadow-card"
                   style={{ borderTopColor: m.color ?? 'var(--color-brand)' }}
                 >
-                  <span className="font-display text-h3 font-semibold text-ink">
+                  <span className="font-display text-h3 font-medium text-ink">
                     {m.nombre_ministerio ?? m.nombre}
                   </span>
                   <span className="text-sm text-ink-soft">
@@ -121,7 +126,7 @@ export default async function SoyNuevoPage() {
         className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
       >
         <div>
-          <h2 id="dejanos-tus-datos" className="text-h2 font-semibold text-ink">
+          <h2 id="dejanos-tus-datos" className="font-headline text-h1 text-ink">
             Queremos conocerte
           </h2>
           <p className="mt-2 max-w-prose text-ink-soft">

@@ -22,8 +22,13 @@ export default async function EventosPage() {
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
       <PageHeader
+        size="display"
         eyebrow="Eventos y noticias"
-        title="Lo que viene"
+        title={
+          <>
+            Lo que <em>viene</em>
+          </>
+        }
         intro="Lo que viene en la iglesia. ¡Trae a alguien contigo!"
         actions={
           <Link
@@ -37,7 +42,7 @@ export default async function EventosPage() {
       <CategoriaTabs active={null} />
       {first ? (
         <div className="grid gap-[clamp(1rem,3vw,1.5rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
-          <EventCard event={first} featured />
+          <EventCard event={first} variant="featured" />
           <div className="flex flex-col gap-4">
             {rest.map((e) => (
               <EventCard key={e.id} event={e} />
@@ -52,13 +57,16 @@ export default async function EventosPage() {
         </Card>
       )}
       {past.length > 0 && (
-        <section aria-labelledby="eventos-pasados" className="flex flex-col gap-4">
-          <h2 id="eventos-pasados" className="text-h2 font-semibold text-ink-soft">
-            Eventos pasados
+        <section
+          aria-labelledby="eventos-pasados"
+          className="mt-[clamp(1rem,4vw,3rem)] flex flex-col gap-6"
+        >
+          <h2 id="eventos-pasados" className="font-headline text-section text-brand-strong">
+            Lo que <em>vivimos</em>
           </h2>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {past.map((e) => (
-              <EventCard key={e.id} event={e} />
+              <EventCard key={e.id} event={e} variant="tile" />
             ))}
           </div>
         </section>

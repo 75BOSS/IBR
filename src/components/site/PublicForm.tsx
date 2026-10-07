@@ -49,7 +49,7 @@ export function PublicForm({
         className="flex flex-col items-start gap-3 rounded-2xl bg-success-soft p-[clamp(1.25rem,4vw,2rem)] text-success"
       >
         <Icon name="check" className="size-8" />
-        <p className="font-display text-h3 font-semibold">{state.message}</p>
+        <p className="font-display text-h3 font-medium">{state.message}</p>
         {state.secret && (
           <div className="w-full">
             <SecretReveal secret={state.secret} />

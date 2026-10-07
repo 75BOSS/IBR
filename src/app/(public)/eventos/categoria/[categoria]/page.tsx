@@ -34,11 +34,11 @@ export default async function CategoriaPage({ params }: Props) {
   const [first, ...rest] = await listEventosByCategoria(c.value, 30);
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
-      <PageHeader eyebrow="Eventos y noticias" title={categoriaTitle(c)} />
+      <PageHeader size="display" eyebrow="Eventos y noticias" title={categoriaTitle(c)} />
       <CategoriaTabs active={c.value} />
       {first ? (
         <div className="grid gap-[clamp(1rem,3vw,1.5rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
-          <EventCard event={first} featured />
+          <EventCard event={first} variant="featured" />
           <div className="flex flex-col gap-4">
             {rest.map((e) => (
               <EventCard key={e.id} event={e} />

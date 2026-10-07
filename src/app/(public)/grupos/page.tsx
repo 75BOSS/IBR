@@ -55,8 +55,13 @@ export default async function GruposPage({ searchParams }: { searchParams: Promi
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
       <PageHeader
+        size="display"
         eyebrow="Comunidad"
-        title="Grupos"
+        title={
+          <>
+            Grupos <em>en casa</em>
+          </>
+        }
         intro="La iglesia también se vive en casa. Busca un grupo cerca de ti y para tu edad, y únete."
       />
 
@@ -129,7 +134,7 @@ export default async function GruposPage({ searchParams }: { searchParams: Promi
           <section key={title} aria-labelledby={`seccion-${title}`} className="flex flex-col gap-4">
             <h2
               id={`seccion-${title}`}
-              className="flex items-center gap-3 text-h2 font-semibold text-ink"
+              className="flex items-center gap-3 font-headline text-h1 text-ink"
             >
               <span
                 className="h-8 w-1.5 rounded-full"
