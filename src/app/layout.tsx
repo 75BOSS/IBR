@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Figtree, Fraunces } from 'next/font/google';
 import { ToastProvider } from '@/components/Toast';
 import { DEFAULT_OG_IMAGE, SITE_NAME } from '@/lib/seo';
-import { siteUrl } from '@/lib/site';
+import { isIndexable, siteUrl } from '@/lib/site';
 import './globals.css';
 
 const fraunces = Fraunces({
@@ -29,6 +29,8 @@ export const metadata: Metadata = {
   description:
     'Iglesia Bíblica Riobamba: horarios de reunión, grupos por edad, prédicas y cómo llegar. Bienvenido a casa.',
   applicationName: 'IBR',
+  // Copias de prueba (dev., subdominio de Pixelia): fuera de Google. Ver PRODUCTION_HOSTS.
+  robots: isIndexable() ? undefined : { index: false, follow: false },
   openGraph: {
     type: 'website',
     locale: 'es_EC',
