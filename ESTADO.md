@@ -207,7 +207,7 @@ Para probar en MariaDB sin chocar con MySQL: `apt-get download mariadb-server-co
 ## Qué hacer en la próxima sesión
 
 1. Ejecutar PASO 0 de `CLAUDE.md`.
-1. Copia de prueba para la iglesia en `ibr.pixeliacomsoluciones.es`: seguir `DESPLIEGUE.md` (la hace la sesión local de Cristian, que tiene acceso a Hostinger). Con el despliegue automático de la rama `dev`, cada push se publica solo.
+1. Copia de prueba **en línea** desde el 2026-10-07: https://ibr.pixeliacomsoluciones.es (versión `6456295`, BD con las migraciones 000–011, robots y `noindex` verificados, 59 páginas generadas). La publica la sesión local de Cristian (`DESPLIEGUE.md`). Falta: (a) el primer administrador (`db:seed-admin --generar`, lo corre Cristian), (b) el despliegue automático (GitHub de hPanel no ve `75BOSS/IBR`, ver `DESPLIEGUE.md` §D; mientras, se sube como zip), (c) `/admin/diagnostico` → «Probar SSE» (F0.9).
 2. Si ya hay credenciales de Hostinger: F0.8 (web app → `dev`), `npm run db:migrate` contra la BD nueva (aplica `000` a `010`), crear el primer admin y correr `/admin/diagnostico` (F0.9). Cargar `NEXT_PUBLIC_SITE_URL` con `https://` (sitemap, OG, correos y QR la usan).
 3. Si ya está el dump del PHP: reconciliar `ESQUEMA.sql` §«Tablas heredadas» (MIGRACION-PHP.md §1) **antes** de aplicarlo en Hostinger, y escribir `scripts/importar-php.ts`.
 4. Al cerrar F0: borrar `/api/ping-sse` y `/admin/diagnostico`.

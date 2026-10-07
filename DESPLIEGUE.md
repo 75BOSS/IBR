@@ -13,12 +13,16 @@ Pixelia para que la iglesia la pruebe. La copia de prueba sale con `noindex` aut
    donde se corre el paso 4 (o «cualquier host» mientras dure la prueba).
 3. **Web app Node.js** en hPanel → Sitios web → Agregar → Web app de Node.js:
    - Repositorio GitHub `75BOSS/IBR`, rama **`dev`**, **despliegue automático al hacer push: activado**.
+     Ojo: la conexión de GitHub de hPanel es de la cuenta *PixeliacomSoluciones* y no ve
+     `75BOSS/IBR`. Mientras no tenga acceso (ver «D»), se sube el código como zip en cada cambio.
    - Preset Next.js · Node 22 · Build `npm run build` · Package manager npm · Output `.next`.
    - Dominio: subdominio **`ibr.pixeliacomsoluciones.es`** (si el dominio está en esta cuenta,
      el DNS se crea solo; si no, un registro CNAME/A según indique hPanel).
    - Variables de entorno (mínimas para que funcione):
      - `NEXT_PUBLIC_SITE_URL=https://ibr.pixeliacomsoluciones.es`
-     - `DATABASE_URL=mysql://USUARIO:CLAVE@HOST:3306/NOMBRE_BD` (caracteres especiales de la clave en `%XX`)
+     - `DATABASE_URL=mysql://USUARIO:CLAVE@127.0.0.1:3306/NOMBRE_BD` dentro de Hostinger (así lo
+       recomienda Hostinger); desde fuera, el host remoto que muestra hPanel. Caracteres
+       especiales de la clave en `%XX`.
      - `SESSION_SECRET=` 32+ caracteres aleatorios (`openssl rand -base64 48`)
      - `TRUSTED_PROXY_HOPS=1`
      - Opcionales (sin ellas el sitio funciona, pero no sube fotos ni manda correos/WhatsApp):
@@ -31,8 +35,9 @@ Pixelia para que la iglesia la pruebe. La copia de prueba sale con `noindex` aut
    DATABASE_URL='mysql://…' npm run db:migrate
    DATABASE_URL='mysql://…' npm run db:seed-admin -- --email=CORREO --nombre="NOMBRE" --generar
    ```
-   `--generar` imprime una contraseña temporal una sola vez: dársela a Cristian por un canal
-   privado; se cambia desde el panel en «Mi cuenta». Nunca subir la `DATABASE_URL` al repo.
+   `--generar` crea una contraseña segura y la muestra una sola vez en la terminal de quien lo
+   corre (Cristian): nadie la escribe en un chat. Se cambia desde el panel en «Mi cuenta».
+   Nunca subir la `DATABASE_URL` al repo (va en `.env.local`, que git ignora).
 5. **Primer deploy**: lanzarlo desde hPanel (o el conector) y revisar el log de build.
 6. **Verificar**: abrir `https://ibr.pixeliacomsoluciones.es`, `/robots.txt` (debe decir
    `Disallow: /`), entrar a `/admin/login` y correr `/admin/diagnostico` → «Probar SSE».
@@ -41,7 +46,8 @@ Pixelia para que la iglesia la pruebe. La copia de prueba sale con `noindex` aut
 ## B. Cada vez que haya cambios nuevos en `dev`
 
 Con el despliegue automático activado, **no hay que hacer nada**: cada push a `dev` compila y
-publica solo. Solo dos casos piden un paso extra:
+publica solo. Sin él: `git pull` de `dev` en el clon local y volver a subir el código (zip) a
+la web app. Dos casos piden un paso extra:
 
 - **Hay migraciones nuevas** (`sql/migraciones/0NN_*.sql` que la BD de prueba no tiene): correr
   `DATABASE_URL='mysql://…' npm run db:migrate` **antes** de que termine el build
@@ -56,3 +62,16 @@ publica solo. Solo dos casos piden un paso extra:
 - Login que no guarda la sesión: falta `SESSION_SECRET` o `NEXT_PUBLIC_SITE_URL` no es `https://`.
 - Rate limit que bloquea a todos con la misma IP: ajustar `TRUSTED_PROXY_HOPS` mirando
   `x-forwarded-for` en `/admin/diagnostico` (debe terminar en la IP real del visitante).
+
+## D. Activar el despliegue automático
+
+La web app solo puede seguir un repositorio que vea la cuenta de GitHub conectada en hPanel
+(*PixeliacomSoluciones*). Opciones, de la más simple a la más definitiva:
+
+1. En GitHub, con la cuenta **75BOSS**: `75BOSS/IBR` → Settings → Collaborators → invitar a
+   *PixeliacomSoluciones*; aceptar la invitación con esa cuenta y volver a hPanel → Git.
+2. Si hPanel sigue sin verlo (la app de GitHub de Hostinger se instala por dueño, no por
+   colaborador): transferir el repositorio a *PixeliacomSoluciones* (Settings → Danger zone →
+   Transfer). GitHub redirige la URL vieja; la sesión de Claude en la nube necesita que se le
+   agregue el repositorio nuevo.
+
