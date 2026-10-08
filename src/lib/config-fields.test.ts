@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { parseCreencias } from '@/lib/config-fields';
+import { accountTypeLabel, parseCreencias } from '@/lib/config-fields';
 import { paragraphs } from '@/lib/text';
 
 test('creencias: título en la primera línea y texto debajo', () => {
@@ -25,4 +25,12 @@ test('creencias: párrafo de una línea queda sin título; vacío da lista vací
 
 test('párrafos con saltos de Windows y líneas en blanco con espacios', () => {
   assert.deepEqual(paragraphs('Uno\r\n\r\nDos\n   \nTres'), ['Uno', 'Dos', 'Tres']);
+});
+
+test('tipo de cuenta: se lee natural escriba lo que escriba la iglesia', () => {
+  assert.equal(accountTypeLabel('Ahorros'), 'Cuenta de ahorros');
+  assert.equal(accountTypeLabel('cuenta de ahorros'), 'Cuenta de ahorros');
+  assert.equal(accountTypeLabel('Corriente'), 'Cuenta corriente');
+  assert.equal(accountTypeLabel('Cuenta corriente'), 'Cuenta corriente');
+  assert.equal(accountTypeLabel(''), 'Cuenta');
 });

@@ -206,6 +206,18 @@ export type BankAccount = {
 };
 export const MAX_BANK_ACCOUNTS = 4;
 
+/**
+ * «Cuenta de ahorros» / «Cuenta corriente» a partir de lo que se escribió en «Tipo» (texto
+ * libre: «Ahorros», «ahorros», «Cuenta de ahorros», «Corriente»…), sin repetir «cuenta».
+ */
+export function accountTypeLabel(tipo: string | null | undefined): string {
+  const value = (tipo ?? '').trim().toLowerCase();
+  if (!value) return 'Cuenta';
+  if (value.startsWith('cuenta')) return value.charAt(0).toUpperCase() + value.slice(1);
+  if (value.startsWith('ahorro')) return 'Cuenta de ahorros';
+  return `Cuenta ${value}`;
+}
+
 export function parseBankAccounts(value: string | null | undefined): BankAccount[] {
   try {
     const parsed: unknown = JSON.parse(value ?? '[]');

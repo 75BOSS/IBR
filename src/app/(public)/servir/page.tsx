@@ -48,7 +48,7 @@ export default async function ServirPage({
           <h2 id="areas" className="font-headline text-h1 text-brand-strong">
             Dónde puedes servir
           </h2>
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
             <Card as="article" tone="brand" emphasis="featured">
               {featured.imagen_url && (
                 <div className="relative -mx-[clamp(1.25rem,4vw,2rem)] -mt-[clamp(1.25rem,4vw,2rem)] mb-4 aspect-[16/9] overflow-hidden rounded-t-2xl">

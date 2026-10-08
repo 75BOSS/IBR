@@ -4,7 +4,7 @@ import { CopyButton } from '@/components/CopyButton';
 import { PageHeader } from '@/components/PageHeader';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { getSiteConfig } from '@/lib/config';
-import { type BankAccount, parseBankAccounts } from '@/lib/config-fields';
+import { type BankAccount, accountTypeLabel, parseBankAccounts } from '@/lib/config-fields';
 import { pageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
@@ -30,9 +30,7 @@ function AccountCard({ account, featured }: { account: BankAccount; featured: bo
       <p className="text-sm font-semibold tracking-wide text-accent-strong uppercase">
         {account.banco}
       </p>
-      <p className="text-ink-soft">
-        {account.tipo ? `Cuenta ${account.tipo.toLowerCase()}` : 'Cuenta'}
-      </p>
+      <p className="text-ink-soft">{accountTypeLabel(account.tipo)}</p>
       <p
         className={`mt-2 font-display font-semibold tracking-wide text-ink tabular-nums ${featured ? 'text-h2' : 'text-h3'}`}
       >

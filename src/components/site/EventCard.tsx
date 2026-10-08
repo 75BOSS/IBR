@@ -101,7 +101,11 @@ export function EventCard({
   const featured = variant === 'featured';
   return (
     <article
-      className={`group relative flex h-full flex-col overflow-hidden rounded-(--radius-frame) bg-surface ring-1 ring-line/70 transition hover:shadow-lift`}
+      // h-full solo en `tile` (carrusel y grillas: tarjetas parejas). En `featured` haría que la
+      // tarjeta tome el alto de la columna vecina y quede un hueco antes de «Ver detalles».
+      className={`group relative flex flex-col overflow-hidden rounded-(--radius-frame) bg-surface ring-1 ring-line/70 transition hover:shadow-lift ${
+        featured ? '' : 'h-full'
+      }`}
     >
       <EventCover
         event={event}
