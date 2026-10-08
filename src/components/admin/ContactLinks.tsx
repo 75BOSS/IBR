@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Icon } from '@/components/Icon';
+import { EmailText } from '@/components/EmailText';
 import { formatPhoneEc, whatsappHref } from '@/lib/whatsapp';
 
 /**
@@ -33,8 +34,8 @@ export function ContactLinks({
         </a>
       )}
       {email && (
-        <a href={`mailto:${email}`} className="text-sm break-all text-ink-soft hover:underline">
-          {email}
+        <a href={`mailto:${email}`} className="text-sm text-ink-soft hover:underline">
+          <EmailText email={email} />
         </a>
       )}
     </span>

@@ -18,7 +18,7 @@ export const metadata = pageMetadata({
 
 export default function OracionPage() {
   return (
-    <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page page-flow">
       <PageHeader
         size="display"
         eyebrow="Oración"
@@ -29,7 +29,7 @@ export default function OracionPage() {
         }
         intro="Escríbenos lo que tengas en el corazón. Los pastores leen cada petición y oramos por ella."
       />
-      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-main-aside">
         <FormPanel
           titleId="escribir-peticion"
           eyebrow="Tu petición"
@@ -40,7 +40,6 @@ export default function OracionPage() {
           }
           text="Puedes enviarla con tu nombre o sin él. Si quieres, te escribimos para acompañarte."
           tone="brand"
-          stacked
         >
           <FormDialog
             id="peticion"
@@ -77,7 +76,7 @@ export default function OracionPage() {
                 <Icon name="users" className="mt-0.5 size-5 shrink-0 text-brand-strong" />
                 <span>
                   <strong className="text-ink">No estás solo.</strong> En los{' '}
-                  <Link href="/grupos" className="font-semibold text-brand-strong underline">
+                  <Link href="/grupos" className="link">
                     grupos en casas
                   </Link>{' '}
                   también oramos unos por otros.

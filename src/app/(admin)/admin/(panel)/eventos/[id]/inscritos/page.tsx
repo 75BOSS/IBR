@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { setInscripcionEstado } from '@/actions/inscripciones';
+import { BackLink } from '@/components/BackLink';
 import { buttonClasses } from '@/components/button-styles';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { type Column, DataTable } from '@/components/DataTable';
@@ -51,25 +52,25 @@ export default async function InscritosPage({ params }: { params: Promise<{ id: 
         />
       ),
     },
-    { key: 'personas', header: 'Personas', className: 'md:w-24', cell: (i) => i.personas },
+    { key: 'personas', header: 'Personas', className: '@4xl:w-24', cell: (i) => i.personas },
     {
       key: 'codigo',
       header: 'Código',
-      className: 'md:w-32',
+      className: '@4xl:w-32',
       cell: (i) => <span className="font-mono font-semibold tracking-wider">{i.codigo}</span>,
     },
-    { key: 'estado', header: 'Estado', className: 'md:w-32', cell: (i) => ESTADO[i.estado] },
+    { key: 'estado', header: 'Estado', className: '@4xl:w-32', cell: (i) => ESTADO[i.estado] },
     {
       key: 'fecha',
       header: 'Se inscribió',
-      className: 'md:w-36',
+      className: '@4xl:w-36',
       cell: (i) => formatDateTime(i.creado_en, { dateStyle: 'medium' }),
     },
     {
       key: 'acciones',
       header: 'Acciones',
       hideLabelOnMobile: true,
-      className: 'md:w-60',
+      className: '@4xl:w-60',
       cell: (i) => (
         <span className="flex flex-wrap gap-2">
           {i.estado === 'confirmada' && (
@@ -108,13 +109,8 @@ export default async function InscritosPage({ params }: { params: Promise<{ id: 
   ];
 
   return (
-    <div className="flex flex-col gap-6 container-panel">
-      <Link
-        href="/admin/eventos"
-        className="inline-flex items-center gap-1 self-start font-semibold text-brand-strong hover:underline"
-      >
-        <Icon name="chevronLeft" className="size-4" /> Eventos
-      </Link>
+    <div className="container-panel">
+      <BackLink href="/admin/eventos">Eventos</BackLink>
       <PageHeader
         eyebrow={`Inscritos · ${eventWhen(event)}`}
         title={event.titulo}

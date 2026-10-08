@@ -23,16 +23,13 @@ export default async function EditarEventoPage({ params }: { params: Promise<{ i
   ]);
   if (!event) notFound();
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader
         eyebrow="Eventos"
         title={`Editar: ${event.titulo}`}
         intro={
           event.publicado ? (
-            <Link
-              href={`/eventos/${event.slug}`}
-              className="inline-flex items-center gap-1.5 font-semibold text-brand-strong underline"
-            >
+            <Link href={`/eventos/${event.slug}`} className="inline-flex items-center gap-1.5 link">
               Ver en el sitio <Icon name="external" className="size-4" />
             </Link>
           ) : (

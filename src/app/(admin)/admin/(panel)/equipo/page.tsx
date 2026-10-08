@@ -29,10 +29,7 @@ export default async function EquipoPage({
       header: 'Nombre',
       primary: true,
       cell: (p) => (
-        <Link
-          href={`/admin/equipo/${p.id}`}
-          className="flex items-center gap-3 font-semibold text-brand-strong hover:underline"
-        >
+        <Link href={`/admin/equipo/${p.id}`} className="flex items-center gap-3 link-quiet">
           <span className="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-full bg-sunken text-ink-soft">
             {p.foto_url ? (
               <Image src={p.foto_url} alt="" fill sizes="40px" className="object-cover" />
@@ -55,12 +52,12 @@ export default async function EquipoPage({
         </span>
       ),
     },
-    { key: 'orden', header: 'Orden', cell: (p) => p.orden, className: 'md:w-20' },
+    { key: 'orden', header: 'Orden', cell: (p) => p.orden, className: '@4xl:w-20' },
     {
       key: 'acciones',
       header: 'Acciones',
       hideLabelOnMobile: true,
-      className: 'md:w-56',
+      className: '@4xl:w-56',
       cell: (p) => (
         <span className="flex flex-wrap gap-1">
           <ButtonLink
@@ -84,7 +81,7 @@ export default async function EquipoPage({
   ];
 
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <FlashToast code={aviso} />
       <PageHeader
         eyebrow="Panel"

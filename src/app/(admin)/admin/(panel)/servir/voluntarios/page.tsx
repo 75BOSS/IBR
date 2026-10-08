@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { deleteVoluntario, updateVoluntario } from '@/actions/servir';
+import { BackLink } from '@/components/BackLink';
 import { buttonClasses } from '@/components/button-styles';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { type Column, DataTable } from '@/components/DataTable';
-import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { Tag } from '@/components/Tag';
 import { ContactLinks } from '@/components/admin/ContactLinks';
@@ -77,14 +77,14 @@ export default async function VoluntariosPage({
     {
       key: 'fecha',
       header: 'Llegó',
-      className: 'md:w-36',
+      className: '@4xl:w-36',
       cell: (v) => formatDateTime(v.creado_en, { dateStyle: 'medium' }),
     },
     {
       key: 'estado',
       header: 'Seguimiento',
       hideLabelOnMobile: true,
-      className: 'md:w-64',
+      className: '@4xl:w-64',
       cell: (v) => (
         <span className="flex w-full flex-col gap-1">
           <StatusForm
@@ -110,13 +110,8 @@ export default async function VoluntariosPage({
   ];
 
   return (
-    <div className="flex flex-col gap-6 container-panel">
-      <Link
-        href="/admin/servir"
-        className="inline-flex items-center gap-1 self-start font-semibold text-brand-strong hover:underline"
-      >
-        <Icon name="chevronLeft" className="size-4" /> Áreas de servicio
-      </Link>
+    <div className="container-panel">
+      <BackLink href="/admin/servir">Áreas de servicio</BackLink>
       <PageHeader
         eyebrow="Servir"
         title={area ? `Voluntarios de ${area.nombre}` : 'Voluntarios'}

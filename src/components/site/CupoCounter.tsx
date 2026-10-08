@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Icon } from '@/components/Icon';
+import { ProgressBar } from '@/components/ProgressBar';
 import { type CupoStatus, disponiblesText } from '@/lib/cupo';
 
 const POLL_MS = 15_000;
@@ -34,8 +35,7 @@ export function CupoCounter({ eventoId, initial }: { eventoId: number; initial: 
   }, [eventoId]);
 
   const full = status.disponibles === 0;
-  const percent =
-    status.cupo && status.cupo > 0 ? Math.min(100, (status.inscritos / status.cupo) * 100) : null;
+  const percent = status.cupo && status.cupo > 0 ? (status.inscritos / status.cupo) * 100 : null;
   return (
     <div role="status" aria-live="polite" className="flex flex-col gap-2">
       <p
@@ -45,16 +45,11 @@ export function CupoCounter({ eventoId, initial }: { eventoId: number; initial: 
         {disponiblesText(status)}
       </p>
       {percent !== null && (
-        <div
-          className="h-2 overflow-hidden rounded-full bg-sunken"
-          aria-hidden="true"
+        <ProgressBar
+          percent={percent}
+          tone={full ? 'danger' : 'success'}
           title={`${status.inscritos} de ${status.cupo} lugares ocupados`}
-        >
-          <div
-            className={`h-full rounded-full ${full ? 'bg-danger' : 'bg-success'}`}
-            style={{ width: `${percent}%` }}
-          />
-        </div>
+        />
       )}
       {!status.abierto && status.motivo && status.disponibles !== 0 && (
         <p className="text-sm text-ink-soft">{status.motivo}</p>

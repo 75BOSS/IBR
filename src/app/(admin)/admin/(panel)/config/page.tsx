@@ -14,7 +14,7 @@ export default async function ConfigPage() {
   const uploadsEnabled = isCloudinaryConfigured();
 
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader
         eyebrow="Panel"
         title="Configuración del sitio"

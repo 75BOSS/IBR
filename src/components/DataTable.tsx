@@ -12,8 +12,10 @@ export type Column<T> = {
 };
 
 /**
- * Tabla única del panel. Cabecera con color (nunca en blanco). En celular cada fila pasa a
- * una tarjeta compacta con «Etiqueta: valor», sin scroll horizontal (Reglas Pixelia).
+ * Tabla única del panel. Cabecera con color (nunca en blanco). Cuando no cabe (menos de 56rem
+ * de ancho) cada fila pasa a una tarjeta compacta con «Etiqueta: valor», sin scroll horizontal
+ * (Reglas Pixelia). Decide por su propio ancho (@container), no por el de la ventana: desde
+ * 1024 px aparece la barra lateral y al contenido le queda menos que en una tablet.
  */
 export function DataTable<T>({
   columns,
@@ -31,28 +33,28 @@ export function DataTable<T>({
   empty: ReactNode;
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line/70">
-      <table className="w-full border-collapse text-left max-md:block">
+    <div className="@container overflow-hidden rounded-2xl bg-surface ring-1 ring-line/70">
+      <table className="w-full border-collapse text-left @max-4xl:block">
         <caption className="sr-only">{caption}</caption>
-        <thead className="bg-brand-soft text-brand-strong max-md:hidden">
+        <thead className="bg-brand-soft text-brand-strong @max-4xl:hidden">
           <tr>
             {columns.map((column) => (
               <th
                 key={column.key}
                 scope="col"
-                className={`px-4 py-3 text-xs font-bold tracking-wider uppercase ${column.className ?? ''}`}
+                className={`px-4 py-3 caps ${column.className ?? ''}`}
               >
                 {column.header}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-line/60 max-md:block">
+        <tbody className="divide-y divide-line/60 @max-4xl:block">
           {rows.length === 0 ? (
-            <tr className="max-md:block">
+            <tr className="@max-4xl:block">
               <td
                 colSpan={columns.length}
-                className="px-4 py-8 text-center text-ink-soft max-md:block"
+                className="px-4 py-8 text-center text-ink-soft @max-4xl:block"
               >
                 {empty}
               </td>
@@ -61,18 +63,18 @@ export function DataTable<T>({
             rows.map((row) => (
               <tr
                 key={rowKey(row)}
-                className="align-top hover:bg-sunken/40 max-md:block max-md:px-4 max-md:py-3"
+                className="align-top hover:bg-sunken/40 @max-4xl:block @max-4xl:px-4 @max-4xl:py-3"
               >
                 {columns.map((column) => (
                   <td
                     key={column.key}
                     data-label={column.header}
-                    className={`px-4 py-3 max-md:flex max-md:gap-2 max-md:px-0 max-md:py-0.5 ${
+                    className={`px-4 py-3 @max-4xl:flex @max-4xl:gap-2 @max-4xl:px-0 @max-4xl:py-0.5 ${
                       column.primary
-                        ? 'max-md:pb-1.5 max-md:text-[1.05rem] max-md:font-semibold'
+                        ? '@max-4xl:pb-1.5 @max-4xl:text-[1.05rem] @max-4xl:font-semibold'
                         : column.hideLabelOnMobile
-                          ? 'max-md:pt-2'
-                          : 'max-md:text-sm max-md:before:w-28 max-md:before:shrink-0 max-md:before:font-semibold max-md:before:text-ink-soft max-md:before:content-[attr(data-label)]'
+                          ? '@max-4xl:pt-2'
+                          : '@max-4xl:text-sm @max-4xl:before:w-28 @max-4xl:before:shrink-0 @max-4xl:before:font-semibold @max-4xl:before:text-ink-soft @max-4xl:before:content-[attr(data-label)]'
                     } ${column.className ?? ''}`}
                   >
                     <div className="min-w-0">{column.cell(row)}</div>

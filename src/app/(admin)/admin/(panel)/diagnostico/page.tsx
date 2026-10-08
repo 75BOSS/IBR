@@ -27,7 +27,7 @@ export default async function DiagnosticsPage() {
   const detectedIp = await getClientIp();
 
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader
         eyebrow="Temporal · F0"
         title="Diagnóstico del hosting"

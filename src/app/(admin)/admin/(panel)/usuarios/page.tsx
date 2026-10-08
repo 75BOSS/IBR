@@ -8,6 +8,7 @@ import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { Tag } from '@/components/Tag';
 import { FlashToast } from '@/components/Toast';
+import { EmailText } from '@/components/EmailText';
 import { requireAdmin } from '@/lib/auth';
 import { formatDateTime } from '@/lib/dates';
 import { type Usuario, listUsuarios } from '@/lib/usuarios';
@@ -30,14 +31,13 @@ export default async function UsuariosPage({
       primary: true,
       cell: (u) => (
         <span className="flex min-w-0 flex-col">
-          <Link
-            href={`/admin/usuarios/${u.id}`}
-            className="font-semibold text-brand-strong hover:underline"
-          >
+          <Link href={`/admin/usuarios/${u.id}`} className="link-quiet">
             {u.nombre}
             {u.id === me.id && <span className="font-normal text-ink-soft"> (tú)</span>}
           </Link>
-          <span className="text-sm break-all text-ink-soft">{u.email}</span>
+          <span className="text-sm text-ink-soft">
+            <EmailText email={u.email} />
+          </span>
         </span>
       ),
     },
@@ -54,7 +54,7 @@ export default async function UsuariosPage({
     {
       key: 'ultimo',
       header: 'Último ingreso',
-      className: 'md:w-44',
+      className: '@4xl:w-44',
       cell: (u) =>
         u.ultimo_login ? (
           formatDateTime(u.ultimo_login, { dateStyle: 'medium', timeStyle: 'short' })
@@ -66,7 +66,7 @@ export default async function UsuariosPage({
       key: 'acciones',
       header: 'Acciones',
       hideLabelOnMobile: true,
-      className: 'md:w-64',
+      className: '@4xl:w-64',
       cell: (u) => (
         <span className="flex flex-wrap gap-1">
           <ButtonLink
@@ -97,7 +97,7 @@ export default async function UsuariosPage({
   ];
 
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <FlashToast code={aviso} />
       <PageHeader
         eyebrow="Panel"

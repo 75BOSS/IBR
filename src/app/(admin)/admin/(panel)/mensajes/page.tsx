@@ -32,7 +32,7 @@ export default async function MensajesPage({
     {
       key: 'persona',
       header: 'De',
-      className: 'md:w-56',
+      className: '@4xl:w-56',
       cell: (c) => (
         <ContactLinks
           nombre={c.nombre}
@@ -45,14 +45,14 @@ export default async function MensajesPage({
     {
       key: 'fecha',
       header: 'Llegó',
-      className: 'md:w-40',
+      className: '@4xl:w-40',
       cell: (c) => formatDateTime(c.creado_en, { dateStyle: 'medium', timeStyle: 'short' }),
     },
     {
       key: 'acciones',
       header: 'Acciones',
       hideLabelOnMobile: true,
-      className: 'md:w-48',
+      className: '@4xl:w-48',
       cell: (c) => (
         <span className="flex flex-wrap items-start gap-2">
           <ActionButton
@@ -78,7 +78,7 @@ export default async function MensajesPage({
   ];
 
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader
         eyebrow="Panel"
         title="Mensajes"

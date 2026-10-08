@@ -1,9 +1,14 @@
+import { useId } from 'react';
+
 /**
  * Ilustración de respaldo para portadas sin foto: amanecer sobre el Chimborazo, el volcán que
  * se ve desde Riobamba. Decorativa (aria-hidden); en cuanto la iglesia sube una foto, se usa la
  * foto.
  */
 export function HeroArt({ className = '' }: { className?: string }) {
+  // Ids propios por dibujo: la portada usa dos en la misma página y un id repetido es HTML
+  // inválido (el segundo degradado tomaría el del primero).
+  const id = useId();
   return (
     <svg
       viewBox="0 0 1600 800"
@@ -13,20 +18,20 @@ export function HeroArt({ className = '' }: { className?: string }) {
       className={className}
     >
       <defs>
-        <linearGradient id="ibr-cielo" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={`${id}-cielo`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#0a1a33" />
           <stop offset="0.42" stopColor="#1d3b8f" />
           <stop offset="0.7" stopColor="#7d8fcf" />
           <stop offset="0.9" stopColor="#f8cba0" />
         </linearGradient>
-        <radialGradient id="ibr-sol" cx="0.5" cy="0.5" r="0.5">
+        <radialGradient id={`${id}-sol`} cx="0.5" cy="0.5" r="0.5">
           <stop offset="0" stopColor="#fde6cc" stopOpacity="0.95" />
           <stop offset="0.35" stopColor="#f8cba0" stopOpacity="0.55" />
           <stop offset="1" stopColor="#f8cba0" stopOpacity="0" />
         </radialGradient>
       </defs>
-      <rect width="1600" height="800" fill="url(#ibr-cielo)" />
-      <circle cx="1210" cy="470" r="330" fill="url(#ibr-sol)" />
+      <rect width="1600" height="800" fill={`url(#${id}-cielo)`} />
+      <circle cx="1210" cy="470" r="330" fill={`url(#${id}-sol)`} />
       <circle cx="1210" cy="470" r="92" fill="#fde6cc" />
       <path
         d="M0 640C110 560 210 480 300 462c62-12 122 40 220 104 84 52 164 82 244 100L0 720Z"

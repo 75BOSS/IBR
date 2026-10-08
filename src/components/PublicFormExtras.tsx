@@ -40,11 +40,7 @@ export function ConsentField({
         <>
           Acepto que la iglesia guarde estos datos para contactarme. Puedes leer cómo los cuidamos
           en la {/* En otra pestaña: leerla no hace perder lo escrito en el formulario. */}
-          <Link
-            href="/privacidad"
-            target="_blank"
-            className="font-semibold text-brand-strong underline"
-          >
+          <Link href="/privacidad" target="_blank" className="link">
             política de privacidad
             <span className="sr-only"> (se abre en una pestaña nueva)</span>
           </Link>

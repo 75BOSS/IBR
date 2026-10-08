@@ -11,7 +11,7 @@ export default async function NuevoEventoPage() {
   await requireAdmin();
   const [ubicaciones, rangos] = await Promise.all([ubicacionOptions(), rangoOptions()]);
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Eventos" title="Crear evento" />
       <EventoForm
         ubicaciones={ubicaciones}

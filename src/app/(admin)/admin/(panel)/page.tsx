@@ -86,7 +86,7 @@ export default async function DashboardPage({
   ]);
 
   return (
-    <section className="flex flex-col gap-6 container-panel">
+    <section className="container-panel">
       {notice && <FormAlert tone="warning">{notice}</FormAlert>}
       <PageHeader
         eyebrow="Resumen"
@@ -108,11 +108,9 @@ export default async function DashboardPage({
         }
       />
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+      <div className="grid gap-4 lg:grid-cols-aside-main">
         <Card tone="brand" emphasis="featured">
-          <p className="text-sm font-semibold tracking-widest text-accent-soft uppercase">
-            Personas nuevas
-          </p>
+          <p className="eyebrow text-accent-soft">Personas nuevas</p>
           <p className="mt-2 font-display text-display leading-none font-semibold">
             {counts.registros_semana}
           </p>
@@ -126,10 +124,7 @@ export default async function DashboardPage({
               ? `${counts.registros_sin_contactar} ${counts.registros_sin_contactar === 1 ? 'espera' : 'esperan'} que les escribamos.`
               : 'Todas ya fueron contactadas.'}
           </p>
-          <Link
-            href="/admin/registros"
-            className="mt-4 inline-flex items-center gap-1.5 font-semibold underline decoration-accent-soft underline-offset-4"
-          >
+          <Link href="/admin/registros" className="mt-4 inline-flex items-center gap-1.5 link">
             Ver registros <Icon name="arrowRight" className="size-4" />
           </Link>
         </Card>
@@ -172,10 +167,7 @@ export default async function DashboardPage({
           title="Por contactar"
           as="section"
           actions={
-            <Link
-              href="/admin/registros"
-              className="text-sm font-semibold text-brand-strong underline"
-            >
+            <Link href="/admin/registros" className="text-sm link">
               Ver todos
             </Link>
           }
@@ -208,10 +200,7 @@ export default async function DashboardPage({
           as="section"
           tone="sunken"
           actions={
-            <Link
-              href="/admin/eventos"
-              className="text-sm font-semibold text-brand-strong underline"
-            >
+            <Link href="/admin/eventos" className="text-sm link">
               Eventos
             </Link>
           }
@@ -235,10 +224,7 @@ export default async function DashboardPage({
           ) : (
             <p className="text-ink-soft">
               No hay eventos publicados por venir.{' '}
-              <Link
-                href="/admin/eventos/nuevo"
-                className="font-semibold text-brand-strong underline"
-              >
+              <Link href="/admin/eventos/nuevo" className="link">
                 Crear uno
               </Link>
             </p>

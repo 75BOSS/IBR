@@ -22,7 +22,7 @@ export default async function EditarPredicaPage({ params }: { params: Promise<{ 
   ]);
   if (!sermon) notFound();
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Prédicas" title="Editar prédica" />
       <PredicaForm sermon={sermon} series={series} predicadores={predicadores} />
     </div>

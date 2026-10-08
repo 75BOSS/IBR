@@ -12,7 +12,7 @@ export default async function NuevoGrupoPage() {
   await requireAdmin();
   const [ubicaciones, rangos] = await Promise.all([ubicacionOptions(), rangoOptions()]);
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Grupos" title="Crear grupo" />
       <GrupoForm
         ubicaciones={ubicaciones}

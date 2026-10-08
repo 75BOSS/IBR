@@ -6,6 +6,7 @@ import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { Field } from '@/components/Field';
 import { Icon } from '@/components/Icon';
+import { ProgressBar } from '@/components/ProgressBar';
 import type { CheckinStats } from '@/lib/checkin';
 import { type FormState, initialFormState } from '@/lib/form-state';
 
@@ -130,10 +131,10 @@ export function CheckinBoard({ eventoId, initial }: { eventoId: number; initial:
     };
   }, [scanning, submitCode]);
 
-  const percent = stats.esperadas > 0 ? Math.min(100, (stats.llegaron / stats.esperadas) * 100) : 0;
+  const percent = stats.esperadas > 0 ? (stats.llegaron / stats.esperadas) * 100 : 0;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
+    <div className="grid gap-4 lg:grid-cols-main-aside lg:items-start">
       <div className="flex flex-col gap-4">
         <div
           role="status"
@@ -208,13 +209,13 @@ export function CheckinBoard({ eventoId, initial }: { eventoId: number; initial:
       </div>
 
       <Card as="section" tone="brand" emphasis="featured">
-        <p className="text-sm font-semibold tracking-widest text-accent-soft uppercase">Llegaron</p>
+        <p className="eyebrow text-accent-soft">Llegaron</p>
         <p className="mt-1 font-display text-display leading-none font-semibold tabular-nums">
           {stats.llegaron}
           <span className="text-h2 text-surface/70"> / {stats.esperadas}</span>
         </p>
-        <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface/20" aria-hidden="true">
-          <div className="h-full rounded-full bg-accent-soft" style={{ width: `${percent}%` }} />
+        <div className="mt-3">
+          <ProgressBar percent={percent} tone="inverse" />
         </div>
         <p className="mt-4 text-sm font-semibold text-accent-soft">Últimas llegadas</p>
         {stats.recientes.length > 0 ? (

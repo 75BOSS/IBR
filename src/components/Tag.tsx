@@ -1,4 +1,5 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { toneVar } from '@/lib/css-vars';
 
 export type TagTone = 'neutral' | 'brand' | 'accent' | 'success' | 'warning' | 'danger' | 'inverse';
 
@@ -28,13 +29,13 @@ export function Tag({
   color?: string | null;
   className?: string;
 }) {
-  const style = color ? ({ '--tag-dot': color } as CSSProperties) : undefined;
+  const style = color ? toneVar(color) : undefined;
   return (
     <span
       style={style}
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${tones[tone]} ${className}`}
     >
-      {color && <span className="size-2 rounded-full bg-(--tag-dot)" aria-hidden="true" />}
+      {color && <span className="size-2 rounded-full bg-(--tone)" aria-hidden="true" />}
       {children}
     </span>
   );

@@ -42,7 +42,9 @@ export function EventCover({
   const date = dateParts(event.fecha_inicio);
   const label = event.categoria === 'evento' ? null : categoryLabel.get(event.categoria);
   return (
-    <div className={`relative isolate overflow-hidden rounded-[inherit] ${className}`}>
+    // @container: la fecha se mide por el ancho de la portada (cqi), no de la ventana; la misma
+    // portada sale grande en el destacado y chica en un carrusel o en tres columnas.
+    <div className={`@container relative isolate overflow-hidden rounded-[inherit] ${className}`}>
       {event.imagen_url ? (
         <Image
           src={event.imagen_url}
@@ -53,22 +55,22 @@ export function EventCover({
         />
       ) : (
         <div
-          className={`absolute inset-0 flex flex-col justify-end p-[clamp(1.25rem,3vw,2rem)] text-surface ${COVER_TONE[event.categoria]}`}
+          className={`absolute inset-0 flex flex-col justify-end p-[clamp(1rem,6cqi,2rem)] text-surface ${COVER_TONE[event.categoria]}`}
         >
           <span
             aria-hidden="true"
             className="absolute -top-[18%] -right-[12%] size-[75%] rounded-full bg-surface/10 transition-transform duration-700 ease-(--ease-out-soft) motion-safe:group-hover:scale-110"
           />
-          <span className="font-display text-[clamp(3.5rem,2.6rem+3vw,5.5rem)] leading-[0.8] font-extrabold tracking-tighter">
+          <span className="font-display text-[clamp(3rem,20cqi,6rem)] leading-[0.8] font-extrabold tracking-tighter">
             {date.day}
           </span>
-          <span className="mt-1 font-script text-[clamp(1.75rem,1.4rem+1.2vw,2.375rem)] leading-tight first-letter:uppercase">
+          <span className="mt-1 font-script text-[clamp(1.5rem,9cqi,2.5rem)] leading-tight first-letter:uppercase">
             {date.weekday} · {date.month}
           </span>
         </div>
       )}
       {label && (
-        <span className="absolute top-3 left-3 rounded-full bg-canvas/90 px-3 py-1 text-xs font-bold tracking-wider text-ink uppercase backdrop-blur">
+        <span className="absolute top-3 left-3 rounded-full bg-canvas/90 px-3 py-1 caps text-ink backdrop-blur">
           {label}
         </span>
       )}

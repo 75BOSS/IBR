@@ -82,15 +82,13 @@ export function EventCard({
       <article className="group relative flex gap-4 rounded-2xl bg-surface p-[clamp(0.875rem,2.5vw,1.25rem)] ring-1 ring-line/70 transition hover:-translate-y-0.5 hover:shadow-lift motion-reduce:hover:translate-y-0">
         <div className="flex w-16 shrink-0 flex-col items-center justify-center rounded-xl bg-accent-soft py-2 text-accent-strong">
           <span className="font-display text-3xl leading-none font-light">{badge.day}</span>
-          <span className="text-xs font-bold tracking-wider uppercase">{badge.month}</span>
+          <span className="caps">{badge.month}</span>
         </div>
         <div className="flex min-w-0 flex-col gap-1">
           {event.categoria !== 'evento' && (
-            <p className="text-xs font-bold tracking-wider text-accent-strong uppercase">
-              {categoryLabel.get(event.categoria)}
-            </p>
+            <p className="caps text-accent-strong">{categoryLabel.get(event.categoria)}</p>
           )}
-          <h3 className="font-display text-h3 font-medium text-ink">{link}</h3>
+          <h3 className="card-title">{link}</h3>
           <p className="text-sm text-ink-soft first-letter:uppercase">{eventWhen(event)}</p>
           {event.resumen && <p className="line-clamp-2 text-ink-soft">{event.resumen}</p>}
         </div>
@@ -103,14 +101,23 @@ export function EventCard({
     <article
       // h-full solo en `tile` (carrusel y grillas: tarjetas parejas). En `featured` haría que la
       // tarjeta tome el alto de la columna vecina y quede un hueco antes de «Ver detalles».
+      // El destacado en tablet va horizontal: a lo ancho, la portada sola ocupaba media pantalla.
       className={`group relative flex flex-col overflow-hidden rounded-(--radius-frame) bg-surface ring-1 ring-line/70 transition hover:shadow-lift ${
-        featured ? '' : 'h-full'
+        featured ? 'md:max-lg:flex-row' : 'h-full'
       }`}
     >
       <EventCover
         event={event}
-        sizes={featured ? '(min-width: 1024px) 60vw, 100vw' : '(min-width: 768px) 26rem, 82vw'}
-        className={`rounded-none ${featured ? 'aspect-[16/10]' : 'aspect-[4/3]'}`}
+        sizes={
+          featured
+            ? '(min-width: 1024px) 60vw, (min-width: 768px) 40vw, 100vw'
+            : '(min-width: 768px) 26rem, 82vw'
+        }
+        className={`rounded-none ${
+          featured
+            ? 'aspect-[16/10] md:max-lg:aspect-auto md:max-lg:w-2/5 md:max-lg:shrink-0'
+            : 'aspect-[4/3]'
+        }`}
       />
       <div className="flex flex-1 flex-col gap-2 p-[clamp(1.125rem,3vw,1.75rem)]">
         <p className="text-sm font-semibold text-accent-strong first-letter:uppercase">

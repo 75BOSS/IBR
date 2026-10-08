@@ -37,7 +37,7 @@ export default async function InscripcionPage({ params }: { params: Promise<{ co
     insc.estado === 'confirmada' ? await qrSvg(`${siteUrl()}/inscripcion/${insc.codigo}`) : null;
 
   return (
-    <div className="container-page flex flex-col gap-6 py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page page-flow">
       <PageHeader size="display" eyebrow="Mi inscripción" title={insc.evento_titulo} />
       <Card emphasis="featured" className="max-w-2xl">
         <dl className="grid gap-x-6 gap-y-3 xs:grid-cols-[auto_1fr]">
@@ -91,7 +91,7 @@ export default async function InscripcionPage({ params }: { params: Promise<{ co
           {insc.evento_publicado && (
             <Link
               href={`/eventos/${insc.evento_slug}`}
-              className="inline-flex items-center gap-1.5 font-semibold text-brand-strong hover:underline"
+              className="inline-flex items-center gap-1.5 link-quiet"
             >
               Ver el evento <Icon name="arrowRight" className="size-4" />
             </Link>

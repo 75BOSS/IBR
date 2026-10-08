@@ -28,10 +28,7 @@ export default async function ReunionesPage({
       header: 'Reunión',
       primary: true,
       cell: (m) => (
-        <Link
-          href={`/admin/reuniones/${m.id}`}
-          className="font-semibold text-brand-strong hover:underline"
-        >
+        <Link href={`/admin/reuniones/${m.id}`} className="link-quiet">
           {m.nombre}
         </Link>
       ),
@@ -58,7 +55,7 @@ export default async function ReunionesPage({
       key: 'acciones',
       header: 'Acciones',
       hideLabelOnMobile: true,
-      className: 'md:w-56',
+      className: '@4xl:w-56',
       cell: (m) => (
         <span className="flex flex-wrap gap-1">
           <ButtonLink
@@ -81,7 +78,7 @@ export default async function ReunionesPage({
     },
   ];
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <FlashToast code={aviso} />
       <PageHeader
         eyebrow="Panel"

@@ -16,7 +16,7 @@ export default async function EditarUsuarioPage({ params }: { params: Promise<{ 
   if (!user) notFound();
   const isSelf = user.id === me.id;
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader
         eyebrow="Usuarios"
         title={`Editar: ${user.nombre}`}

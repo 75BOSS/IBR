@@ -21,7 +21,7 @@ export default async function EditarGrupoPage({ params }: { params: Promise<{ id
   ]);
   if (!group) notFound();
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Grupos" title={`Editar: ${group.nombre}`} />
       <GrupoForm
         group={group}

@@ -3,6 +3,7 @@ import { buttonClasses } from '@/components/button-styles';
 import { BrandLogo } from '@/components/BrandMark';
 import { Icon } from '@/components/Icon';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
+import { EmailText } from '@/components/EmailText';
 import type { SiteConfig } from '@/lib/config';
 import { directionsUrl } from '@/lib/maps';
 import { type visibleNav, socialLinks } from '@/lib/nav';
@@ -30,7 +31,7 @@ export function SiteFooter({
   return (
     <footer className="mt-auto bg-footer text-footer-ink on-dark">
       <div className="container-page flex flex-col gap-[clamp(2.5rem,6vw,4.5rem)] py-[clamp(3rem,8vw,6rem)]">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="flex max-w-3xl flex-col gap-5">
             <p className="text-cream">
               <BrandLogo className="h-[clamp(4rem,3rem+4vw,6.5rem)]" />
@@ -42,7 +43,7 @@ export function SiteFooter({
               </p>
             )}
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex shrink-0 flex-wrap gap-3">
             <Link
               href="/soy-nuevo"
               className={buttonClasses({
@@ -69,8 +70,10 @@ export function SiteFooter({
           </div>
         </div>
 
-        <div className="grid gap-x-10 gap-y-10 border-t border-footer-ink/15 pt-[clamp(2rem,5vw,3.5rem)] xs:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
-          <div className="flex flex-col gap-4 xs:col-span-2 lg:col-span-1">
+        {/* Desde tablet, todo en una fila: «Visítanos» más ancho y una columna por grupo del menú
+            (los grupos sin contenido no se muestran y los demás se reparten el ancho). */}
+        <div className="grid gap-x-[clamp(1.5rem,4vw,2.5rem)] gap-y-10 border-t border-footer-ink/15 pt-[clamp(2rem,5vw,3.5rem)] xs:grid-cols-2 md:grid-cols-[minmax(13rem,1.5fr)_repeat(auto-fit,minmax(7.5rem,1fr))]">
+          <div className="flex flex-col gap-4 xs:col-span-2 md:col-span-1">
             <FooterHeading>Visítanos</FooterHeading>
             {config.direccion ? (
               <address className="flex gap-2 not-italic">
@@ -94,7 +97,7 @@ export function SiteFooter({
                 href={directions}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 self-start font-semibold underline decoration-peach decoration-2 underline-offset-4 hover:decoration-footer-ink"
+                className="inline-flex items-center gap-2 self-start link"
               >
                 <Icon name="mapPin" className="size-5" /> Cómo llegar
                 <span className="sr-only"> (abre Google Maps en una pestaña nueva)</span>
@@ -116,10 +119,10 @@ export function SiteFooter({
                 <li>
                   <a
                     href={`mailto:${config.email}`}
-                    className="inline-flex items-center gap-2 break-all hover:underline"
+                    className="inline-flex items-center gap-2 hover:underline"
                   >
-                    <Icon name="mail" className="size-5 text-footer-muted" />
-                    {config.email}
+                    <Icon name="mail" className="size-5 shrink-0 text-footer-muted" />
+                    <EmailText email={config.email} />
                   </a>
                 </li>
               )}
@@ -159,7 +162,7 @@ export function SiteFooter({
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="font-display text-lg text-footer-ink/90 transition-colors hover:text-peach"
+                      className="font-display text-[clamp(1rem,0.95rem+0.25vw,1.125rem)] text-footer-ink/90 transition-colors hover:text-peach"
                     >
                       {item.label}
                     </Link>

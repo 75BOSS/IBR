@@ -4,6 +4,7 @@ import { Card } from '@/components/Card';
 import { PageHeader } from '@/components/PageHeader';
 import { FormDialog } from '@/components/site/FormDialog';
 import { FormPanel } from '@/components/site/FormPanel';
+import { SectionHeading } from '@/components/site/SectionHeading';
 import { listAreas } from '@/lib/servir';
 import { pageMetadata } from '@/lib/seo';
 import { paragraphs } from '@/lib/text';
@@ -31,7 +32,7 @@ export default async function ServirPage({
   const [featured, ...rest] = areas;
 
   return (
-    <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page page-flow">
       <PageHeader
         size="display"
         eyebrow="Servir"
@@ -44,67 +45,76 @@ export default async function ServirPage({
       />
 
       {featured ? (
-        <section aria-labelledby="areas" className="flex flex-col gap-4">
-          <h2 id="areas" className="font-headline text-h1 text-brand-strong">
-            Dónde puedes servir
-          </h2>
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
-            <Card as="article" tone="brand" emphasis="featured">
-              {featured.imagen_url && (
-                <div className="relative -mx-[clamp(1.25rem,4vw,2rem)] -mt-[clamp(1.25rem,4vw,2rem)] mb-4 aspect-[16/9] overflow-hidden rounded-t-2xl">
-                  <Image
-                    src={featured.imagen_url}
-                    alt=""
-                    fill
-                    sizes="(min-width: 1024px) 60vw, 100vw"
-                    className="object-cover"
-                  />
-                </div>
-              )}
-              <h3 className="font-headline text-h1">{featured.nombre}</h3>
-              {paragraphs(featured.descripcion).map((p, i) => (
-                <p key={i} className="mt-2 text-surface/85">
-                  {p}
-                </p>
-              ))}
-              {featured.responsable && featured.responsable_visible && (
-                <p className="mt-3 text-sm text-accent-soft">A cargo de {featured.responsable}</p>
-              )}
-              <a
-                href={`/servir?area=${featured.slug}#quiero-servir`}
-                className="mt-4 inline-flex items-center font-semibold underline decoration-accent-soft underline-offset-4"
+        <section aria-labelledby="areas" className="section-flow">
+          <SectionHeading
+            id="areas"
+            title={
+              <>
+                Dónde puedes <em>servir</em>
+              </>
+            }
+          />
+          {/* La destacada ocupa 2×2 y las demás llenan alrededor: sin columnas de alto distinto
+              que dejen un hueco al lado. En tablet, si al final queda una sola, ocupa la fila. */}
+          <ul className="grid gap-4 md:grid-cols-2 lg:grid-flow-dense lg:grid-cols-3 md:max-lg:[&>li:last-child:nth-child(even)]:col-span-2">
+            <li className="md:col-span-2 lg:row-span-2">
+              <Card
+                as="article"
+                tone="brand"
+                emphasis="featured"
+                className="flex h-full flex-col justify-end"
               >
-                Quiero servir aquí
-              </a>
-            </Card>
-            {rest.length > 0 && (
-              <ul className="flex flex-col gap-3">
-                {rest.map((a) => (
-                  <li
-                    key={a.id}
-                    className="rounded-2xl border-l-4 border-accent bg-surface p-4 ring-1 ring-line/70"
-                  >
-                    <h3 className="font-display text-h3 font-medium text-ink">{a.nombre}</h3>
-                    {a.descripcion && (
-                      <p className="mt-1 line-clamp-3 text-ink-soft">{a.descripcion}</p>
-                    )}
-                    <a
-                      href={`/servir?area=${a.slug}#quiero-servir`}
-                      className="mt-2 inline-flex text-sm font-semibold text-brand-strong underline underline-offset-4"
-                    >
-                      Quiero servir aquí
-                    </a>
-                  </li>
+                {featured.imagen_url && (
+                  <div className="relative -mx-[clamp(1.25rem,4vw,2.5rem)] -mt-[clamp(1.25rem,4vw,2.5rem)] mb-4 aspect-[16/9] overflow-hidden">
+                    <Image
+                      src={featured.imagen_url}
+                      alt=""
+                      fill
+                      sizes="(min-width: 1024px) 60vw, 100vw"
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+                <h3 className="font-headline text-h1">{featured.nombre}</h3>
+                {paragraphs(featured.descripcion).map((p, i) => (
+                  <p key={i} className="mt-2 max-w-prose text-surface/85">
+                    {p}
+                  </p>
                 ))}
-              </ul>
-            )}
-          </div>
+                {featured.responsable && featured.responsable_visible && (
+                  <p className="mt-3 text-sm text-accent-soft">A cargo de {featured.responsable}</p>
+                )}
+                <a
+                  href={`/servir?area=${featured.slug}#quiero-servir`}
+                  className="mt-4 inline-flex items-center link"
+                >
+                  Quiero servir aquí
+                </a>
+              </Card>
+            </li>
+            {rest.map((a) => (
+              <li key={a.id}>
+                <Card as="article" accentColor="var(--color-accent)" className="h-full">
+                  <h3 className="card-title">{a.nombre}</h3>
+                  {a.descripcion && (
+                    <p className="mt-1 line-clamp-3 text-ink-soft">{a.descripcion}</p>
+                  )}
+                  <a
+                    href={`/servir?area=${a.slug}#quiero-servir`}
+                    className="mt-2 inline-flex text-sm link"
+                  >
+                    Quiero servir aquí
+                  </a>
+                </Card>
+              </li>
+            ))}
+          </ul>
         </section>
       ) : (
         <Card tone="sunken">
           <p className="text-ink-soft">
             Estamos organizando las áreas de servicio.{' '}
-            <Link href="/contacto#mensaje" className="font-semibold text-brand-strong underline">
+            <Link href="/contacto#mensaje" className="link">
               Escríbenos un mensaje
             </Link>{' '}
             contándonos qué te gustaría hacer y te avisamos.

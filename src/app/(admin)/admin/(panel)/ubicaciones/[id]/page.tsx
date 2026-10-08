@@ -19,7 +19,7 @@ export default async function EditarUbicacionPage({ params }: { params: Promise<
   );
   if (!place) notFound();
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Lugares" title={`Editar: ${place.nombre}`} />
       <UbicacionForm place={place} tipos={UBICACION_TIPOS} />
     </div>

@@ -5,6 +5,7 @@ import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { type Column, DataTable } from '@/components/DataTable';
 import { PageHeader } from '@/components/PageHeader';
 import { Tag } from '@/components/Tag';
+import { EmailText } from '@/components/EmailText';
 import { type Suscriptor, buildAgendaText, listEnvios, listSuscriptores } from '@/lib/agenda';
 import { requireAdmin } from '@/lib/auth';
 import { getSiteConfig } from '@/lib/config';
@@ -32,7 +33,9 @@ export default async function AgendaAdminPage() {
       primary: true,
       cell: (s) => (
         <span className="flex min-w-0 flex-col">
-          <span className="font-semibold break-all">{s.email}</span>
+          <span className="font-semibold">
+            <EmailText email={s.email} />
+          </span>
           {s.nombre && <span className="text-sm text-ink-soft">{s.nombre}</span>}
         </span>
       ),
@@ -40,7 +43,7 @@ export default async function AgendaAdminPage() {
     {
       key: 'estado',
       header: 'Estado',
-      className: 'md:w-36',
+      className: '@4xl:w-36',
       cell: (s) =>
         s.activo ? (
           <Tag tone="success">Suscrito</Tag>
@@ -53,14 +56,14 @@ export default async function AgendaAdminPage() {
     {
       key: 'desde',
       header: 'Desde',
-      className: 'md:w-36',
+      className: '@4xl:w-36',
       cell: (s) => formatDateTime(s.confirmado_en ?? s.creado_en, { dateStyle: 'medium' }),
     },
     {
       key: 'acciones',
       header: 'Acciones',
       hideLabelOnMobile: true,
-      className: 'md:w-40',
+      className: '@4xl:w-40',
       cell: (s) =>
         admin.rol === 'admin' && (
           <ConfirmDialog
@@ -75,13 +78,13 @@ export default async function AgendaAdminPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader
         eyebrow="Panel"
         title="Agenda semanal"
         intro="Correo con los eventos de los próximos 7 días y las reuniones de la semana. Las personas se suscriben en /agenda y confirman desde su correo."
       />
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
+      <div className="grid gap-4 lg:grid-cols-main-aside lg:items-start">
         <EnvioForm
           preview={preview}
           activos={activos}

@@ -24,7 +24,7 @@ export default async function EditarReunionPage({ params }: { params: Promise<{ 
   ]);
   if (!meeting) notFound();
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Reuniones" title={`Editar: ${meeting.nombre}`} />
       <ReunionForm meeting={meeting} ubicaciones={ubicaciones} rangos={rangos} />
     </div>

@@ -34,10 +34,7 @@ export default async function UbicacionesPage({
       header: 'Lugar',
       primary: true,
       cell: (p) => (
-        <Link
-          href={`/admin/ubicaciones/${p.id}`}
-          className="font-semibold text-brand-strong hover:underline"
-        >
+        <Link href={`/admin/ubicaciones/${p.id}`} className="link-quiet">
           {p.nombre}
         </Link>
       ),
@@ -58,7 +55,7 @@ export default async function UbicacionesPage({
       key: 'acciones',
       header: 'Acciones',
       hideLabelOnMobile: true,
-      className: 'md:w-56',
+      className: '@4xl:w-56',
       cell: (p) => (
         <span className="flex flex-wrap gap-1">
           <ButtonLink
@@ -81,7 +78,7 @@ export default async function UbicacionesPage({
     },
   ];
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <FlashToast code={aviso} />
       <PageHeader
         eyebrow="Panel"

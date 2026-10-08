@@ -17,7 +17,7 @@ export default async function EditarAreaPage({ params }: { params: Promise<{ id:
   const [area, equipo] = await Promise.all([getArea(parsed.data), listEquipo()]);
   if (!area) notFound();
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Servir" title={`Editar: ${area.nombre}`} />
       <AreaForm
         area={area}

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { buttonClasses } from '@/components/button-styles';
 import { Card } from '@/components/Card';
 import { Field } from '@/components/Field';
@@ -8,6 +9,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { Tag } from '@/components/Tag';
 import { YouTubeEmbed } from '@/components/YouTubeEmbed';
 import { LiveBanner } from '@/components/site/LiveBanner';
+import { SectionHeading } from '@/components/site/SectionHeading';
 import { getSiteConfig } from '@/lib/config';
 import { formatDateOnly, formatDateTime } from '@/lib/dates';
 import { type Predica, listPredicas, predicaFacets } from '@/lib/predicas';
@@ -26,6 +28,43 @@ export const metadata = pageMetadata({
 
 const pick = (value: string | string[] | undefined) =>
   typeof value === 'string' && value.trim() ? value.trim() : null;
+
+/** Video en la lista (prédicas guardadas o videos del canal): miniatura + título + datos. */
+function VideoRow({
+  href,
+  thumbnail,
+  title,
+  children,
+}: {
+  href: string;
+  thumbnail: string | null;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <li>
+      <Link href={href} scroll className="group flex gap-4 rounded-xl">
+        <span className="relative aspect-video w-[clamp(7.5rem,32vw,11rem)] shrink-0 overflow-hidden rounded-xl bg-sunken">
+          {thumbnail && (
+            <Image
+              src={thumbnail}
+              alt=""
+              fill
+              sizes="176px"
+              className="object-cover transition-transform duration-500 motion-safe:group-hover:scale-105"
+            />
+          )}
+        </span>
+        <span className="flex min-w-0 flex-col gap-1">
+          <span className="font-display text-h3 leading-snug font-semibold text-ink group-hover:text-brand-strong group-hover:underline">
+            {title}
+          </span>
+          {children}
+        </span>
+      </Link>
+    </li>
+  );
+}
 
 function Meta({ p }: { p: Predica }) {
   return (
@@ -56,7 +95,7 @@ function ChannelVideos({
     <>
       <section
         aria-labelledby="predica-destacada"
-        className="grid gap-[clamp(1rem,3vw,2rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-center"
+        className="grid gap-[clamp(1rem,3vw,2rem)] lg:grid-cols-main-aside lg:items-center"
       >
         <YouTubeEmbed key={featured.videoId} videoId={featured.videoId} title={featured.titulo} />
         <div className="flex flex-col gap-3">
@@ -85,31 +124,25 @@ function ChannelVideos({
         </div>
       </section>
       {rest.length > 0 && (
-        <section aria-labelledby="mas-predicas" className="flex flex-col gap-4">
-          <h2 id="mas-predicas" className="font-headline text-h1 text-ink">
-            Cultos anteriores
-          </h2>
+        <section aria-labelledby="mas-predicas" className="section-flow">
+          <SectionHeading
+            id="mas-predicas"
+            title={
+              <>
+                Cultos <em>anteriores</em>
+              </>
+            }
+          />
           <ul className="grid gap-x-8 gap-y-5 xl:grid-cols-2">
             {rest.map((v) => (
-              <li key={v.videoId}>
-                <Link href={`/predicas?v=${v.videoId}`} className="group flex gap-4 rounded-xl">
-                  <span className="relative aspect-video w-[clamp(7.5rem,32vw,11rem)] shrink-0 overflow-hidden rounded-xl bg-sunken">
-                    <Image
-                      src={youTubeThumbnail(v.videoId)}
-                      alt=""
-                      fill
-                      sizes="176px"
-                      className="object-cover transition-transform group-hover:scale-105"
-                    />
-                  </span>
-                  <span className="flex min-w-0 flex-col gap-1">
-                    <span className="font-display text-h3 leading-snug font-semibold text-ink group-hover:text-brand-strong group-hover:underline">
-                      {v.titulo}
-                    </span>
-                    <span className="text-sm text-ink-soft">{published(v)}</span>
-                  </span>
-                </Link>
-              </li>
+              <VideoRow
+                key={v.videoId}
+                href={`/predicas?v=${v.videoId}`}
+                thumbnail={youTubeThumbnail(v.videoId)}
+                title={v.titulo}
+              >
+                <span className="text-sm text-ink-soft">{published(v)}</span>
+              </VideoRow>
             ))}
           </ul>
         </section>
@@ -151,7 +184,7 @@ export default async function PredicasPage({
   };
 
   return (
-    <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page page-flow">
       <PageHeader
         size="display"
         eyebrow="Enseñanza"
@@ -163,7 +196,7 @@ export default async function PredicasPage({
       {featured ? (
         <section
           aria-labelledby="predica-destacada"
-          className="grid gap-[clamp(1rem,3vw,2rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-center"
+          className="grid gap-[clamp(1rem,3vw,2rem)] lg:grid-cols-main-aside lg:items-center"
         >
           <YouTubeEmbed
             key={featured.youtube_id}
@@ -190,17 +223,12 @@ export default async function PredicasPage({
               ? 'No hay prédicas con ese filtro. '
               : 'Pronto publicaremos las prédicas aquí. '}
             {filtered ? (
-              <Link href="/predicas" className="font-semibold text-brand-strong underline">
+              <Link href="/predicas" className="link">
                 Ver todas
               </Link>
             ) : (
               config.youtube && (
-                <a
-                  href={config.youtube}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold text-brand-strong underline"
-                >
+                <a href={config.youtube} target="_blank" rel="noopener noreferrer" className="link">
                   Mira nuestro canal de YouTube
                   <span className="sr-only"> (se abre en una pestaña nueva)</span>
                 </a>
@@ -246,33 +274,29 @@ export default async function PredicasPage({
       )}
 
       {rest.length > 0 && (
-        <section aria-labelledby="mas-predicas" className="flex flex-col gap-4">
-          <h2 id="mas-predicas" className="font-headline text-h1 text-ink">
-            {filtered ? 'Resultados' : 'Más prédicas'}
-          </h2>
+        <section aria-labelledby="mas-predicas" className="section-flow">
+          <SectionHeading
+            id="mas-predicas"
+            title={
+              filtered ? (
+                'Resultados'
+              ) : (
+                <>
+                  Más <em>prédicas</em>
+                </>
+              )
+            }
+          />
           <ul className="grid gap-x-8 gap-y-5 xl:grid-cols-2">
             {rest.map((p) => (
-              <li key={p.id}>
-                <Link href={query(p.youtube_id)} scroll className="group flex gap-4 rounded-xl">
-                  <span className="relative aspect-video w-[clamp(7.5rem,32vw,11rem)] shrink-0 overflow-hidden rounded-xl bg-sunken">
-                    {p.miniatura_url && (
-                      <Image
-                        src={p.miniatura_url}
-                        alt=""
-                        fill
-                        sizes="176px"
-                        className="object-cover transition-transform group-hover:scale-105"
-                      />
-                    )}
-                  </span>
-                  <span className="flex min-w-0 flex-col gap-1">
-                    <span className="font-display text-h3 leading-snug font-semibold text-ink group-hover:text-brand-strong group-hover:underline">
-                      {p.titulo}
-                    </span>
-                    <Meta p={p} />
-                  </span>
-                </Link>
-              </li>
+              <VideoRow
+                key={p.id}
+                href={query(p.youtube_id)}
+                thumbnail={p.miniatura_url}
+                title={p.titulo}
+              >
+                <Meta p={p} />
+              </VideoRow>
             ))}
           </ul>
         </section>

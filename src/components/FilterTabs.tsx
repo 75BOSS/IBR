@@ -18,13 +18,14 @@ export function FilterTabs({
   if (variant === 'pills') {
     return (
       <nav aria-label={label}>
-        <ul className="flex flex-wrap gap-2">
+        <ul className="flex flex-wrap gap-[clamp(0.375rem,1.5vw,0.5rem)]">
           {tabs.map((tab) => (
             <li key={tab.href}>
               <Link
                 href={tab.href}
                 aria-current={tab.active ? 'page' : undefined}
-                className={`flex min-h-11 items-center rounded-full px-5 font-semibold whitespace-nowrap transition-colors ${
+                // En celular más compactas (2 filas en vez de 3 para seis categorías).
+                className={`flex min-h-10 items-center rounded-full px-[clamp(0.875rem,3vw,1.25rem)] text-[clamp(0.875rem,0.8rem+0.3vw,1rem)] font-semibold whitespace-nowrap transition-colors md:min-h-11 ${
                   tab.active ? 'bg-ink text-canvas' : 'text-ink ring-1 ring-ink/20 hover:bg-sunken'
                 }`}
               >

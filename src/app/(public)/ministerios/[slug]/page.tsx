@@ -1,11 +1,13 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { BackLink } from '@/components/BackLink';
 import { buttonClasses } from '@/components/button-styles';
 import { Card } from '@/components/Card';
-import { Icon } from '@/components/Icon';
+import { PageHeader } from '@/components/PageHeader';
 import { EventCard } from '@/components/site/EventCard';
 import { GroupCard } from '@/components/site/GroupCard';
+import { PhotoFrame } from '@/components/site/PhotoFrame';
+import { SectionHeading } from '@/components/site/SectionHeading';
 import { DAY_NAMES, formatTime } from '@/lib/dates';
 import { listUpcomingEventos } from '@/lib/eventos';
 import { listGruposPublicos } from '@/lib/grupos';
@@ -41,61 +43,50 @@ export default async function MinisterioPage({ params }: Props) {
     listGruposPublicos({ rango: m.id }),
     listUpcomingEventos(3, { rangoId: m.id }),
   ]);
-  const color = m.color ?? 'var(--color-brand)';
   const edad = edadText(m);
 
   return (
-    <div className="container-page flex flex-col gap-[clamp(1.5rem,5vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
-      <Link
-        href="/ministerios"
-        className="inline-flex items-center gap-1.5 self-start font-semibold text-brand-strong hover:underline"
-      >
-        <Icon name="chevronLeft" className="size-4" /> Todos los ministerios
-      </Link>
+    <div className="container-page page-flow">
+      <BackLink href="/ministerios">Todos los ministerios</BackLink>
 
-      <header
-        className="grid gap-[clamp(1.25rem,3vw,2.5rem)] border-l-[6px] pl-[clamp(1rem,3vw,1.75rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-center"
-        style={{ borderColor: color }}
-      >
-        <div className="flex flex-col gap-3">
-          <p className="text-sm font-semibold tracking-widest text-accent-strong uppercase">
-            {[m.nombre_ministerio ? m.nombre : 'Ministerio', edad].filter(Boolean).join(' · ')}
+      <PageHeader
+        size="display"
+        eyebrow={[m.nombre_ministerio ? m.nombre : 'Ministerio', edad].filter(Boolean).join(' · ')}
+        title={ministerioName(m)}
+        intro={paragraphs(m.descripcion).map((p, i) => (
+          <p key={i} className="whitespace-pre-line [&+&]:mt-3">
+            {p}
           </p>
-          <h1 className="text-h1 font-semibold text-brand-strong">{ministerioName(m)}</h1>
-          {paragraphs(m.descripcion).map((p, i) => (
-            <p key={i} className="max-w-prose text-lg whitespace-pre-line text-ink-soft">
-              {p}
-            </p>
-          ))}
-          <div className="flex flex-wrap gap-3 pt-2">
-            <Link href="/soy-nuevo#mis-datos" className={buttonClasses({ variant: 'accent' })}>
+        ))}
+        actions={
+          <>
+            <Link
+              href="/soy-nuevo#mis-datos"
+              className={buttonClasses({ variant: 'accent', shape: 'pill' })}
+            >
               Quiero conectarme
             </Link>
             {grupos.length > 0 && (
               <Link
                 href={`/grupos?edad=${m.id}`}
-                className={buttonClasses({ variant: 'secondary' })}
+                className={buttonClasses({ variant: 'secondary', shape: 'pill' })}
               >
                 Ver sus grupos
               </Link>
             )}
-          </div>
-        </div>
-        {m.imagen_url && (
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-sunken">
-            <Image
-              src={m.imagen_url}
-              alt=""
-              fill
-              priority
-              sizes="(min-width: 1024px) 40vw, 100vw"
-              className="object-cover"
-            />
-          </div>
-        )}
-      </header>
+          </>
+        }
+      />
+      {m.imagen_url && (
+        <PhotoFrame
+          image={m.imagen_url}
+          priority
+          sizes="(min-width: 1216px) 1216px, 100vw"
+          className="aspect-[16/10] md:aspect-[21/9]"
+        />
+      )}
 
-      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start">
+      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-aside-main lg:items-start">
         <Card title="Cuándo nos reunimos" as="section" tone="sunken">
           {reuniones.length > 0 ? (
             <ul className="flex flex-col divide-y divide-line/60">
@@ -112,7 +103,7 @@ export default async function MinisterioPage({ params }: Props) {
             </ul>
           ) : (
             <p className="text-ink-soft">
-              <Link href="/contacto#mensaje" className="font-semibold text-brand-strong underline">
+              <Link href="/contacto#mensaje" className="link">
                 Escríbenos
               </Link>{' '}
               y te contamos cuándo se reúne este ministerio.
@@ -120,7 +111,7 @@ export default async function MinisterioPage({ params }: Props) {
                 <>
                   {' '}
                   También puedes{' '}
-                  <Link href="/reuniones" className="font-semibold text-brand-strong underline">
+                  <Link href="/reuniones" className="link">
                     ver todos los horarios
                   </Link>
                   .
@@ -131,10 +122,15 @@ export default async function MinisterioPage({ params }: Props) {
         </Card>
 
         {eventos.length > 0 && (
-          <section aria-labelledby="eventos-ministerio" className="flex flex-col gap-3">
-            <h2 id="eventos-ministerio" className="font-headline text-h1 text-brand-strong">
-              Próximos eventos
-            </h2>
+          <section aria-labelledby="eventos-ministerio" className="flex flex-col gap-4">
+            <SectionHeading
+              id="eventos-ministerio"
+              title={
+                <>
+                  Próximos <em>eventos</em>
+                </>
+              }
+            />
             {eventos.map((e) => (
               <EventCard key={e.id} event={e} />
             ))}
@@ -144,9 +140,14 @@ export default async function MinisterioPage({ params }: Props) {
 
       {grupos.length > 0 && (
         <section aria-labelledby="grupos-ministerio" className="flex flex-col gap-4">
-          <h2 id="grupos-ministerio" className="font-headline text-h1 text-brand-strong">
-            Grupos en casas
-          </h2>
+          <SectionHeading
+            id="grupos-ministerio"
+            title={
+              <>
+                Grupos <em>en casa</em>
+              </>
+            }
+          />
           <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {grupos.map((g) => (
               <li key={g.id}>

@@ -1,4 +1,5 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { toneVar } from '@/lib/css-vars';
 
 export type CardTone = 'surface' | 'sunken' | 'brand' | 'accent';
 
@@ -37,14 +38,14 @@ export function Card({
   className = '',
   children,
 }: CardProps) {
-  const style = accentColor ? ({ '--card-accent': accentColor } as CSSProperties) : undefined;
+  const style = accentColor ? toneVar(accentColor) : undefined;
   const padding =
     emphasis === 'featured' ? 'p-[clamp(1.25rem,4vw,2.5rem)]' : 'p-[clamp(1rem,3vw,1.5rem)]';
   const frame = [
     'relative overflow-hidden rounded-2xl',
     tones[tone],
     emphasis === 'featured' ? 'shadow-card' : tone === 'surface' ? 'ring-1 ring-line/70' : '',
-    accentColor ? 'border-l-[6px] border-(--card-accent)' : '',
+    accentColor ? 'border-l-[6px] border-(--tone)' : '',
     className,
   ].join(' ');
 

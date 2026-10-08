@@ -7,6 +7,7 @@ import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { GroupCard } from '@/components/site/GroupCard';
 import { rangoOptions } from '@/lib/catalogs';
 import { getSiteConfig } from '@/lib/config';
+import { toneVar } from '@/lib/css-vars';
 import { DAY_OPTIONS } from '@/lib/dates';
 import { grupoFacets, listGruposPublicos } from '@/lib/grupos';
 import type { GrupoPublico } from '@/lib/grupos-public';
@@ -67,7 +68,7 @@ export default async function GruposPage({ searchParams }: { searchParams: Promi
   }
 
   return (
-    <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page page-flow">
       <PageHeader
         size="display"
         eyebrow="Comunidad"
@@ -83,7 +84,8 @@ export default async function GruposPage({ searchParams }: { searchParams: Promi
         <form
           method="get"
           action="/grupos"
-          className="flex flex-col gap-3 rounded-2xl bg-sunken/70 p-4 md:flex-row md:flex-wrap md:items-end"
+          // En celular, los filtros de a dos (antes cuatro listas apiladas llenaban la pantalla).
+          className="grid grid-cols-2 items-end gap-3 rounded-2xl bg-sunken/70 p-[clamp(0.875rem,3vw,1rem)] md:flex md:flex-wrap"
         >
           {filters.edad && (
             <Field
@@ -129,7 +131,7 @@ export default async function GruposPage({ searchParams }: { searchParams: Promi
               className="md:min-w-[12rem] md:flex-1"
             />
           )}
-          <div className="flex gap-2">
+          <div className="col-span-2 flex gap-2">
             <button type="submit" className={buttonClasses({ className: 'flex-1 md:flex-none' })}>
               Buscar
             </button>
@@ -165,8 +167,8 @@ export default async function GruposPage({ searchParams }: { searchParams: Promi
               className="flex items-center gap-3 font-headline text-h1 text-ink"
             >
               <span
-                className="h-8 w-1.5 rounded-full"
-                style={{ backgroundColor: section.color ?? 'var(--color-brand)' }}
+                className="h-8 w-1.5 rounded-full bg-(--tone)"
+                style={toneVar(section.color)}
                 aria-hidden="true"
               />
               {title}

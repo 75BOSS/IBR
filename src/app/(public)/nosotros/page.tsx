@@ -1,14 +1,14 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { buttonClasses } from '@/components/button-styles';
 import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { CountUp } from '@/components/site/CountUp';
-import { HeroArt } from '@/components/site/HeroArt';
+import { PersonCard } from '@/components/site/PersonCard';
+import { PhotoFrame } from '@/components/site/PhotoFrame';
 import { SectionHeading } from '@/components/site/SectionHeading';
 import { getSiteConfig } from '@/lib/config';
 import { parseCreencias } from '@/lib/config-fields';
-import { type EquipoRow, listEquipoVisible } from '@/lib/equipo';
+import { listEquipoVisible } from '@/lib/equipo';
 import { pageMetadata } from '@/lib/seo';
 import { directionsUrl } from '@/lib/maps';
 import { getSiteContent } from '@/lib/site-content';
@@ -23,55 +23,6 @@ export const metadata = pageMetadata({
     'Quiénes somos: la historia, la visión y lo que cree la Iglesia Bíblica Riobamba, y las personas que la sirven.',
   path: '/nosotros',
 });
-
-function initial(name: string): string {
-  return name.replace(/^(Pastora?|Ps\.)\s+/i, '').charAt(0);
-}
-
-function Person({ person, featured }: { person: EquipoRow; featured: boolean }) {
-  return (
-    <li
-      className={`flex reveal gap-4 rounded-(--radius-frame) bg-surface ring-1 ring-line/70 ${
-        featured
-          ? 'flex-col p-[clamp(1.25rem,3vw,2rem)] xs:flex-row xs:items-center'
-          : // En celular, dos por fila: la foto arriba para que el nombre y el rol no se aprieten.
-            'flex-col items-center p-3 text-center md:flex-row md:pr-4 md:text-left'
-      }`}
-    >
-      <span
-        className={`relative shrink-0 overflow-hidden rounded-full bg-electric-soft ${
-          featured ? 'size-[clamp(5rem,14vw,7rem)]' : 'size-16'
-        }`}
-      >
-        {person.foto_url ? (
-          <Image
-            src={person.foto_url}
-            alt=""
-            fill
-            sizes={featured ? '136px' : '64px'}
-            className="object-cover"
-          />
-        ) : (
-          <span
-            className={`grid size-full place-items-center font-script text-electric-strong ${
-              featured ? 'text-[clamp(3rem,2.4rem+2.4vw,4.25rem)]' : 'text-4xl'
-            }`}
-          >
-            {initial(person.nombre)}
-          </span>
-        )}
-      </span>
-      <span className="flex min-w-0 flex-col gap-1">
-        {featured && <span className="eyebrow text-accent-strong">{person.rol}</span>}
-        <span className={`font-headline text-ink ${featured ? 'text-h2' : 'text-lg'}`}>
-          {person.nombre}
-        </span>
-        {!featured && <span className="text-sm text-accent-strong">{person.rol}</span>}
-        {featured && person.bio && <span className="text-ink-soft">{person.bio}</span>}
-      </span>
-    </li>
-  );
-}
 
 export default async function NosotrosPage() {
   const [config, team, stats, content] = await Promise.all([
@@ -102,7 +53,7 @@ export default async function NosotrosPage() {
   ].filter((f) => f.value > 0);
 
   return (
-    <div className="container-page flex flex-col gap-[clamp(3rem,7vw,5rem)] py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page page-sections">
       <PageHeader
         size="display"
         eyebrow="Nosotros"
@@ -116,13 +67,13 @@ export default async function NosotrosPage() {
 
       {figures.length > 0 && (
         <section aria-label="La iglesia en cifras">
-          <ul className="grid grid-cols-2 gap-y-8 rounded-(--radius-frame) bg-surface p-[clamp(1.5rem,4vw,3rem)] ring-1 ring-line/70 lg:grid-cols-4">
+          <ul className="grid grid-cols-2 gap-y-8 rounded-(--radius-frame) bg-surface p-[clamp(1.5rem,4vw,3rem)] ring-1 ring-line/70 md:auto-cols-fr md:grid-flow-col md:grid-cols-none">
             {figures.map((f, i) => (
               <li
                 key={f.label}
                 className={`flex flex-col gap-1 px-[clamp(0.75rem,2vw,2rem)] ${
                   i % 2 === 1 ? 'border-l border-line' : ''
-                } ${i > 0 ? 'lg:border-l lg:border-line' : ''}`}
+                } ${i > 0 ? 'md:border-l md:border-line' : ''}`}
               >
                 <CountUp
                   value={f.value}
@@ -140,19 +91,12 @@ export default async function NosotrosPage() {
         className="grid gap-[clamp(1.5rem,4vw,3.5rem)] lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-start"
       >
         <div className="flex flex-col gap-3 lg:sticky lg:top-28">
-          <div className="relative aspect-[5/4] reveal overflow-hidden rounded-(--radius-frame) bg-brand-strong">
-            {config.nosotros_imagen ? (
-              <Image
-                src={config.nosotros_imagen}
-                alt={`Congregación de ${config.nombre_iglesia}`}
-                fill
-                sizes="(min-width: 1024px) 40vw, 100vw"
-                className="object-cover"
-              />
-            ) : (
-              <HeroArt className="absolute inset-0 size-full" />
-            )}
-          </div>
+          <PhotoFrame
+            image={config.nosotros_imagen}
+            alt={`Congregación de ${config.nombre_iglesia}`}
+            sizes="(min-width: 1024px) 40vw, 100vw"
+            className="aspect-[16/10] reveal md:aspect-[21/9] lg:aspect-[5/4]"
+          />
           {config.vision && (
             <div className="rounded-(--radius-frame) bg-brand-strong p-[clamp(1.25rem,3vw,2rem)] text-surface on-dark">
               <p className="eyebrow text-peach">Visión</p>
@@ -207,10 +151,7 @@ export default async function NosotrosPage() {
       </section>
 
       {creencias.length > 0 && (
-        <section
-          aria-labelledby="creencias"
-          className="flex flex-col gap-[clamp(1.5rem,4vw,2.5rem)]"
-        >
+        <section aria-labelledby="creencias" className="section-flow">
           <SectionHeading
             id="creencias"
             eyebrow="Fe"
@@ -240,7 +181,7 @@ export default async function NosotrosPage() {
       )}
 
       {team.length > 0 && (
-        <section aria-labelledby="equipo" className="flex flex-col gap-[clamp(1.5rem,4vw,2.5rem)]">
+        <section aria-labelledby="equipo" className="section-flow">
           <SectionHeading
             id="equipo"
             eyebrow="Equipo"
@@ -253,14 +194,14 @@ export default async function NosotrosPage() {
           {pastores.length > 0 && (
             <ul className="grid gap-[clamp(1rem,3vw,2rem)] lg:grid-cols-2">
               {pastores.map((p) => (
-                <Person key={p.id} person={p} featured />
+                <PersonCard key={p.id} person={p} featured />
               ))}
             </ul>
           )}
           {lideres.length > 0 && (
-            <ul className="grid gap-3 xs:grid-cols-2 lg:grid-cols-4">
+            <ul className="grid gap-3 xs:grid-cols-2 xl:grid-cols-[repeat(auto-fit,minmax(14rem,1fr))]">
               {lideres.map((p) => (
-                <Person key={p.id} person={p} featured={false} />
+                <PersonCard key={p.id} person={p} />
               ))}
             </ul>
           )}
@@ -269,7 +210,7 @@ export default async function NosotrosPage() {
 
       <section
         aria-labelledby="visitanos"
-        className="relative isolate flex reveal flex-col gap-6 overflow-hidden rounded-(--radius-frame) bg-accent p-[clamp(1.75rem,5vw,3.5rem)] text-surface on-dark md:flex-row md:items-end md:justify-between"
+        className="relative isolate flex reveal flex-col gap-6 overflow-hidden rounded-(--radius-frame) bg-accent p-[clamp(1.75rem,5vw,3.5rem)] text-surface on-dark lg:flex-row lg:items-end lg:justify-between"
       >
         <span
           aria-hidden="true"
@@ -283,7 +224,7 @@ export default async function NosotrosPage() {
             No necesitas nada especial para visitarnos. Te esperamos.
           </p>
         </div>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex shrink-0 flex-wrap gap-3">
           <Link
             href="/soy-nuevo"
             className={buttonClasses({ variant: 'primary', size: 'lg', shape: 'pill' })}

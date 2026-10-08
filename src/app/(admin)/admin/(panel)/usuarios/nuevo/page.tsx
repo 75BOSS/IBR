@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: 'Nuevo usuario' };
 export default async function NuevoUsuarioPage() {
   await requireAdmin({ role: 'admin' });
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Usuarios" title="Nuevo usuario del panel" />
       <UsuarioForm />
     </div>

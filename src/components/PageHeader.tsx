@@ -12,7 +12,6 @@ export function PageHeader({
   size = 'h1',
   tone = 'default',
   actions,
-  className = '',
 }: {
   eyebrow?: ReactNode;
   title: ReactNode;
@@ -20,35 +19,25 @@ export function PageHeader({
   size?: 'h1' | 'display';
   tone?: 'default' | 'danger';
   actions?: ReactNode;
-  className?: string;
 }) {
   const display = size === 'display';
   return (
     <header
       className={`flex flex-wrap items-end justify-between gap-x-8 gap-y-5 ${
         display ? 'border-b border-line/80 pb-[clamp(1.5rem,4vw,2.75rem)]' : ''
-      } ${className}`}
+      }`}
     >
       <div className={display ? 'max-w-5xl' : 'max-w-3xl'}>
-        {eyebrow &&
-          (display ? (
-            <p className={`eyebrow ${tone === 'danger' ? 'text-danger' : 'text-accent-strong'}`}>
-              {eyebrow}
-            </p>
-          ) : (
-            <p
-              className={`text-sm font-semibold tracking-widest uppercase ${
-                tone === 'danger' ? 'text-danger' : 'text-accent-strong'
-              }`}
-            >
-              {eyebrow}
-            </p>
-          ))}
+        {eyebrow && (
+          <p className={`eyebrow ${tone === 'danger' ? 'text-danger' : 'text-accent-strong'}`}>
+            {eyebrow}
+          </p>
+        )}
         <h1
           className={
             display
               ? `mt-4 font-headline text-display ${tone === 'danger' ? 'text-ink' : 'text-brand-strong'}`
-              : `mt-2 text-h1 font-semibold ${tone === 'danger' ? 'text-ink' : 'text-brand-strong'}`
+              : `mt-3 text-h1 font-semibold ${tone === 'danger' ? 'text-ink' : 'text-brand-strong'}`
           }
         >
           {title}

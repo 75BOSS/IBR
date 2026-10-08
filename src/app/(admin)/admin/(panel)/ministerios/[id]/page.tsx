@@ -20,7 +20,7 @@ export default async function EditarMinisterioPage({
   const ministerio = await getMinisterio(parsed.data);
   if (!ministerio) notFound();
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Ministerios" title={`Editar: ${ministerioName(ministerio)}`} />
       <MinisterioForm ministerio={ministerio} uploadsEnabled={isCloudinaryConfigured()} />
     </div>

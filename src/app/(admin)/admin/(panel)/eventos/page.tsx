@@ -32,10 +32,7 @@ export default async function EventosAdminPage({
       header: 'Evento',
       primary: true,
       cell: (e) => (
-        <Link
-          href={`/admin/eventos/${e.id}`}
-          className="font-semibold text-brand-strong hover:underline"
-        >
+        <Link href={`/admin/eventos/${e.id}`} className="link-quiet">
           {e.titulo}
         </Link>
       ),
@@ -68,12 +65,12 @@ export default async function EventosAdminPage({
     {
       key: 'inscritos',
       header: 'Inscritos',
-      className: 'md:w-32',
+      className: '@4xl:w-32',
       cell: (e) =>
         e.requiere_inscripcion ? (
           <Link
             href={`/admin/eventos/${e.id}/inscritos`}
-            className="inline-flex items-center gap-1.5 font-semibold text-brand-strong hover:underline"
+            className="inline-flex items-center gap-1.5 link-quiet"
           >
             <Icon name="users" className="size-4" />
             {e.inscritos}
@@ -87,7 +84,7 @@ export default async function EventosAdminPage({
       key: 'acciones',
       header: 'Acciones',
       hideLabelOnMobile: true,
-      className: 'md:w-56',
+      className: '@4xl:w-56',
       cell: (e) => (
         <span className="flex flex-wrap gap-1">
           <ButtonLink
@@ -112,7 +109,7 @@ export default async function EventosAdminPage({
     },
   ];
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <FlashToast code={aviso} />
       <PageHeader
         eyebrow="Panel"

@@ -16,7 +16,7 @@ export default async function EditarEquipoPage({ params }: { params: Promise<{ i
   const person = await getEquipo(parsed.data);
   if (!person) notFound();
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Equipo" title={`Editar: ${person.nombre}`} />
       <EquipoForm person={person} uploadsEnabled={isCloudinaryConfigured()} />
     </div>

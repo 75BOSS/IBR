@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Icon } from '@/components/Icon';
+import { BackLink } from '@/components/BackLink';
 import { PageHeader } from '@/components/PageHeader';
 import { eventWhen } from '@/components/site/EventCard';
 import { requireAdmin } from '@/lib/auth';
@@ -22,13 +21,8 @@ export default async function CheckinPage({ params }: { params: Promise<{ id: st
   ]);
   if (!event) notFound();
   return (
-    <div className="flex flex-col gap-6 container-panel">
-      <Link
-        href={`/admin/eventos/${event.id}/inscritos`}
-        className="inline-flex items-center gap-1 self-start font-semibold text-brand-strong hover:underline"
-      >
-        <Icon name="chevronLeft" className="size-4" /> Inscritos
-      </Link>
+    <div className="container-panel">
+      <BackLink href={`/admin/eventos/${event.id}/inscritos`}>Inscritos</BackLink>
       <PageHeader eyebrow={`Check-in · ${eventWhen(event)}`} title={event.titulo} />
       <CheckinBoard eventoId={event.id} initial={stats} />
     </div>

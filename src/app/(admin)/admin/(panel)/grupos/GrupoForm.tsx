@@ -90,9 +90,7 @@ export function GrupoForm({
             error={e.descripcion}
           />
           <fieldset className="grid gap-5 rounded-xl bg-sunken/60 p-4 md:grid-cols-2">
-            <legend className="px-1 text-sm font-bold tracking-wider text-brand-strong uppercase">
-              Cuándo y dónde
-            </legend>
+            <legend className="px-1 caps text-brand-strong">Cuándo y dónde</legend>
             <Field
               as="select"
               label="Día"
@@ -148,9 +146,7 @@ export function GrupoForm({
             />
           </fieldset>
           <fieldset className="grid gap-5 rounded-xl bg-sunken/60 p-4 md:grid-cols-3">
-            <legend className="px-1 text-sm font-bold tracking-wider text-brand-strong uppercase">
-              Líder
-            </legend>
+            <legend className="px-1 caps text-brand-strong">Líder</legend>
             <Field
               label="Nombre"
               name="lider_nombre"

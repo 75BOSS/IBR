@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Icon } from '@/components/Icon';
+import { toneVar } from '@/lib/css-vars';
 import { type Ministerio, edadText, ministerioName } from '@/lib/ministerios';
 
 /** Fondo de los ministerios sin color propio: tonos de la marca, para que no salgan todos iguales. */
@@ -16,7 +17,7 @@ const FALLBACK_TONES = [
  * Ministerio como tarjeta de foto (inicio y /ministerios). Sin foto, su color con la inicial
  * grande. El velo oscuro de abajo garantiza el contraste del nombre sobre cualquier foto.
  */
-export function MinisterioCard({
+function MinisterioCard({
   ministerio: m,
   sizes,
   featured = false,
@@ -31,10 +32,10 @@ export function MinisterioCard({
   return (
     <Link
       href={`/ministerios/${m.slug}`}
-      className={`group relative isolate flex h-full flex-col justify-end overflow-hidden rounded-(--radius-frame) text-surface on-dark ${
+      className={`group relative isolate flex h-full flex-col justify-end overflow-hidden rounded-(--radius-frame) bg-(--tone) text-surface on-dark ${
         featured ? 'min-h-[clamp(13rem,30vw,20rem)]' : 'min-h-[clamp(11rem,22vw,15rem)]'
       }`}
-      style={{ backgroundColor: m.color ?? FALLBACK_TONES[m.id % FALLBACK_TONES.length] }}
+      style={toneVar(m.color, FALLBACK_TONES[m.id % FALLBACK_TONES.length])}
     >
       {m.imagen_url ? (
         <Image
@@ -57,7 +58,7 @@ export function MinisterioCard({
         <Icon name="arrowUpRight" className="size-5" />
       </span>
       <span className="flex flex-col gap-2 p-[clamp(1rem,3vw,2rem)]">
-        <span className="text-[0.7rem] font-bold tracking-[0.18em] text-surface/85 uppercase md:text-xs">
+        <span className="caps text-surface/85">
           {[m.nombre_ministerio ? m.nombre : null, edad].filter(Boolean).join(' · ') ||
             'Ministerio'}
         </span>
@@ -91,16 +92,16 @@ export function MinisterioCard({
 }
 
 /**
- * Lugar de cada ministerio en la grilla (2 columnas en celular, 6 en escritorio): los dos
- * primeros grandes y el resto más chicos. La última fila siempre llena el ancho, tengan contenido
- * 3, 4 o 7 ministerios (antes, con 4 quedaba un hueco a la derecha en escritorio).
+ * Lugar de cada ministerio en la grilla: uno por fila en celulares chicos (< 360 px), de a dos en
+ * celular y tablet, 6 columnas en escritorio. Los dos primeros grandes y el resto más chicos; la
+ * última fila siempre llena el ancho, tengan contenido 3, 4 o 7 ministerios.
  */
-export function ministerioSpan(index: number, total: number): string {
-  if (index < 2) return 'col-span-2 md:col-span-1 lg:col-span-3';
+function ministerioSpan(index: number, total: number): string {
+  if (index < 2) return 'xs:col-span-2 md:col-span-1 lg:col-span-3';
   const rest = total - 2;
   const pos = index - 2;
-  // Celular y tablet: de a dos; si quedan impares, el último ocupa la fila entera.
-  const small = rest % 2 === 1 && pos === rest - 1 ? 'col-span-2' : 'col-span-1';
+  // De a dos: si quedan impares, el último ocupa la fila entera.
+  const small = rest % 2 === 1 && pos === rest - 1 ? 'xs:col-span-2' : '';
   // Escritorio: de a tres; la última fila se reparte el ancho entre los que quedan, sin huecos.
   const lastRowCount = rest % 3 || 3;
   const large =
@@ -112,4 +113,21 @@ export function ministerioSpan(index: number, total: number): string {
           ? 'lg:col-span-3'
           : 'lg:col-span-2';
   return `${small} ${large}`;
+}
+
+/** Grilla de ministerios (inicio, /ministerios y Soy nuevo): la misma en todo el sitio. */
+export function MinisteriosGrid({ ministerios }: { ministerios: Ministerio[] }) {
+  return (
+    <ul className="grid gap-3 xs:grid-cols-2 lg:grid-cols-6">
+      {ministerios.map((m, i) => (
+        <li key={m.id} className={`reveal ${ministerioSpan(i, ministerios.length)}`}>
+          <MinisterioCard
+            ministerio={m}
+            featured={i < 2}
+            sizes={i < 2 ? '(min-width: 768px) 50vw, 100vw' : '(min-width: 1024px) 33vw, 50vw'}
+          />
+        </li>
+      ))}
+    </ul>
+  );
 }

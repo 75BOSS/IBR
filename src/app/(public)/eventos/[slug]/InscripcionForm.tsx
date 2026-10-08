@@ -30,7 +30,7 @@ export function InscripcionForm({
             <p className="font-semibold text-ink">{closedReason}</p>
             <p className="text-ink-soft">
               ¿Tienes una pregunta?{' '}
-              <Link href="/contacto#mensaje" className="font-semibold text-brand-strong underline">
+              <Link href="/contacto#mensaje" className="link">
                 Escríbenos un mensaje
               </Link>
               .

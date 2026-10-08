@@ -28,10 +28,7 @@ export default async function ServirAdminPage({
       header: 'Área',
       primary: true,
       cell: (a) => (
-        <Link
-          href={`/admin/servir/${a.id}`}
-          className="font-semibold text-brand-strong hover:underline"
-        >
+        <Link href={`/admin/servir/${a.id}`} className="link-quiet">
           {a.nombre}
         </Link>
       ),
@@ -53,14 +50,14 @@ export default async function ServirAdminPage({
     {
       key: 'estado',
       header: 'En el sitio',
-      className: 'md:w-28',
+      className: '@4xl:w-28',
       cell: (a) => (a.activo ? <Tag tone="success">Activa</Tag> : <Tag>Inactiva</Tag>),
     },
     {
       key: 'acciones',
       header: 'Acciones',
       hideLabelOnMobile: true,
-      className: 'md:w-52',
+      className: '@4xl:w-52',
       cell: (a) => (
         <span className="flex flex-wrap gap-1">
           <ButtonLink
@@ -84,7 +81,7 @@ export default async function ServirAdminPage({
   ];
 
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <FlashToast code={aviso} />
       <PageHeader
         eyebrow="Panel"

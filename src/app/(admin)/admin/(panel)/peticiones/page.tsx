@@ -55,7 +55,7 @@ export default async function PeticionesPage({
     {
       key: 'persona',
       header: 'De',
-      className: 'md:w-56',
+      className: '@4xl:w-56',
       cell: (p) =>
         p.texto === null ? (
           <span className="text-ink-soft">Reservado</span>
@@ -73,7 +73,7 @@ export default async function PeticionesPage({
     {
       key: 'fecha',
       header: atendidas ? 'Atendida' : 'Llegó',
-      className: 'md:w-40',
+      className: '@4xl:w-40',
       cell: (p) =>
         atendidas && p.atendida_en ? (
           <span className="flex flex-col">
@@ -88,7 +88,7 @@ export default async function PeticionesPage({
       key: 'acciones',
       header: 'Acciones',
       hideLabelOnMobile: true,
-      className: 'md:w-48',
+      className: '@4xl:w-48',
       cell: (p) => (
         <span className="flex flex-wrap items-start gap-2">
           <ActionButton
@@ -114,7 +114,7 @@ export default async function PeticionesPage({
   ];
 
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader
         eyebrow="Panel"
         title="Peticiones de oración"

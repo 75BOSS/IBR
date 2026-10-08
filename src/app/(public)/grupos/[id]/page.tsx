@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { pageMetadata } from '@/lib/seo';
 import Image from 'next/image';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { BackLink } from '@/components/BackLink';
 import { Card } from '@/components/Card';
-import { Icon } from '@/components/Icon';
+import { DetailList } from '@/components/DetailList';
 import { PageHeader } from '@/components/PageHeader';
 import { FormDialog } from '@/components/site/FormDialog';
 import { FormPanel } from '@/components/site/FormPanel';
@@ -40,15 +40,10 @@ export default async function GrupoPage({ params }: Props) {
   const group = await load(params);
   if (!group) notFound();
   return (
-    <div className="container-page flex flex-col gap-[clamp(1.25rem,3vw,2rem)] py-[clamp(2rem,6vw,4.5rem)]">
-      <Link
-        href="/grupos"
-        className="inline-flex items-center gap-1 self-start font-semibold text-brand-strong hover:underline"
-      >
-        <Icon name="chevronLeft" className="size-4" /> Todos los grupos
-      </Link>
+    <div className="container-page page-flow">
+      <BackLink href="/grupos">Todos los grupos</BackLink>
       <PageHeader size="display" eyebrow={group.rango_edad ?? 'Grupo'} title={group.nombre} />
-      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-main-aside">
         <div className="flex flex-col gap-5">
           {group.imagen_url && (
             <div className="relative aspect-video overflow-hidden rounded-2xl bg-sunken">
@@ -67,41 +62,30 @@ export default async function GrupoPage({ params }: Props) {
             </p>
           )}
           <Card tone="sunken">
-            <dl className="grid gap-4 md:grid-cols-2">
-              <div>
-                <dt className="text-sm font-semibold text-ink-soft">Cuándo</dt>
-                <dd>{groupWhen(group)}</dd>
-              </div>
-              <div>
-                <dt className="text-sm font-semibold text-ink-soft">Dónde</dt>
-                <dd>
-                  {group.zona ?? group.ubicacion ?? 'Por confirmar'}
-                  {group.direccion ? (
-                    <span className="block text-ink-soft">{group.direccion}</span>
-                  ) : (
-                    group.ubicacion_tipo === 'casa' && (
-                      <span className="block text-sm text-ink-soft">
-                        Es en una casa: te damos la dirección al unirte.
-                      </span>
-                    )
-                  )}
-                </dd>
-              </div>
-              {group.lider_nombre && (
-                <div>
-                  <dt className="text-sm font-semibold text-ink-soft">Líder</dt>
-                  <dd>{group.lider_nombre}</dd>
-                </div>
-              )}
-              {group.tipo && (
-                <div>
-                  <dt className="text-sm font-semibold text-ink-soft">Tipo</dt>
-                  <dd>
-                    <Tag tone="brand">{group.tipo}</Tag>
-                  </dd>
-                </div>
-              )}
-            </dl>
+            <DetailList
+              items={[
+                { label: 'Cuándo', value: groupWhen(group) },
+                {
+                  label: 'Dónde',
+                  value: (
+                    <>
+                      {group.zona ?? group.ubicacion ?? 'Por confirmar'}
+                      {group.direccion ? (
+                        <span className="block text-ink-soft">{group.direccion}</span>
+                      ) : (
+                        group.ubicacion_tipo === 'casa' && (
+                          <span className="block text-sm text-ink-soft">
+                            Es en una casa: te damos la dirección al unirte.
+                          </span>
+                        )
+                      )}
+                    </>
+                  ),
+                },
+                group.lider_nombre && { label: 'Líder', value: group.lider_nombre },
+                group.tipo && { label: 'Tipo', value: <Tag tone="brand">{group.tipo}</Tag> },
+              ]}
+            />
           </Card>
         </div>
         <div className="lg:sticky lg:top-28 lg:self-start">
@@ -118,7 +102,6 @@ export default async function GrupoPage({ params }: Props) {
                 ? `Déjanos tu WhatsApp y ${group.lider_nombre} te escribirá para darte la dirección y contarte cómo es.`
                 : 'Déjanos tu WhatsApp y el líder te escribirá para darte la dirección y contarte cómo es.'
             }
-            stacked
           >
             <FormDialog
               id="unirme"

@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: 'Agregar persona' };
 export default async function NuevoRegistroPage() {
   await requireAdmin();
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader
         eyebrow="Registros"
         title="Agregar persona"

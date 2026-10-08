@@ -10,7 +10,7 @@ export default async function NuevaReunionPage() {
   await requireAdmin();
   const [ubicaciones, rangos] = await Promise.all([ubicacionOptions(), rangoOptions()]);
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Reuniones" title="Agregar reunión" />
       <ReunionForm ubicaciones={ubicaciones} rangos={rangos} />
     </div>

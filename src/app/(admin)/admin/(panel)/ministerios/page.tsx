@@ -7,6 +7,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { Tag } from '@/components/Tag';
 import { FlashToast } from '@/components/Toast';
 import { requireAdmin } from '@/lib/auth';
+import { toneVar } from '@/lib/css-vars';
 import { type Ministerio, edadText, listMinisterios, ministerioName } from '@/lib/ministerios';
 
 export const metadata: Metadata = { title: 'Ministerios' };
@@ -26,14 +27,11 @@ export default async function MinisteriosAdminPage({
       header: 'Ministerio',
       primary: true,
       cell: (m) => (
-        <Link
-          href={`/admin/ministerios/${m.id}`}
-          className="flex items-center gap-3 font-semibold text-brand-strong hover:underline"
-        >
+        <Link href={`/admin/ministerios/${m.id}`} className="flex items-center gap-3 link-quiet">
           <span
             aria-hidden="true"
-            className="size-4 shrink-0 rounded-full ring-1 ring-line"
-            style={{ background: m.color ?? 'var(--color-sunken)' }}
+            className="size-4 shrink-0 rounded-full bg-(--tone) ring-1 ring-line"
+            style={toneVar(m.color, 'var(--color-sunken)')}
           />
           <span className="flex flex-col">
             {ministerioName(m)}
@@ -68,12 +66,12 @@ export default async function MinisteriosAdminPage({
         </span>
       ),
     },
-    { key: 'orden', header: 'Orden', className: 'md:w-20', cell: (m) => m.orden },
+    { key: 'orden', header: 'Orden', className: '@4xl:w-20', cell: (m) => m.orden },
     {
       key: 'acciones',
       header: 'Acciones',
       hideLabelOnMobile: true,
-      className: 'md:w-48',
+      className: '@4xl:w-48',
       cell: (m) => (
         <span className="flex flex-wrap gap-1">
           <ButtonLink
@@ -100,7 +98,7 @@ export default async function MinisteriosAdminPage({
   ];
 
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <FlashToast code={aviso} />
       <PageHeader
         eyebrow="Panel"

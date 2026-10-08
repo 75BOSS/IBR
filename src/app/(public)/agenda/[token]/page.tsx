@@ -5,6 +5,7 @@ import { Card } from '@/components/Card';
 import { PageHeader } from '@/components/PageHeader';
 import { Tag } from '@/components/Tag';
 import { ActionButton } from '@/components/ActionButton';
+import { EmailText } from '@/components/EmailText';
 import { getSuscriptorByToken } from '@/lib/agenda';
 
 export const dynamic = 'force-dynamic';
@@ -25,7 +26,7 @@ export default async function SuscripcionPage({ params }: { params: Promise<{ to
   const pending = !s.activo && !s.baja_en;
 
   return (
-    <div className="container-page flex flex-col gap-6 py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page page-flow">
       <PageHeader
         size="display"
         eyebrow="Agenda semanal"
@@ -37,7 +38,9 @@ export default async function SuscripcionPage({ params }: { params: Promise<{ to
       />
       <Card emphasis="featured" className="max-w-xl">
         <p className="flex flex-wrap items-center gap-2">
-          <span className="font-semibold break-all">{s.email}</span>
+          <span className="font-semibold">
+            <EmailText email={s.email} />
+          </span>
           {s.activo ? (
             <Tag tone="success">Suscrito</Tag>
           ) : pending ? (

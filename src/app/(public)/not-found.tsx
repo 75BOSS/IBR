@@ -11,7 +11,7 @@ export default async function PublicNotFound() {
   // Solo se recomiendan páginas que tienen algo que ver.
   const { menu } = visibleNav(await getSiteContent());
   return (
-    <section className="container-page flex flex-col gap-[clamp(2rem,5vw,3.5rem)] py-[clamp(3rem,10vw,6rem)]">
+    <section className="container-page page-flow">
       <PageHeader
         size="display"
         eyebrow="Error 404"

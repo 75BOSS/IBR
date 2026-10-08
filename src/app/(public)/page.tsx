@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { buttonClasses } from '@/components/button-styles';
 import { EmphasizeLast } from '@/components/Emphasis';
@@ -8,11 +7,13 @@ import { MapEmbed } from '@/components/MapEmbed';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { YouTubeEmbed } from '@/components/YouTubeEmbed';
 import { Carousel } from '@/components/site/Carousel';
+import { ArrowLink } from '@/components/site/ArrowLink';
 import { EventCard } from '@/components/site/EventCard';
-import { HeroArt } from '@/components/site/HeroArt';
+import { PersonCard } from '@/components/site/PersonCard';
+import { PhotoFrame } from '@/components/site/PhotoFrame';
 import { LiveBanner } from '@/components/site/LiveBanner';
 import { Marquee } from '@/components/site/Marquee';
-import { MinisterioCard, ministerioSpan } from '@/components/site/MinisterioCard';
+import { MinisteriosGrid } from '@/components/site/MinisterioCard';
 import { SectionHeading } from '@/components/site/SectionHeading';
 import { CONFIG_DEFAULTS, getSiteConfig } from '@/lib/config';
 import { DAY_NAMES, formatDateOnly, formatDateTime, formatTime } from '@/lib/dates';
@@ -177,7 +178,13 @@ export default async function HomePage() {
     <>
       {/* Portada: titular grande y, debajo, el marco con video, foto o la ilustración. */}
       <section aria-labelledby="bienvenida" className="container-page pt-[clamp(2rem,6vw,4.5rem)]">
-        <div className="grid gap-[clamp(1.25rem,3vw,2.5rem)] lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-end">
+        {/* La columna del subtítulo existe solo si hay subtítulo: sin él, el titular usa todo el
+            ancho (antes se partía en dos líneas junto a una columna vacía). */}
+        <div
+          className={`grid gap-[clamp(1.25rem,3vw,2.5rem)] ${
+            config.home_hero_sub ? 'lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-end' : ''
+          }`}
+        >
           <div className="flex flex-col gap-[clamp(1rem,2.5vw,1.75rem)]">
             <p className="eyebrow text-accent-strong">
               {config.nombre_iglesia}
@@ -192,34 +199,13 @@ export default async function HomePage() {
           )}
         </div>
 
-        <div className="relative isolate mt-[clamp(1.5rem,4vw,3rem)] flex min-h-[clamp(22rem,45vw,34rem)] flex-col justify-end overflow-hidden rounded-(--radius-frame) bg-brand-strong text-surface on-dark">
-          {config.home_hero_imagen ? (
-            <Image
-              src={config.home_hero_imagen}
-              alt=""
-              fill
-              priority
-              sizes="(min-width: 1216px) 1216px, 100vw"
-              className="-z-30 object-cover motion-safe:animate-slow-zoom"
-            />
-          ) : (
-            <HeroArt className="absolute inset-0 -z-30 size-full" />
-          )}
-          {config.home_hero_video && (
-            <video
-              src={config.home_hero_video}
-              poster={config.home_hero_imagen ?? undefined}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              aria-hidden="true"
-              className="absolute inset-0 -z-20 size-full object-cover motion-reduce:hidden"
-            />
-          )}
-          <div className="absolute inset-0 -z-10 bg-gradient-to-t from-night/90 via-night/40 to-transparent" />
-          <div className="flex flex-col gap-5 p-[clamp(1.25rem,4vw,3rem)] md:flex-row md:items-end md:justify-between">
+        <PhotoFrame
+          image={config.home_hero_imagen}
+          video={config.home_hero_video}
+          priority
+          className="mt-[clamp(1.5rem,4vw,3rem)] min-h-[clamp(20rem,45vw,34rem)]"
+        >
+          <div className="flex flex-col gap-5 p-[clamp(1.25rem,4vw,3rem)] lg:flex-row lg:items-end lg:justify-between">
             <div className="flex flex-col gap-2">
               <p className="eyebrow text-peach">Te esperamos</p>
               <p className="flex flex-wrap gap-x-4 font-headline text-[clamp(1.375rem,1.1rem+1vw,2rem)] leading-tight">
@@ -233,7 +219,7 @@ export default async function HomePage() {
               </p>
               {config.direccion && <p className="max-w-md text-surface/85">{config.direccion}</p>}
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex shrink-0 flex-wrap gap-3">
               <Link
                 href="/soy-nuevo"
                 className={buttonClasses({
@@ -276,10 +262,10 @@ export default async function HomePage() {
               )}
             </div>
           </div>
-        </div>
+        </PhotoFrame>
       </section>
 
-      <div className="container-page flex flex-col gap-[clamp(3rem,7vw,5.5rem)] py-[clamp(2.5rem,7vw,5rem)]">
+      <div className="container-page page-sections">
         <LiveBanner />
 
         {/* Accesos rápidos: «Soy nuevo» grande y cuatro de colores. */}
@@ -288,7 +274,7 @@ export default async function HomePage() {
             <li className="reveal xs:col-span-2 lg:row-span-2">
               <Link
                 href="/soy-nuevo"
-                className="group relative isolate flex h-full min-h-[clamp(14rem,32vw,20rem)] flex-col justify-between gap-6 overflow-hidden rounded-[1.75rem] bg-peach p-[clamp(1.5rem,3.5vw,2.5rem)] text-ink transition duration-300 ease-(--ease-out-soft) hover:-translate-y-1 hover:shadow-lift motion-reduce:hover:translate-y-0"
+                className="group @container relative isolate flex h-full min-h-[clamp(14rem,32vw,20rem)] flex-col justify-between gap-6 overflow-hidden rounded-[1.75rem] bg-peach p-[clamp(1.5rem,3.5vw,2.5rem)] text-ink transition duration-300 ease-(--ease-out-soft) hover:-translate-y-1 hover:shadow-lift motion-reduce:hover:translate-y-0"
               >
                 <span
                   aria-hidden="true"
@@ -296,7 +282,9 @@ export default async function HomePage() {
                 />
                 <span className="eyebrow text-accent-strong">Soy nuevo</span>
                 <span className="flex flex-col gap-4">
-                  <span className="font-headline text-[clamp(2rem,1.4rem+2.6vw,3.5rem)] leading-[0.98]">
+                  {/* Tamaño según el ancho de la tarjeta (cqi), no de la ventana: en escritorio la
+                      tarjeta ocupa media fila y «primera vez» cabe en una línea. */}
+                  <span className="font-headline text-[clamp(1.875rem,9cqi,3.5rem)] leading-[0.98]">
                     ¿Es tu <em>primera vez</em>?
                   </span>
                   <span className="max-w-md text-lead text-ink/85">
@@ -339,7 +327,7 @@ export default async function HomePage() {
               </>
             )}
           </h2>
-          <ul className="flex flex-wrap justify-center gap-x-8 gap-y-3 font-semibold text-brand-strong">
+          <ul className="flex flex-wrap justify-center gap-x-8 gap-y-3">
             {[
               { href: '/nosotros', label: 'Conócenos', show: true },
               { href: '/nosotros#equipo', label: 'Nuestros pastores', show: content.pastores },
@@ -348,16 +336,7 @@ export default async function HomePage() {
               .filter((l) => l.show)
               .map((l) => (
                 <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    className="group inline-flex items-center gap-2 border-b-2 border-accent pb-1"
-                  >
-                    {l.label}
-                    <Icon
-                      name="arrowRight"
-                      className="size-4 transition-transform motion-safe:group-hover:translate-x-1"
-                    />
-                  </Link>
+                  <ArrowLink href={l.href}>{l.label}</ArrowLink>
                 </li>
               ))}
           </ul>
@@ -392,10 +371,7 @@ export default async function HomePage() {
       {/* Sin ministerios con contenido no queda una franja vacía entre la frase y la prédica. */}
       {ministerios.length > 0 && (
         <div className="container-page py-[clamp(2.5rem,7vw,5rem)]">
-          <section
-            aria-labelledby="ministerios"
-            className="flex flex-col gap-[clamp(1.5rem,4vw,2.5rem)]"
-          >
+          <section aria-labelledby="ministerios" className="section-flow">
             <SectionHeading
               id="ministerios"
               eyebrow="Ministerios"
@@ -406,26 +382,14 @@ export default async function HomePage() {
               }
               link={{ href: '/ministerios', label: 'Todos los ministerios' }}
             />
-            <ul className="grid grid-cols-2 gap-3 lg:grid-cols-6">
-              {ministerios.map((m, i) => (
-                <li key={m.id} className={`reveal ${ministerioSpan(i, ministerios.length)}`}>
-                  <MinisterioCard
-                    ministerio={m}
-                    featured={i < 2}
-                    sizes={
-                      i < 2 ? '(min-width: 1024px) 50vw, 100vw' : '(min-width: 1024px) 33vw, 50vw'
-                    }
-                  />
-                </li>
-              ))}
-            </ul>
+            <MinisteriosGrid ministerios={ministerios} />
           </section>
         </div>
       )}
 
       {sermon && (
         <section aria-labelledby="ultima-predica" className="bg-night text-surface on-dark">
-          <div className="container-page grid items-center gap-[clamp(1.5rem,4vw,3.5rem)] py-[clamp(3rem,8vw,6rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <div className="container-page grid items-center gap-[clamp(1.5rem,4vw,3.5rem)] py-[clamp(3rem,8vw,6rem)] lg:grid-cols-main-aside">
             <div className="reveal overflow-hidden rounded-(--radius-frame)">
               <YouTubeEmbed videoId={sermon.videoId} title={sermon.titulo} />
             </div>
@@ -472,12 +436,9 @@ export default async function HomePage() {
         </section>
       )}
 
-      <div className="container-page flex flex-col gap-[clamp(3rem,7vw,5.5rem)] py-[clamp(3rem,8vw,6rem)]">
+      <div className="container-page page-sections">
         {pastores.length > 0 && (
-          <section
-            aria-labelledby="pastores"
-            className="flex flex-col gap-[clamp(1.5rem,4vw,2.5rem)]"
-          >
+          <section aria-labelledby="pastores" className="section-flow">
             <SectionHeading
               id="pastores"
               eyebrow="Quienes nos cuidan"
@@ -490,25 +451,7 @@ export default async function HomePage() {
             />
             <ul className="grid gap-[clamp(1rem,3vw,2rem)] lg:grid-cols-2">
               {pastores.map((p) => (
-                <li
-                  key={p.id}
-                  className="flex reveal flex-col gap-5 rounded-(--radius-frame) bg-surface p-[clamp(1.25rem,3vw,2rem)] ring-1 ring-line/70 xs:flex-row xs:items-center"
-                >
-                  <span className="relative size-[clamp(5rem,14vw,7rem)] shrink-0 overflow-hidden rounded-full bg-electric-soft">
-                    {p.foto_url ? (
-                      <Image src={p.foto_url} alt="" fill sizes="136px" className="object-cover" />
-                    ) : (
-                      <span className="grid size-full place-items-center font-script text-[clamp(3rem,2.4rem+2.4vw,4.25rem)] text-electric-strong">
-                        {p.nombre.replace(/^(Pastora?|Ps\.)\s+/i, '').charAt(0)}
-                      </span>
-                    )}
-                  </span>
-                  <span className="flex min-w-0 flex-col gap-1.5">
-                    <span className="eyebrow text-accent-strong">{p.rol}</span>
-                    <span className="font-headline text-h2 text-ink">{p.nombre}</span>
-                    {p.bio && <span className="line-clamp-3 text-ink-soft">{p.bio}</span>}
-                  </span>
-                </li>
+                <PersonCard key={p.id} person={p} featured />
               ))}
             </ul>
           </section>
@@ -516,20 +459,12 @@ export default async function HomePage() {
 
         {/* Cierre: invitación grande y dos formas de seguir conectado. */}
         <section aria-labelledby="ser-parte" className="flex flex-col gap-3">
-          <div className="relative isolate flex min-h-[clamp(18rem,36vw,24rem)] reveal flex-col justify-end overflow-hidden rounded-(--radius-frame) bg-brand-strong text-surface on-dark">
-            {closingImage ? (
-              <Image
-                src={closingImage}
-                alt=""
-                fill
-                sizes="(min-width: 1216px) 1216px, 100vw"
-                className="-z-20 object-cover"
-              />
-            ) : (
-              <HeroArt className="absolute inset-0 -z-20 size-full scale-x-[-1]" />
-            )}
-            <div className="absolute inset-0 -z-10 bg-gradient-to-t from-night/90 via-night/45 to-night/5" />
-            <div className="flex flex-col gap-5 p-[clamp(1.5rem,5vw,3.5rem)] md:flex-row md:items-end md:justify-between">
+          <PhotoFrame
+            image={closingImage}
+            mirrored
+            className="min-h-[clamp(18rem,36vw,24rem)] reveal"
+          >
+            <div className="flex flex-col items-start gap-5 p-[clamp(1.5rem,5vw,3.5rem)] lg:flex-row lg:items-end lg:justify-between">
               <div className="flex max-w-2xl flex-col gap-3">
                 <h2 id="ser-parte" className="font-headline text-section">
                   ¿Quieres ser <em>parte</em>?
@@ -551,13 +486,11 @@ export default async function HomePage() {
                 Tu siguiente paso
               </Link>
             </div>
-          </div>
+          </PhotoFrame>
           {(content.agenda || channels.length > 0) && (
             <div
               className={`grid gap-3 ${
-                content.agenda && channels.length > 0
-                  ? 'md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]'
-                  : ''
+                content.agenda && channels.length > 0 ? 'md:grid-cols-main-aside' : ''
               }`}
             >
               {content.agenda && (
@@ -619,7 +552,7 @@ export default async function HomePage() {
         {/* Visítanos: dirección y horarios a la izquierda, mapa a la derecha. */}
         <section
           aria-labelledby="visitanos"
-          className="grid gap-[clamp(1.5rem,4vw,3rem)] lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-center"
+          className="grid gap-[clamp(1.5rem,4vw,3rem)] lg:grid-cols-aside-main lg:items-center"
         >
           <div className="flex flex-col gap-5">
             <SectionHeading

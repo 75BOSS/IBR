@@ -3,6 +3,7 @@ import { Card } from '@/components/Card';
 import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { EventCard } from '@/components/site/EventCard';
+import { SectionHeading } from '@/components/site/SectionHeading';
 import { listPastEventos, listUpcomingEventos } from '@/lib/eventos';
 import { getSiteConfig } from '@/lib/config';
 import { socialLinks } from '@/lib/nav';
@@ -30,7 +31,7 @@ export default async function EventosPage() {
   const [social] = content.horarios || content.agenda ? [] : socialLinks(config);
   const [first, ...rest] = upcoming;
   return (
-    <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page page-flow">
       <PageHeader
         size="display"
         eyebrow="Eventos y noticias"
@@ -42,10 +43,7 @@ export default async function EventosPage() {
         intro="Lo que viene en la iglesia. ¡Trae a alguien contigo!"
         actions={
           content.agenda && (
-            <Link
-              href="/agenda"
-              className="inline-flex items-center gap-1.5 font-semibold text-brand-strong underline decoration-accent decoration-2 underline-offset-4"
-            >
+            <Link href="/agenda" className="inline-flex items-center gap-1.5 link">
               <Icon name="mail" className="size-4" /> Recibir la agenda por correo
             </Link>
           )
@@ -53,7 +51,7 @@ export default async function EventosPage() {
       />
       <CategoriaTabs active={null} />
       {first ? (
-        <div className="grid gap-[clamp(1rem,3vw,1.5rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
+        <div className="grid gap-[clamp(1rem,3vw,1.5rem)] lg:grid-cols-main-aside lg:items-start">
           <EventCard event={first} variant="featured" />
           <div className="flex flex-col gap-4">
             {rest.map((e) => (
@@ -69,7 +67,7 @@ export default async function EventosPage() {
               <>
                 {' '}
                 Mientras tanto, te esperamos en las{' '}
-                <Link href="/reuniones" className="font-semibold text-brand-strong underline">
+                <Link href="/reuniones" className="link">
                   reuniones de cada semana
                 </Link>
                 .
@@ -78,10 +76,7 @@ export default async function EventosPage() {
             {content.agenda && (
               <>
                 {' '}
-                <Link
-                  href="/agenda#suscribirme"
-                  className="font-semibold text-brand-strong underline"
-                >
+                <Link href="/agenda#suscribirme" className="link">
                   Suscríbete a la agenda
                 </Link>{' '}
                 y te avisamos cuando haya algo nuevo.
@@ -91,12 +86,7 @@ export default async function EventosPage() {
               <>
                 {' '}
                 Para enterarte primero, síguenos en{' '}
-                <a
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold text-brand-strong underline"
-                >
+                <a href={social.href} target="_blank" rel="noopener noreferrer" className="link">
                   {social.label}
                   <span className="sr-only"> (se abre en una pestaña nueva)</span>
                 </a>
@@ -109,11 +99,16 @@ export default async function EventosPage() {
       {past.length > 0 && (
         <section
           aria-labelledby="eventos-pasados"
-          className="mt-[clamp(1rem,4vw,3rem)] flex flex-col gap-6"
+          className="mt-[clamp(1rem,4vw,3rem)] flex flex-col gap-[clamp(1.25rem,3vw,2rem)]"
         >
-          <h2 id="eventos-pasados" className="font-headline text-section text-brand-strong">
-            Lo que <em>vivimos</em>
-          </h2>
+          <SectionHeading
+            id="eventos-pasados"
+            title={
+              <>
+                Lo que <em>vivimos</em>
+              </>
+            }
+          />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {past.map((e) => (
               <EventCard key={e.id} event={e} variant="tile" />

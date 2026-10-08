@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: 'Agregar lugar' };
 export default async function NuevaUbicacionPage() {
   await requireAdmin();
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Lugares" title="Agregar lugar" />
       <UbicacionForm tipos={UBICACION_TIPOS} />
     </div>

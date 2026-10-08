@@ -40,7 +40,7 @@ export default async function PrivacidadPage() {
     .join(' o ');
 
   return (
-    <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page page-flow">
       <PageHeader
         size="display"
         eyebrow="Tus datos"
@@ -157,10 +157,7 @@ export default async function PrivacidadPage() {
               máximo de 15 días.
             </p>
             <p>
-              <Link
-                href="/contacto"
-                className="font-semibold text-brand-strong underline decoration-accent decoration-2 underline-offset-4"
-              >
+              <Link href="/contacto" className="link">
                 Ir a Contacto
               </Link>
             </p>

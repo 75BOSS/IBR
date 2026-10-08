@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: 'Nuevo ministerio' };
 export default async function NuevoMinisterioPage() {
   await requireAdmin();
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Ministerios" title="Nuevo ministerio" />
       <MinisterioForm uploadsEnabled={isCloudinaryConfigured()} />
     </div>

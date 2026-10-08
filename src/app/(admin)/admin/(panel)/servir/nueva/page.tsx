@@ -11,7 +11,7 @@ export default async function NuevaAreaPage() {
   await requireAdmin();
   const equipo = await listEquipo();
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Servir" title="Nueva área de servicio" />
       <AreaForm
         equipo={equipo.map((p) => ({ value: String(p.id), label: `${p.nombre} · ${p.rol}` }))}

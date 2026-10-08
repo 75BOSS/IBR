@@ -26,7 +26,7 @@ export default async function AgendaPage() {
   // Sin correo saliente la confirmación no llegaría: se avisa en vez de ofrecer el formulario.
   const { agenda: canSend } = await getSiteContent();
   return (
-    <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page page-flow">
       <PageHeader
         size="display"
         eyebrow="Agenda semanal"
@@ -37,9 +37,9 @@ export default async function AgendaPage() {
         }
         intro="Suscríbete y te contamos cada semana qué pasa en la iglesia, para que no te pierdas nada."
       />
-      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start">
+      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-aside-main lg:items-start">
         <Card tone="sunken" as="section">
-          <h2 className="font-display text-h3 font-medium text-ink">Qué vas a recibir</h2>
+          <h2 className="card-title">Qué vas a recibir</h2>
           <ul className="mt-3 flex flex-col gap-3">
             {POINTS.map((p) => (
               <li key={p.text} className="flex gap-3 text-ink-soft">

@@ -37,7 +37,7 @@ export default async function MiCuentaPage() {
     // formulario que siempre fallaría (la página sigue abierta por enlaces viejos y marcadores).
     const loginReady = content.cuenta;
     return (
-      <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
+      <div className="container-page page-flow">
         <PageHeader
           size="display"
           eyebrow="Mi cuenta"
@@ -57,7 +57,7 @@ export default async function MiCuentaPage() {
             <p className="text-ink-soft">
               Muy pronto podrás entrar con tu WhatsApp. Si necesitas saber algo de tu inscripción o
               de tu grupo,{' '}
-              <Link href="/contacto#mensaje" className="font-semibold text-brand-strong underline">
+              <Link href="/contacto#mensaje" className="link">
                 escríbenos un mensaje
               </Link>
               .
@@ -74,7 +74,7 @@ export default async function MiCuentaPage() {
   const pasadas = inscripciones.filter((i) => i.fecha_inicio.getTime() < now);
 
   return (
-    <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page page-flow">
       <PageHeader
         size="display"
         eyebrow="Mi cuenta"
@@ -93,12 +93,12 @@ export default async function MiCuentaPage() {
         }
       />
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
+      <div className="grid gap-4 lg:grid-cols-main-aside lg:items-start">
         <Card title="Mis inscripciones" as="section">
           {inscripciones.length === 0 ? (
             <p className="text-ink-soft">
               Todavía no te inscribes a ningún evento.{' '}
-              <Link href="/eventos" className="font-semibold text-brand-strong underline">
+              <Link href="/eventos" className="link">
                 Ver eventos
               </Link>
             </p>
@@ -110,10 +110,7 @@ export default async function MiCuentaPage() {
                   className="flex flex-wrap items-start justify-between gap-2 py-3 first:pt-0 last:pb-0"
                 >
                   <span className="flex min-w-0 flex-col">
-                    <Link
-                      href={`/inscripcion/${i.codigo}`}
-                      className="font-semibold text-brand-strong hover:underline"
-                    >
+                    <Link href={`/inscripcion/${i.codigo}`} className="link-quiet">
                       {i.titulo}
                     </Link>
                     <span className="text-sm text-ink-soft first-letter:uppercase">
@@ -144,7 +141,7 @@ export default async function MiCuentaPage() {
             {grupos.length === 0 ? (
               <p className="text-ink-soft">
                 Aún no pides unirte a un grupo.{' '}
-                <Link href="/grupos" className="font-semibold text-brand-strong underline">
+                <Link href="/grupos" className="link">
                   Buscar un grupo
                 </Link>
               </p>
@@ -156,10 +153,7 @@ export default async function MiCuentaPage() {
                     className="flex flex-wrap items-center justify-between gap-2"
                   >
                     {g.publico ? (
-                      <Link
-                        href={`/grupos/${g.grupo_id}`}
-                        className="font-semibold text-brand-strong hover:underline"
-                      >
+                      <Link href={`/grupos/${g.grupo_id}`} className="link-quiet">
                         {g.grupo}
                       </Link>
                     ) : (
@@ -175,7 +169,7 @@ export default async function MiCuentaPage() {
             {servicio.length === 0 ? (
               <p className="text-ink-soft">
                 ¿Quieres servir?{' '}
-                <Link href="/servir" className="font-semibold text-brand-strong underline">
+                <Link href="/servir" className="link">
                   Mira las áreas
                 </Link>
               </p>

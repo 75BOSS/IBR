@@ -3,6 +3,7 @@ import { Card } from '@/components/Card';
 import { CopyButton } from '@/components/CopyButton';
 import { PageHeader } from '@/components/PageHeader';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
+import { SectionHeading } from '@/components/site/SectionHeading';
 import { getSiteConfig } from '@/lib/config';
 import { type BankAccount, accountTypeLabel, parseBankAccounts } from '@/lib/config-fields';
 import { pageMetadata } from '@/lib/seo';
@@ -68,7 +69,7 @@ export default async function DarPage() {
   const intro = config.dar_intro || DEFAULT_INTRO;
 
   return (
-    <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page page-flow">
       <PageHeader
         size="display"
         eyebrow="Diezmos y ofrendas"
@@ -78,7 +79,7 @@ export default async function DarPage() {
           </>
         }
       />
-      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-aside-main">
         <div className="flex flex-col gap-4">
           <Card tone="brand" emphasis="featured">
             <p className="font-display text-h3 leading-snug whitespace-pre-line">{intro}</p>
@@ -104,10 +105,16 @@ export default async function DarPage() {
           )}
         </div>
 
-        <section aria-labelledby="cuentas" className="flex flex-col gap-4">
-          <h2 id="cuentas" className="font-headline text-h1 text-ink">
-            Transferencia o depósito
-          </h2>
+        <section aria-labelledby="cuentas" className="section-flow">
+          <SectionHeading
+            id="cuentas"
+            eyebrow="Cuentas de la iglesia"
+            title={
+              <>
+                Transferencia o <em>depósito</em>
+              </>
+            }
+          />
           {accounts.length > 0 ? (
             <ul className="grid gap-4 md:grid-cols-2">
               {accounts.map((account, i) => (

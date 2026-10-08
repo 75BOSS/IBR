@@ -10,7 +10,7 @@ export default async function NuevaPredicaPage() {
   await requireAdmin();
   const { series, predicadores } = await predicaFacets(false);
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <PageHeader eyebrow="Prédicas" title="Agregar prédica" />
       <PredicaForm series={series} predicadores={predicadores} />
     </div>

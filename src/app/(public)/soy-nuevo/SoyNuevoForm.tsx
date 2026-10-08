@@ -26,11 +26,7 @@ export function SoyNuevoForm({
             <p className="mt-2 flex flex-wrap gap-x-5 gap-y-2">
               <span>Mientras tanto:</span>
               {nextSteps.map((step) => (
-                <Link
-                  key={step.href}
-                  href={step.href}
-                  className="font-semibold text-brand-strong underline"
-                >
+                <Link key={step.href} href={step.href} className="link">
                   {step.label}
                 </Link>
               ))}

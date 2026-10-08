@@ -29,10 +29,7 @@ export default async function GruposAdminPage({
       header: 'Grupo',
       primary: true,
       cell: (g) => (
-        <Link
-          href={`/admin/grupos/${g.id}`}
-          className="font-semibold text-brand-strong hover:underline"
-        >
+        <Link href={`/admin/grupos/${g.id}`} className="link-quiet">
           {g.nombre}
         </Link>
       ),
@@ -72,7 +69,7 @@ export default async function GruposAdminPage({
       key: 'acciones',
       header: 'Acciones',
       hideLabelOnMobile: true,
-      className: 'md:w-56',
+      className: '@4xl:w-56',
       cell: (g) => (
         <span className="flex flex-wrap gap-1">
           <ButtonLink
@@ -95,7 +92,7 @@ export default async function GruposAdminPage({
     },
   ];
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <FlashToast code={aviso} />
       <PageHeader
         eyebrow="Panel"

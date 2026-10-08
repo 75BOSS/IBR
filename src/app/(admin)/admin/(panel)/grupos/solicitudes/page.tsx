@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { updateSolicitud } from '@/actions/grupos';
+import { BackLink } from '@/components/BackLink';
 import { type Column, DataTable } from '@/components/DataTable';
-import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { ContactLinks } from '@/components/admin/ContactLinks';
 import { FilterTabs } from '@/components/FilterTabs';
@@ -79,7 +79,7 @@ export default async function SolicitudesPage({
       key: 'estado',
       header: 'Estado',
       hideLabelOnMobile: true,
-      className: 'md:w-64',
+      className: '@4xl:w-64',
       cell: (s) => (
         <StatusForm
           action={updateSolicitud}
@@ -93,13 +93,8 @@ export default async function SolicitudesPage({
   ];
 
   return (
-    <div className="flex flex-col gap-6 container-panel">
-      <Link
-        href="/admin/grupos"
-        className="inline-flex items-center gap-1 self-start font-semibold text-brand-strong hover:underline"
-      >
-        <Icon name="chevronLeft" className="size-4" /> Grupos
-      </Link>
+    <div className="container-panel">
+      <BackLink href="/admin/grupos">Grupos</BackLink>
       <PageHeader
         eyebrow="Grupos"
         title="Solicitudes para unirse"

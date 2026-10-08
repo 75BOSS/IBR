@@ -4,8 +4,10 @@ import { paragraphs } from '@/lib/text';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { BackLink } from '@/components/BackLink';
 import { buttonClasses } from '@/components/button-styles';
 import { Card } from '@/components/Card';
+import { DetailList } from '@/components/DetailList';
 import { FormDialog } from '@/components/site/FormDialog';
 import { FormPanel } from '@/components/site/FormPanel';
 import { Icon } from '@/components/Icon';
@@ -61,20 +63,15 @@ export default async function EventoPage({ params }: Props) {
   const cupo = event.requiere_inscripcion ? cupoStatus(event) : null;
 
   return (
-    <article className="container-page flex flex-col gap-[clamp(1.25rem,3vw,2rem)] py-[clamp(2rem,6vw,4.5rem)]">
-      <Link
-        href="/eventos"
-        className="inline-flex items-center gap-1 self-start font-semibold text-brand-strong hover:underline"
-      >
-        <Icon name="chevronLeft" className="size-4" /> Todos los eventos
-      </Link>
+    <article className="container-page page-flow">
+      <BackLink href="/eventos">Todos los eventos</BackLink>
       <PageHeader
         size="display"
         eyebrow={eventWhen(event)}
         title={event.titulo}
         intro={event.resumen}
       />
-      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-main-aside">
         <div className="flex flex-col gap-5">
           {event.imagen_url && (
             <div className="relative aspect-[1200/630] overflow-hidden rounded-2xl bg-sunken">
@@ -97,35 +94,43 @@ export default async function EventoPage({ params }: Props) {
           </div>
         </div>
         <Card title="Detalles" tone="sunken" as="aside">
-          <dl className="flex flex-col gap-3">
-            <div>
-              <dt className="text-sm font-semibold text-ink-soft">Cuándo</dt>
-              <dd className="first-letter:uppercase">
-                {eventWhen(event)}
-                {untilText(event)}
-              </dd>
-            </div>
-            {event.ubicacion && (
-              <div>
-                <dt className="text-sm font-semibold text-ink-soft">Dónde</dt>
-                <dd>
-                  {event.ubicacion}
-                  {event.ubicacion_direccion && (
-                    <span className="block text-ink-soft">{event.ubicacion_direccion}</span>
-                  )}
-                </dd>
-              </div>
-            )}
-            {event.rango_edad && (
-              <div>
-                <dt className="text-sm font-semibold text-ink-soft">Para</dt>
-                <dd>{event.rango_edad}</dd>
-              </div>
-            )}
-          </dl>
+          <DetailList
+            items={[
+              {
+                label: 'Cuándo',
+                value: (
+                  <span className="block first-letter:uppercase">
+                    {eventWhen(event)}
+                    {untilText(event)}
+                  </span>
+                ),
+              },
+              event.ubicacion && {
+                label: 'Dónde',
+                value: (
+                  <>
+                    {event.ubicacion}
+                    {event.ubicacion_direccion && (
+                      <span className="block text-ink-soft">{event.ubicacion_direccion}</span>
+                    )}
+                  </>
+                ),
+              },
+              event.rango_edad && { label: 'Para', value: event.rango_edad },
+            ]}
+          />
           <div className="mt-5 flex flex-col gap-2">
+            {/* Atajo solo en escritorio, donde el texto del evento puede dejar la inscripción
+                lejos; en celular y tablet el panel de inscripción viene justo debajo. */}
             {cupo?.abierto && (
-              <a href="#inscripcion" className={buttonClasses({ variant: 'accent', block: true })}>
+              <a
+                href="#inscripcion"
+                className={buttonClasses({
+                  variant: 'accent',
+                  block: true,
+                  className: 'max-lg:hidden',
+                })}
+              >
                 Inscribirme
               </a>
             )}
@@ -176,7 +181,7 @@ export default async function EventoPage({ params }: Props) {
             ) : (
               <>
                 {cupo.motivo}{' '}
-                <Link href="/contacto#mensaje" className="font-semibold underline">
+                <Link href="/contacto#mensaje" className="link">
                   Escríbenos
                 </Link>{' '}
                 si tienes una pregunta.

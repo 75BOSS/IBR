@@ -94,6 +94,11 @@
 
   --radius-frame: clamp(1.25rem, 0.8rem + 2vw, 2.5rem);
 
+  /* Columnas de contenido + lateral (lg:grid-cols-main-aside): la principal un poco más ancha.
+     minmax(0, …) para que un texto largo no estire la columna. */
+  --grid-template-columns-main-aside: minmax(0, 3fr) minmax(0, 2fr);
+  --grid-template-columns-aside-main: minmax(0, 2fr) minmax(0, 3fr);
+
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -105,6 +110,9 @@
     /* El encabezado del sitio es fijo (sticky, 4–4.5rem): al saltar a un `#ancla` el destino
        queda debajo de él y no tapado. Una sola regla para todas las anclas. */
     scroll-padding-top: 6rem;
+    /* Colores de enlace (utilidades link, link-quiet y ArrowLink); on-dark los cambia. */
+    --link-ink: var(--color-brand-strong);
+    --link-line: var(--color-accent);
   }
 
   body {
@@ -132,9 +140,10 @@
     font-size: 1.3em;
     line-height: 0.8;
     letter-spacing: 0;
-    /* Los trazos de la manuscrita salen de su caja y casi no tiene espacio a los lados: un
-       respiro para que no se pegue a la palabra anterior ni se corte al final. */
-    padding-inline: 0.07em 0.1em;
+    /* Los trazos de entrada de la manuscrita salen de su caja hacia la izquierda (medido: la «p»
+       0.34em, «g» «y» «z» ~0.27em) y el espacio entre palabras mide ~0.2em: sin este margen,
+       «tu primera» se monta sobre la palabra anterior. A la derecha el trazo sale ~0.07em. */
+    padding-inline: 0.18em 0.06em;
     color: var(--title-em, var(--color-accent-strong));
   }
 
@@ -247,6 +256,14 @@
   }
 }
 
+/* Etiqueta corta en versalitas sin raya (categoría de un evento, mes, encabezado de tabla). */
+@utility caps {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 /* Titulares grandes: Poppins gruesa y con las letras juntas, como «Somos Familia». */
 @utility font-headline {
   font-family: var(--font-display);
@@ -267,10 +284,39 @@
 @utility on-dark {
   --focus-ring: var(--color-accent-soft);
   --title-em: var(--color-peach);
+  --link-ink: currentColor;
+  --link-line: var(--color-peach);
 }
 
-/* Contenido de las páginas del panel: márgenes fluidos junto a la barra lateral. */
+/* Enlace dentro de un texto: subrayado naranja, siempre visible (no depende del color). */
+@utility link {
+  font-weight: 600;
+  color: var(--link-ink);
+  text-decoration-line: underline;
+  text-decoration-color: var(--link-line);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  &:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+/* Enlace que ya se reconoce por su lugar (nombre en una fila, volver): subraya al pasar. */
+@utility link-quiet {
+  font-weight: 600;
+  color: var(--link-ink);
+  &:hover {
+    text-decoration-line: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+/* Contenido de las páginas del panel: márgenes fluidos junto a la barra lateral y los bloques
+   apilados con el mismo aire. */
 @utility container-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
   padding-inline: clamp(1rem, 4vw, 2.5rem);
   padding-block: clamp(1.5rem, 5vw, 3rem);
 }
@@ -281,4 +327,37 @@
   max-width: 76rem;
   margin-inline: auto;
   padding-inline: clamp(1rem, 4vw, 2.5rem);
+}
+
+/* Ritmo vertical de una página del sitio: bloques apilados con aire fluido (16 → 48 px) y
+   márgenes arriba/abajo. Va junto a container-page. */
+@utility page-flow {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  padding-block: clamp(2rem, 6vw, 4.5rem);
+}
+
+/* Páginas hechas de secciones grandes (inicio, nosotros): más aire entre secciones. */
+@utility page-sections {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3rem, 7vw, 5.5rem);
+  padding-block: clamp(2.5rem, 7vw, 5rem);
+}
+
+/* Una sección: su encabezado (SectionHeading) y lo que muestra, con aire fluido entre ambos. */
+@utility section-flow {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 3vw, 2rem);
+}
+
+/* Título de una tarjeta de lista (grupo, evento en fila, área de servicio). */
+@utility card-title {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  line-height: var(--text-h3--line-height);
+  font-weight: 500;
+  color: var(--color-ink);
 }

@@ -73,14 +73,14 @@ export default async function RegistrosPage({
     {
       key: 'fecha',
       header: 'Llegó',
-      className: 'md:w-36',
+      className: '@4xl:w-36',
       cell: (r) => formatDateTime(r.creado_en, { dateStyle: 'medium' }),
     },
     {
       key: 'estado',
       header: 'Seguimiento',
       hideLabelOnMobile: true,
-      className: 'md:w-64',
+      className: '@4xl:w-64',
       cell: (r) => (
         <span className="flex w-full flex-col gap-1">
           <StatusForm
@@ -106,7 +106,7 @@ export default async function RegistrosPage({
   ];
 
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <FlashToast code={params.aviso} />
       <PageHeader
         eyebrow="Panel"

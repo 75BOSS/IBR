@@ -1,16 +1,22 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { confirmDemo } from '@/actions/demo';
+import { BackLink } from '@/components/BackLink';
 import { Button, ButtonLink } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { DetailList } from '@/components/DetailList';
+import { EmailText } from '@/components/EmailText';
 import { Field } from '@/components/Field';
 import { FormAlert } from '@/components/FormAlert';
 import { Icon } from '@/components/Icon';
 import { MapEmbed } from '@/components/MapEmbed';
 import { PageHeader } from '@/components/PageHeader';
+import { ProgressBar } from '@/components/ProgressBar';
 import { Tag } from '@/components/Tag';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { YouTubeEmbed } from '@/components/YouTubeEmbed';
+import { ArrowLink } from '@/components/site/ArrowLink';
 import { requireAdmin } from '@/lib/auth';
 import { ToastDemo } from './Demos';
 
@@ -23,7 +29,7 @@ export const metadata: Metadata = { title: 'Componentes' };
 export default async function ComponentsPage() {
   await requireAdmin();
   return (
-    <div className="flex flex-col gap-[clamp(1.25rem,3vw,2rem)] container-panel">
+    <div className="container-panel">
       <PageHeader
         eyebrow="Guía"
         title="Componentes base"
@@ -67,7 +73,7 @@ export default async function ComponentsPage() {
         </div>
       </Card>
 
-      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-main-aside">
         <Card title="Campos" actions={<Tag tone="brand">Field</Tag>}>
           <div className="grid gap-5 md:grid-cols-2">
             <Field label="Nombres" name="demo-nombres" placeholder="ej. María José" required />
@@ -102,7 +108,7 @@ export default async function ComponentsPage() {
           </div>
         </Card>
 
-        <div className="flex flex-col gap-[clamp(1.25rem,3vw,2rem)]">
+        <div className="section-flow">
           <Card title="Etiquetas" actions={<Tag tone="brand">Tag</Tag>}>
             <div className="flex flex-wrap gap-2">
               <Tag>Neutral</Tag>
@@ -147,9 +153,7 @@ export default async function ComponentsPage() {
 
       <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <Card tone="brand" emphasis="featured">
-          <p className="text-sm font-semibold tracking-widest text-accent-soft uppercase">
-            Tarjeta destacada
-          </p>
+          <p className="eyebrow text-accent-soft">Tarjeta destacada</p>
           <p className="mt-2 font-display text-h2 font-semibold">Culto dominical · 10:00</p>
           <p className="mt-2 text-surface/85">
             Una destacada y varias secundarias: nunca una grilla de tarjetas idénticas.
@@ -166,6 +170,44 @@ export default async function ComponentsPage() {
           </Card>
         </div>
       </div>
+
+      <Card
+        title="Enlaces y datos"
+        actions={
+          <Tag tone="brand">BackLink · ArrowLink · DetailList · ProgressBar · EmailText</Tag>
+        }
+      >
+        <div className="grid gap-6 md:grid-cols-2">
+          <div className="flex flex-col items-start gap-3">
+            <BackLink href="/admin">Volver a la lista</BackLink>
+            <p>
+              Enlace en un texto:{' '}
+              <Link href="/admin" className="link">
+                clase link
+              </Link>
+              . En una fila:{' '}
+              <Link href="/admin" className="link-quiet">
+                clase link-quiet
+              </Link>
+              .
+            </p>
+            <ArrowLink href="/admin">Ver todos</ArrowLink>
+            <p className="max-w-56 text-sm">
+              <EmailText email="iglesiabiblicariobamba@gmail.com" />
+            </p>
+          </div>
+          <div className="flex flex-col gap-4">
+            <DetailList
+              items={[
+                { label: 'Cuándo', value: 'Sábado · 19:00 (cada semana)' },
+                { label: 'Dónde', value: 'La Politécnica' },
+                { label: 'Líder', value: 'Andrés y Paula' },
+              ]}
+            />
+            <ProgressBar percent={65} title="13 de 20 lugares ocupados" />
+          </div>
+        </div>
+      </Card>
 
       <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-2">
         <Card title="Video" actions={<Tag tone="brand">YouTubeEmbed</Tag>}>

@@ -82,11 +82,13 @@ src/
     nav.ts               # PUBLIC_MENU (+ MENU_LINKS, LEGAL_NAV, PUBLIC_PAGES), ADMIN_NAV (ready:true al terminar cada módulo)
     form-state.ts        # FormState: resultado estándar de server actions
     validators/          # esquemas Zod por entidad
+    css-vars.ts          # cssVars()/toneVar(): datos de la BD como variables CSS (el estilo va en clases)
     youtube.ts  maps.ts  whatsapp.ts  dates.ts  site.ts   (mail.ts, cloudinary.ts en F1)
     *.test.ts            # pruebas con node:test (npm test)
   components/            # UI compartida: Button (+ button-styles.ts), Field, Card, Tag, Icon, Toast,
-                         # ConfirmDialog, FormAlert, PageHeader, YouTubeEmbed, MapEmbed, WhatsAppButton,
-                         # BrandMark, Spinner; site/ (header, menú, pie) y admin/ (AdminNav)
+                         # ConfirmDialog, FormAlert, PageHeader, BackLink, ProgressBar, YouTubeEmbed, MapEmbed,
+                         # WhatsAppButton, BrandMark, Spinner; site/ (header, menú, pie, PhotoFrame, ArrowLink,
+                         # PersonCard, MinisterioCard…) y admin/ (AdminNav)
   actions/               # server actions por entidad: auth.ts, registros.ts, grupos.ts, predicas.ts...
 scripts/                 # migrate.ts, seed-admin.ts, revisar-responsive.ts, lib/script-db.ts
 sql/
@@ -107,8 +109,11 @@ sql/
 - **Menú público**: `PUBLIC_MENU` (grupos con descripción por página) en `src/lib/nav.ts`; lo usan el encabezado, el menú del celular, el pie, la 404 y el sitemap (`PUBLIC_PAGES`). Página nueva → agregarla a su grupo.
 - **Configuración**: leer con `getSiteConfig()`; al guardar en `/admin/config`, `revalidateTag(CONFIG_TAG)`.
 - **Colores y tipografía**: solo tokens de `src/app/globals.css` (`bg-surface`, `text-ink-soft`, `text-h2`…). Superficies oscuras: variantes `inverse` de `Button`/`Tag` (`inverseOutline` para una acción visible sobre la portada o un panel de marca), nunca pisar clases con `className`.
+- **Estilos solo con clases**: nada de `style={{ … }}` con colores o medidas. Un dato que el diseño necesita y llega de la BD o de un cálculo (color de un ministerio, porcentaje) se pasa como variable CSS con `cssVars()`/`toneVar()` (`src/lib/css-vars.ts`) y se usa en clases: `bg-(--tone)`, `border-(--tone)`, `w-(--progress)`.
+- **Clases del tema (no repetir cadenas largas)**: ritmo de página `container-page page-flow` (interiores) o `page-sections` (inicio, nosotros), de una sección `section-flow` y del panel `container-panel`; columnas contenido + lateral `lg:grid-cols-main-aside` / `lg:grid-cols-aside-main`; enlaces `link` (en un texto, subrayado naranja) y `link-quiet` (nombre en una fila: subraya al pasar); etiquetas `eyebrow` (con raya) y `caps` (versalitas cortas: categoría, mes, encabezado de tabla); título de tarjeta de lista `card-title`. Fichas «Cuándo / Dónde»: `DetailList`; un correo en pantalla: `EmailText`. Si una misma cadena de clases aparece en dos lugares, es un componente o una utilidad.
+- **Tamaño según el contenedor, no la ventana**: un componente que aparece en anchos distintos (portada de evento, tarjeta «Soy nuevo», `FormPanel`, `DetailList`, la tabla del panel) lleva `@container` y mide su texto en `cqi` o decide su forma con `@2xl:`; nada de props tipo `stacked` para que la página le diga si es angosto.
 - **Íconos**: `<Icon name="…">`; para uno nuevo se agrega su SVG al mapa de `src/components/Icon.tsx`.
-- **Páginas**: encabezado con `PageHeader`; avisos de formulario/pantalla con `FormAlert`; contenedor `container-page` (sitio) o `container-panel` (panel). Superficies oscuras llevan la clase `on-dark` (anillo de foco claro).
+- **Páginas**: encabezado con `PageHeader`; «‹ Volver» con `BackLink`; avisos de formulario/pantalla con `FormAlert`; contenedor `container-page page-flow` (sitio) o `container-panel` (panel). Superficies oscuras llevan la clase `on-dark` (anillo de foco claro).
 - **Estilos de botón** en Server Components: `buttonClasses()` de `@/components/button-styles` (no de `Button.tsx`, que es cliente).
 - **Fechas**: `DATETIME` llega como `Date` (UTC) → `formatDateTime()`; `DATE` llega como `'YYYY-MM-DD'` → `formatDateOnly()`; hoy en Ecuador → `todayInChurchTz()` (`src/lib/dates.ts`).
 - **WhatsApp**: guardar y mostrar con `normalizeEcuadorWhatsapp()` / `whatsappHref()` (`src/lib/whatsapp.ts`).
@@ -120,7 +125,7 @@ sql/
 - **Avisos externos** (correo, WhatsApp Cloud API): se llaman después de guardar, nunca hacen fallar el formulario y registran el motivo si no salen.
 - **Formularios públicos en ventana emergente**: la página muestra un `FormPanel` (título, por qué llenarlo) y dentro un `FormDialog` con el formulario (`PublicForm`) como hijo. El formulario queda montado al cerrar (no se pierde lo escrito ni el agradecimiento) y se abre también con un enlace a `#id` (ej. `/servir?area=x#quiero-servir`, `/agenda#suscribirme`). Filtros y el acceso de «Mi cuenta» siguen en la página.
 - **Botones con destino**: un enlace solo se muestra si a donde lleva tiene contenido. Leer `getSiteContent()` (`src/lib/site-content.ts`) y usar sus claves; en `PUBLIC_MENU` cada entrada lleva `needs`, y `visibleNav(content)` arma menú, pie, 404 y sitemap. Cada estado vacío ofrece un paso siguiente que sí existe (casi siempre `/contacto#mensaje`). `WhatsAppButton` sin número cae a «Escríbenos un mensaje» (`fallback={false}` para no mostrar nada).
-- **Sitio público (diseño)**: título de página con `PageHeader size="display"`; títulos de sección con `SectionHeading`; un `<em>` dentro de un título sale en la manuscrita de la marca, en naranja (textos de la config: `EmphasizeLast`); para frases cortas y adornos, la utilidad `font-script` (nunca párrafos). Etiquetas con la utilidad `eyebrow`, titulares con `font-headline`. Logo: `BrandLogo` (sello + «Somos Familia») y `BrandMark` (solo el sello), en `src/components/BrandMark.tsx`; toman el color del texto (azul marino en claro, `text-cream` en oscuro). Botones de llamada a la acción con `shape: 'pill'`. Tarjetas que entran al hacer scroll: clase `reveal` (solo CSS). Fotos con zoom al pasar el mouse: `motion-safe:group-hover:scale-105`. Toda animación respeta «reducir movimiento» (`motion-safe:`/`motion-reduce:`) y nada queda oculto sin JavaScript.
+- **Sitio público (diseño)**: título de página con `PageHeader size="display"`; títulos de sección con `SectionHeading`; un `<em>` dentro de un título sale en la manuscrita de la marca, en naranja (textos de la config: `EmphasizeLast`); para frases cortas y adornos, la utilidad `font-script` (nunca párrafos). Etiquetas con la utilidad `eyebrow`, titulares con `font-headline`. Enlace a «ver más» con flecha: `ArrowLink`. Foto grande o la ilustración del Chimborazo, con texto encima: `PhotoFrame` (pone el velo que asegura el contraste). Personas del equipo: `PersonCard`; ministerios: `MinisteriosGrid`; barra de avance: `ProgressBar`. Logo: `BrandLogo` (sello + «Somos Familia») y `BrandMark` (solo el sello), en `src/components/BrandMark.tsx`; toman el color del texto (azul marino en claro, `text-cream` en oscuro). Botones de llamada a la acción con `shape: 'pill'`. Tarjetas que entran al hacer scroll: clase `reveal` (solo CSS). Fotos con zoom al pasar el mouse: `motion-safe:group-hover:scale-105`. Toda animación respeta «reducir movimiento» (`motion-safe:`/`motion-reduce:`) y nada queda oculto sin JavaScript.
 
 ## Reglas de código
 

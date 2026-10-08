@@ -4,6 +4,8 @@ import { Icon, type IconName } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { FormDialog } from '@/components/site/FormDialog';
 import { FormPanel } from '@/components/site/FormPanel';
+import { MinisteriosGrid } from '@/components/site/MinisterioCard';
+import { SectionHeading } from '@/components/site/SectionHeading';
 import { rangoOptions } from '@/lib/catalogs';
 import { getSiteConfig } from '@/lib/config';
 import { directionsUrl } from '@/lib/maps';
@@ -51,10 +53,9 @@ export default async function SoyNuevoPage() {
     ...(content.horarios ? [{ href: '/reuniones', label: 'Ver los horarios' }] : []),
     ...(content.grupos ? [{ href: '/grupos', label: 'Buscar un grupo cerca' }] : []),
   ];
-  const linkClass =
-    'mt-6 inline-flex items-center gap-1.5 font-semibold underline decoration-accent-soft underline-offset-4';
+  const linkClass = 'link mt-6 inline-flex items-center gap-1.5';
   return (
-    <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page page-flow">
       <PageHeader
         size="display"
         eyebrow="Bienvenido"
@@ -66,10 +67,7 @@ export default async function SoyNuevoPage() {
         intro="Nos alegra que estés aquí. Esto es lo que puedes esperar, y abajo puedes dejarnos tus datos para acompañarte."
       />
 
-      <section
-        aria-labelledby="que-esperar"
-        className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
-      >
+      <section aria-labelledby="que-esperar" className="grid gap-4 lg:grid-cols-aside-main">
         <h2 id="que-esperar" className="sr-only">
           Qué esperar
         </h2>
@@ -91,11 +89,12 @@ export default async function SoyNuevoPage() {
             )
           )}
         </Card>
-        <ul className="flex flex-col gap-3">
+        {/* Tablet: las tres en fila, con el ícono arriba; escritorio: en la columna de al lado. */}
+        <ul className="grid gap-3 md:grid-cols-3 lg:grid-cols-1">
           {EXPECT.map((item) => (
             <li
               key={item.title}
-              className="flex gap-4 rounded-2xl bg-surface p-4 ring-1 ring-line/70"
+              className="flex gap-4 rounded-2xl bg-surface p-4 ring-1 ring-line/70 md:max-lg:flex-col md:max-lg:gap-3"
             >
               <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent-soft text-accent-strong">
                 <Icon name={item.icon} />
@@ -110,36 +109,17 @@ export default async function SoyNuevoPage() {
       </section>
 
       {ministerios.length > 0 && (
-        <section aria-labelledby="ministerios" className="flex flex-col gap-4">
-          <h2 id="ministerios" className="font-headline text-h1 text-ink">
-            Un lugar para cada edad
-          </h2>
-          {/* Las columnas se ajustan a cuántos ministerios hay (sin huecos a la derecha); en
-              dos columnas, si queda uno solo al final, ocupa la fila. */}
-          <ul className="grid gap-3 xs:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(11rem,1fr))] xs:[&>li:last-child:nth-child(odd)]:col-span-2 lg:[&>li:last-child:nth-child(odd)]:col-span-1">
-            {ministerios.map((m) => (
-              <li key={m.id}>
-                <Link
-                  href={`/ministerios/${m.slug}`}
-                  className="flex h-full flex-col gap-1 rounded-2xl border-t-4 bg-surface p-4 ring-1 ring-line/70 hover:shadow-card"
-                  style={{ borderTopColor: m.color ?? 'var(--color-brand)' }}
-                >
-                  <span className="font-display text-h3 font-medium text-ink">
-                    {m.nombre_ministerio ?? m.nombre}
-                  </span>
-                  <span className="text-sm text-ink-soft">
-                    {m.edad_min !== null
-                      ? `${m.edad_min}${m.edad_max !== null ? `–${m.edad_max}` : '+'} años`
-                      : ''}
-                  </span>
-                  {m.descripcion && <span className="text-sm text-ink-soft">{m.descripcion}</span>}
-                  <span className="mt-auto pt-2 text-sm font-semibold text-brand-strong">
-                    Conocer más →
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <section aria-labelledby="ministerios" className="section-flow">
+          <SectionHeading
+            id="ministerios"
+            eyebrow="Ministerios"
+            title={
+              <>
+                Un lugar para <em>cada edad</em>
+              </>
+            }
+          />
+          <MinisteriosGrid ministerios={ministerios} />
         </section>
       )}
 

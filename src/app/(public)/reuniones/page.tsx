@@ -39,7 +39,7 @@ export default async function ReunionesPublicPage() {
   const online = meetings.filter((m) => m.en_linea);
 
   return (
-    <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
+    <div className="container-page page-flow">
       <PageHeader
         size="display"
         eyebrow="Te esperamos"
@@ -55,13 +55,11 @@ export default async function ReunionesPublicPage() {
         }
       />
 
-      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <div className="flex flex-col gap-[clamp(1.25rem,3vw,2rem)]">
+      <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-main-aside">
+        <div className="section-flow">
           {main && (
             <Card tone="brand" emphasis="featured">
-              <p className="text-sm font-semibold tracking-widest text-accent-soft uppercase">
-                Reunión principal
-              </p>
+              <p className="eyebrow text-accent-soft">Reunión principal</p>
               <h2 className="mt-2 font-headline text-h1">{main.nombre}</h2>
               <p className="mt-2 font-display text-[clamp(1.75rem,1.2rem+2.5vw,2.75rem)] leading-none">
                 {DAY_NAMES[main.dia_semana]} · {timeRange(main)}
@@ -91,20 +89,12 @@ export default async function ReunionesPublicPage() {
               <p className="text-ink-soft">
                 Pronto publicaremos los horarios. Mientras tanto,{' '}
                 {whatsapp ? (
-                  <a
-                    href={whatsapp}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-brand-strong underline"
-                  >
+                  <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="link">
                     escríbenos por WhatsApp
                     <span className="sr-only"> (se abre en una pestaña nueva)</span>
                   </a>
                 ) : (
-                  <Link
-                    href="/contacto#mensaje"
-                    className="font-semibold text-brand-strong underline"
-                  >
+                  <Link href="/contacto#mensaje" className="link">
                     escríbenos un mensaje
                   </Link>
                 )}{' '}
@@ -117,16 +107,12 @@ export default async function ReunionesPublicPage() {
                     key={day}
                     className="grid gap-2 py-4 first:pt-0 last:pb-0 md:grid-cols-[8rem_minmax(0,1fr)]"
                   >
-                    <h3 className="font-sans text-sm font-bold tracking-wider text-brand uppercase">
-                      {DAY_NAMES[day]}
-                    </h3>
+                    <h3 className="font-sans caps text-brand">{DAY_NAMES[day]}</h3>
                     <ul className="flex flex-col gap-3">
                       {items.map((m) => (
                         <li key={m.id} className="flex flex-col gap-1">
                           <p className="flex flex-wrap items-baseline gap-x-3">
-                            <span className="font-display text-h3 font-medium text-ink">
-                              {timeRange(m)}
-                            </span>
+                            <span className="card-title">{timeRange(m)}</span>
                             <span className="font-semibold">{m.nombre}</span>
                           </p>
                           {m.descripcion && <p className="text-ink-soft">{m.descripcion}</p>}
@@ -145,7 +131,7 @@ export default async function ReunionesPublicPage() {
           </Card>
         </div>
 
-        <div className="flex flex-col gap-[clamp(1.25rem,3vw,2rem)]">
+        <div className="section-flow">
           <Card title="Cómo llegar" as="section" tone="sunken">
             <div className="flex flex-col gap-4">
               {config.direccion ? (
@@ -187,7 +173,7 @@ export default async function ReunionesPublicPage() {
                     href={youTubeLiveUrl(config.youtube)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 font-semibold text-brand-strong underline decoration-accent decoration-2 underline-offset-4"
+                    className="inline-flex items-center gap-1.5 link"
                   >
                     <Icon name="youtube" className="size-5" />
                     Ver la transmisión en YouTube
@@ -195,10 +181,7 @@ export default async function ReunionesPublicPage() {
                   </a>
                 )}
                 {content.predicas && (
-                  <Link
-                    href="/predicas"
-                    className="inline-flex items-center gap-1.5 font-semibold text-brand-strong underline decoration-accent decoration-2 underline-offset-4"
-                  >
+                  <Link href="/predicas" className="inline-flex items-center gap-1.5 link">
                     Prédicas anteriores
                     <Icon name="arrowRight" className="size-4" />
                   </Link>

@@ -29,10 +29,7 @@ export default async function PredicasAdminPage({
       header: 'Prédica',
       primary: true,
       cell: (p) => (
-        <Link
-          href={`/admin/predicas/${p.id}`}
-          className="flex items-center gap-3 font-semibold text-brand-strong hover:underline"
-        >
+        <Link href={`/admin/predicas/${p.id}`} className="flex items-center gap-3 link-quiet">
           <span className="relative hidden aspect-video w-24 shrink-0 overflow-hidden rounded-lg bg-sunken xs:block">
             {p.miniatura_url && (
               <Image src={p.miniatura_url} alt="" fill sizes="96px" className="object-cover" />
@@ -46,7 +43,7 @@ export default async function PredicasAdminPage({
       key: 'fecha',
       header: 'Fecha',
       cell: (p) => formatDateOnly(p.fecha, { dateStyle: 'medium' }),
-      className: 'md:w-36',
+      className: '@4xl:w-36',
     },
     { key: 'predicador', header: 'Predicador', cell: (p) => p.predicador ?? '—' },
     {
@@ -64,7 +61,7 @@ export default async function PredicasAdminPage({
       key: 'acciones',
       header: 'Acciones',
       hideLabelOnMobile: true,
-      className: 'md:w-56',
+      className: '@4xl:w-56',
       cell: (p) => (
         <span className="flex flex-wrap gap-1">
           <ButtonLink
@@ -87,7 +84,7 @@ export default async function PredicasAdminPage({
     },
   ];
   return (
-    <div className="flex flex-col gap-6 container-panel">
+    <div className="container-panel">
       <FlashToast code={aviso} />
       <PageHeader
         eyebrow="Panel"
