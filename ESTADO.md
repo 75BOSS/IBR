@@ -1,6 +1,6 @@
 # ESTADO.md — Web IBR
 
-Última actualización: 2026-10-07 (sesión de Claude Code). Claude Code: actualizar este archivo al cierre de cada sesión.
+Última actualización: 2026-10-08 (sesión de Claude Code). Claude Code: actualizar este archivo al cierre de cada sesión.
 
 ## Fase actual
 
@@ -32,7 +32,7 @@ Lista consolidada. Nada de esto se sube al repo: los valores van en hPanel → W
 8. **SMTP de Hostinger**: la casilla de correo que envía los avisos (`SMTP_USER`, `SMTP_PASS`). Sin esto no salen los avisos, la confirmación de inscripciones ni la agenda semanal. Dime también el **límite de envíos por hora** de su plan (la agenda se manda a todos los suscriptores).
 9. **YouTube Data API key**: opcional. Sin ella, el título y la miniatura salen de oEmbed (sin fecha de publicación).
 10. **Decidir la visibilidad del repo.** `75BOSS/IBR` es **público**. No tiene secretos, pero conviene que sea privado.
-11. **Contenido real** para cargar desde el panel (`/admin/config`, `/admin/equipo`, `/admin/reuniones`…): foto de portada, dirección y mapa, WhatsApp oficial, correo que recibe los avisos (`email_avisos`), cuentas bancarias y QR, pastores con foto, horarios. Lo puede cargar la iglesia o me lo pasas y lo cargo yo.
+11. **Contenido real** para cargar desde el panel (`/admin/config`, `/admin/equipo`, `/admin/reuniones`…): foto de portada, dirección y mapa, WhatsApp oficial, correo que recibe los avisos (`email_avisos`; si queda vacío, los avisos van al correo público iglesiabiblicariobamba@gmail.com), cuentas bancarias y QR, pastores con foto, horarios. Lo puede cargar la iglesia o me lo pasas y lo cargo yo.
 12. **WhatsApp Cloud API de Meta** (opcional, F2/F3): una cuenta de WhatsApp Business verificada en Meta, el `WHATSAPP_TOKEN` (token permanente de un usuario del sistema) y el `WHATSAPP_PHONE_NUMBER_ID`. Hay que crear y aprobar dos plantillas en español:
     - `nueva_solicitud_grupo` (categoría Utilidad): «Hola {{1}}, {{2}} quiere unirse al grupo «{{3}}». Su WhatsApp: {{4}}. Escríbele pronto.»
     - `codigo_acceso` (categoría Autenticación, con botón «Copiar código»): el código de 6 dígitos para entrar a «Mi cuenta».
@@ -116,7 +116,34 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 | 2026-10-07 | Portada sin foto: ilustración del Chimborazo al amanecer (`HeroArt`). Video corto opcional (`home_hero_video`, migración 011) | Se ve terminada antes de tener fotos reales; el volcán es la imagen de Riobamba |
 | 2026-10-07 | Paleta tomada de las redes de la IBR («Somos Familia»): azul marino `#102a4f`/`#0f2340`, durazno `#f8cba0`, azul eléctrico `#2c55c7`, naranja `#b14d1a` y crema. Reemplaza el petróleo y terracota iniciales; el sello pasa a «ibr» en un círculo azul marino | El sitio debe sentirse de la misma iglesia que sus publicaciones de Instagram |
 | 2026-10-07 | Los 7 formularios públicos (Soy nuevo, Oración, Contacto, Servir, Agenda, inscripción a eventos, Quiero unirme) se abren en ventana emergente (`FormDialog` con `<dialog>` nativo): hoja desde abajo en celular, centrada en escritorio; se abren también con `#id` | Pedido de Cristian. Con `<dialog>` nativo el foco queda dentro, Escape cierra y no hace falta librería |
+| 2026-10-08 | Un enlace o botón solo aparece si a donde lleva tiene contenido: `getSiteContent()` (`src/lib/site-content.ts`) dice qué hay en cada destino y `visibleNav(content)` filtra el menú, el pie, la 404 y el sitemap (clave `needs` en `PUBLIC_MENU`); las páginas usan lo mismo para sus botones y estados vacíos | Pedido de Cristian («que a donde nos lleven tengan algo»). Con la BD recién creada no hay enlaces a páginas vacías y cada sección aparece sola cuando se carga su contenido |
+| 2026-10-08 | Datos reales de la iglesia (correo, Facebook, Instagram, TikTok, YouTube y enlace de Google Maps) en la migración 012; solo llena campos vacíos o con el valor de ejemplo | Lo entregó Cristian; lo guardado desde `/admin/config` no se pisa |
+| 2026-10-08 | Campo nuevo «Enlace de Google Maps» (`maps_url`): da «Cómo llegar» y el mapa sin clave de API (el pin `!3d…!4d…` del enlace); los enlaces cortos `maps.app.goo.gl` se expanden al guardar | La iglesia solo tiene que pegar el enlace de «Compartir»; el mapa insertado queda opcional |
+| 2026-10-08 | Prédicas sin prédicas cargadas muestra los últimos cultos del canal de YouTube (feed RSS público, sin clave, en caché 1 h; se quita el duplicado de la transmisión y su versión editada) | «Prédicas» lleva a los cultos reales desde el primer día |
+| 2026-10-08 | Los avisos internos van a `email_avisos` o, si está vacío, al correo público (`noticeEmail(config)`) | En la BD real `email_avisos` estaba vacío: los avisos de Soy nuevo, Oración, Contacto y Servir no llegaban a nadie |
+| 2026-10-08 | `/agenda` y `/mi-cuenta` siguen abiertas, pero sin SMTP o sin la plantilla de WhatsApp muestran «muy pronto» y un enlace a Contacto en vez del formulario; la acción de la agenda tampoco guarda sin SMTP | Un formulario que nunca puede funcionar engaña a la persona; la página puede seguir enlazada desde correos o marcadores |
+| 2026-10-08 | El margen para anclas (`#sección`) va una sola vez en `html { scroll-padding-top: 6rem }` | El encabezado fijo tapaba el título al saltar a una sección; antes se parchaba con `scroll-mt-28` en algunos elementos |
 | 2026-10-07 | Escala tipográfica más contenida (hero máx. 6.25rem, display 4.25rem, sección 3.25rem) y tarjetas más bajas (ministerios, portada, cierre) | En una pantalla de 1905 px todo se veía enorme: los máximos de `clamp()` estaban pensados para impacto y no para proporción |
+
+## Qué se hizo — coherencia de botones (2026-10-08)
+
+- Auditoría de a dónde lleva cada botón y enlace del sitio (portada, menú, Conócenos, Conéctate, correos y avisos), con la BD vacía y con datos de prueba. Se corrigió todo lo que llevaba a una página vacía, a un 404 o a un formulario que no podía funcionar:
+  - menú, pie, 404 y sitemap según contenido; portada (accesos, «Cómo llegar», enlaces a pastores y creencias, «Más prédicas», agenda y canales);
+  - Prédicas con los videos del canal; «En vivo» abre la transmisión (`…/@canal/live`);
+  - tarjetas de eventos: «Ver e inscribirme» solo con inscripción abierta, «Cupo lleno» si se llenó; panel de inscripción cerrada con su motivo; pestañas de categorías solo con publicaciones;
+  - Grupos sin filtros si no hay grupos y con solo las edades y días que tienen grupos; carrusel sin flechas si todo cabe;
+  - estados vacíos con enlace (Reuniones, Ministerios, Servir, Eventos, detalle de ministerio); textos de Contacto según haya WhatsApp;
+  - tras inscribirse, botón «Ver mi inscripción y mi QR»; «Ver el evento» solo si sigue publicado; el aviso al líder ya no le manda al panel;
+  - panel: «Ver» de un ministerio solo si aparece en el sitio, y si no, qué le falta.
+- Revisión visual hecha por Claude (sin multiagentes) con capturas a 360/768/1280 de las 29 rutas públicas y las 7 ventanas emergentes, con BD vacía y con datos de prueba: todas responden, sin desborde horizontal, cada ventana abre con el foco en el primer campo. Lo que se vio y se corrigió:
+  - «Nosotros» contaba los 5 ministerios sembrados aunque ninguno tenía contenido; la cifra ahora cuenta lo mismo que el menú. Su botón «Horarios» llevaba a una página sin horarios: ahora es «Cómo llegar» mientras no haya.
+  - Grilla de ministerios con 4: dejaba un hueco a la derecha en escritorio (`ministerioSpan` reparte la última fila). Igual en «Soy nuevo» (columnas según cuántos hay).
+  - Portada con BD vacía: franja vacía donde iban los ministerios.
+  - Pie: el ícono de Facebook quedaba solo en otra línea; WhatsApp va en su línea y las redes juntas.
+  - Contacto: el correo se cortaba a mitad de palabra en celular; ahora se corta antes de la @.
+  - Equipo en celular: las tarjetas de dos en fila quedaban apretadas; la foto va arriba.
+  - «¿Cuántas personas vienen?»: el asterisco caía a otra línea. «Mi inscripción»: borde sin nada debajo.
+  - El mapa de Google sí carga (con el pin de la iglesia); en capturas rápidas sale vacío porque se carga al llegar a él.
 
 ## Pendiente de confirmar con la iglesia (bloquea F1 contenido, no F0)
 
@@ -208,6 +235,7 @@ Para probar en MariaDB sin chocar con MySQL: `apt-get download mariadb-server-co
 ## Qué hacer en la próxima sesión
 
 1. Ejecutar PASO 0 de `CLAUDE.md`.
+1. En la copia en línea, después de subir esta versión: `npm run db:migrate` (aplica la 012 con los datos de la iglesia). Falta que la iglesia cargue dirección escrita, WhatsApp y teléfono.
 1. Copia de prueba **en línea** desde el 2026-10-07: https://ibr.pixeliacomsoluciones.es (versión `6456295`, BD con las migraciones 000–011, robots y `noindex` verificados, 59 páginas generadas). La publica la sesión local de Cristian (`DESPLIEGUE.md`). Falta: (a) el primer administrador (`db:seed-admin --generar`, lo corre Cristian), (b) el despliegue automático (GitHub de hPanel no ve `75BOSS/IBR`, ver `DESPLIEGUE.md` §D; mientras, se sube como zip), (c) `/admin/diagnostico` → «Probar SSE» (F0.9).
 2. Si ya hay credenciales de Hostinger: F0.8 (web app → `dev`), `npm run db:migrate` contra la BD nueva (aplica `000` a `010`), crear el primer admin y correr `/admin/diagnostico` (F0.9). Cargar `NEXT_PUBLIC_SITE_URL` con `https://` (sitemap, OG, correos y QR la usan).
 3. Si ya está el dump del PHP: reconciliar `ESQUEMA.sql` §«Tablas heredadas» (MIGRACION-PHP.md §1) **antes** de aplicarlo en Hostinger, y escribir `scripts/importar-php.ts`.
