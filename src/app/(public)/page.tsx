@@ -591,6 +591,7 @@ export default async function HomePage() {
           <div className="reveal overflow-hidden rounded-(--radius-frame) ring-1 ring-line/70">
             <MapEmbed
               embedUrl={config.maps_embed_url}
+              mapsUrl={config.maps_url}
               address={config.direccion}
               title="Mapa del auditorio"
             />

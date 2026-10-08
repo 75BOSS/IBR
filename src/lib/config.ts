@@ -4,7 +4,8 @@ import { query } from '@/lib/db';
 
 /**
  * Configuración editable desde /admin/config (tabla `config`). Los valores por defecto
- * replican la semilla de sql/ESQUEMA.sql: mantenerlos iguales.
+ * replican la semilla de sql/ESQUEMA.sql más los datos reales de la migración 012: mantenerlos
+ * iguales.
  */
 export const CONFIG_DEFAULTS = {
   nombre_iglesia: 'Iglesia Bíblica Riobamba',
@@ -13,17 +14,18 @@ export const CONFIG_DEFAULTS = {
   anio_fundacion: '2008',
   direccion: null,
   referencia_llegada: null,
+  maps_url: null,
   maps_embed_url: null,
   telefono: null,
   whatsapp: null,
   whatsapp_canal_url: null,
-  email: null,
+  email: 'iglesiabiblicariobamba@gmail.com',
   email_avisos: null,
-  instagram: 'https://instagram.com/ibr_riobamba',
-  tiktok: 'https://tiktok.com/@ibr_riobamba',
-  youtube: 'https://youtube.com/@ibr-riobamba',
-  facebook: null,
-  youtube_channel_id: null,
+  instagram: 'https://www.instagram.com/ibr_riobamba/',
+  tiktok: 'https://www.tiktok.com/@ibr_riobamba',
+  youtube: 'https://www.youtube.com/@ibr-riobamba',
+  facebook: 'https://www.facebook.com/somosiglesiacristiana',
+  youtube_channel_id: 'UCwL0afgA_8qr-75cUUPcglw',
   en_vivo_activo: '0',
   dar_intro: null,
   dar_cuentas: '[]',

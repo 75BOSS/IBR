@@ -132,6 +132,7 @@ export default async function ContactoPage() {
               )}
               <MapEmbed
                 embedUrl={config.maps_embed_url}
+                mapsUrl={config.maps_url}
                 address={config.direccion}
                 title="Mapa del auditorio"
               />

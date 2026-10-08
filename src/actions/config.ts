@@ -12,7 +12,7 @@ import {
 } from '@/lib/config-fields';
 import { execute } from '@/lib/db';
 import type { FormState } from '@/lib/form-state';
-import { safeMapsEmbedUrl } from '@/lib/maps';
+import { expandMapsLink, isGoogleMapsLink, safeMapsEmbedUrl } from '@/lib/maps';
 import {
   checkbox,
   optionalEmail,
@@ -66,6 +66,18 @@ async function parseField(field: ConfigField, formData: FormData): Promise<Parse
             error:
               'No reconocemos ese mapa. En Google Maps: Compartir → Insertar un mapa → Copiar HTML.',
           };
+    }
+    case 'mapsLink': {
+      const value = text(formData, field.key);
+      if (!value) return { value: null };
+      if (!isGoogleMapsLink(value)) {
+        return {
+          error:
+            'Pega el enlace de Google Maps: busca la iglesia, toca Compartir → Copiar enlace (ej. https://maps.app.goo.gl/…).',
+        };
+      }
+      // El enlace corto no trae coordenadas: se guarda el del lugar para poder dibujar el mapa.
+      return { value: await expandMapsLink(value) };
     }
     case 'youtubeChannel': {
       const value = text(formData, field.key);

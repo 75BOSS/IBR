@@ -1,24 +1,30 @@
 import { Icon } from '@/components/Icon';
-import { mapsSearchUrl, safeMapsEmbedUrl } from '@/lib/maps';
+import { directionsUrl, mapsEmbedFromLink, safeMapsEmbedUrl } from '@/lib/maps';
 
 type Props = {
   /** config.maps_embed_url (src de «Insertar un mapa» de Google Maps, o el <iframe> completo). */
   embedUrl: string | null | undefined;
+  /** config.maps_url: enlace de Google Maps de la iglesia («Cómo llegar» y mapa si no hay embed). */
+  mapsUrl?: string | null;
   /** Dirección en texto: se usa para «Cómo llegar» y como alternativa si no hay mapa. */
   address: string | null | undefined;
   title?: string;
   className?: string;
 };
 
-/** Mapa de Google Maps con enlace «Cómo llegar». Alto proporcional al ancho de pantalla. */
+/**
+ * Mapa de Google Maps con enlace «Cómo llegar». Alto proporcional al ancho de pantalla. El mapa
+ * sale del embed pegado en la config o, si no hay, del enlace de Google Maps de la iglesia.
+ */
 export function MapEmbed({
   embedUrl,
+  mapsUrl,
   address,
   title = 'Mapa de ubicación',
   className = '',
 }: Props) {
-  const src = safeMapsEmbedUrl(embedUrl);
-  const directions = address ? mapsSearchUrl(address) : null;
+  const src = safeMapsEmbedUrl(embedUrl) ?? mapsEmbedFromLink(mapsUrl);
+  const directions = directionsUrl(mapsUrl, address);
 
   return (
     <div className={`overflow-hidden rounded-2xl bg-sunken ring-1 ring-line/70 ${className}`}>

@@ -10,6 +10,7 @@ export type ConfigFieldKind =
   | 'textarea'
   | 'url'
   | 'maps'
+  | 'mapsLink'
   | 'phone'
   | 'whatsapp'
   | 'email'
@@ -68,10 +69,17 @@ export const CONFIG_SECTIONS: ConfigSection[] = [
         hint: 'Ej. «Frente al parque Guayaquil, portón verde».',
       },
       {
+        key: 'maps_url',
+        label: 'Enlace de Google Maps',
+        kind: 'mapsLink',
+        placeholder: 'ej. https://maps.app.goo.gl/…',
+        hint: 'En Google Maps, busca la iglesia → Compartir → Copiar enlace, y pégalo aquí. Con esto el botón «Cómo llegar» abre el lugar exacto y se dibuja el mapa.',
+      },
+      {
         key: 'maps_embed_url',
-        label: 'Mapa de Google Maps',
+        label: 'Mapa insertado (opcional)',
         kind: 'maps',
-        hint: 'En Google Maps: Compartir → Insertar un mapa → Copiar HTML, y pégalo aquí completo.',
+        hint: 'Solo si quieres otro encuadre del mapa: en Google Maps, Compartir → Insertar un mapa → Copiar HTML, y pégalo aquí completo. Si lo dejas vacío, se usa el enlace de arriba.',
       },
       { key: 'telefono', label: 'Teléfono', kind: 'phone', placeholder: 'ej. 032123456' },
       {

@@ -19,6 +19,7 @@ import {
 
 const inputTypes: Partial<Record<ConfigField['kind'], string>> = {
   url: 'url',
+  mapsLink: 'url',
   phone: 'tel',
   whatsapp: 'tel',
   email: 'email',
