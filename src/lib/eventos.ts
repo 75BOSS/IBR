@@ -55,7 +55,7 @@ export function listUpcomingEventos(
 
 /**
  * Los que aún no empiezan, por fecha (resumen del panel). Misma regla que
- * v_dashboard.eventos_proximos, para que el contador y la lista coincidan.
+ * el contador «eventos próximos» del resumen (src/lib/dashboard.ts), para que coincidan.
  */
 export function listNotStartedEventos(limit: number): Promise<Evento[]> {
   return query<Evento>(

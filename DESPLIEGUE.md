@@ -60,6 +60,10 @@ la web app. Dos casos piden un paso extra:
 - `ECONNREFUSED` o `Access denied` en el build: la web app no llega a la BD (host, usuario o
   MySQL remoto). El build necesita la BD.
 - Login que no guarda la sesión: falta `SESSION_SECRET` o `NEXT_PUBLIC_SITE_URL` no es `https://`.
+- Panel que entra pero «Resumen» dice «No pudimos cargar esta pantalla»: la BD tiene vistas
+  creadas por «MySQL remoto» cuyo dueño (`usuario@IP`) ya no existe. Correr `npm run db:migrate`
+  (la migración 013 las borra; el código ya no las usa). Regla: no crear vistas, triggers ni
+  procedimientos en la BD, por la misma razón.
 - Rate limit que bloquea a todos con la misma IP: ajustar `TRUSTED_PROXY_HOPS` mirando
   `x-forwarded-for` en `/admin/diagnostico` (debe terminar en la IP real del visitante).
 
