@@ -46,7 +46,7 @@ export async function sendMail(message: {
 }): Promise<MailResult> {
   if (!message.to) {
     console.warn(
-      `[correo] "${message.subject}": no hay destinatario configurado (config.email_avisos).`,
+      `[correo] "${message.subject}": no hay destinatario (faltan el correo de avisos y el correo público en /admin/config).`,
     );
     return { sent: false, reason: 'sin-destinatario' };
   }

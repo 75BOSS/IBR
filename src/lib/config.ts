@@ -78,3 +78,12 @@ export async function getSiteConfig(): Promise<SiteConfig> {
     return { ...CONFIG_DEFAULTS };
   }
 }
+
+/**
+ * A dónde llegan los avisos internos (Soy nuevo, oración, contacto, voluntarios, grupos sin
+ * correo del líder): el «correo que recibe los avisos» o, si está vacío, el correo público.
+ * Así un aviso no se pierde solo porque falta ese campo en /admin/config.
+ */
+export function noticeEmail(config: Pick<SiteConfig, 'email_avisos' | 'email'>): string | null {
+  return config.email_avisos || config.email;
+}

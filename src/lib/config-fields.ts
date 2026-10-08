@@ -100,7 +100,7 @@ export const CONFIG_SECTIONS: ConfigSection[] = [
         key: 'email_avisos',
         label: 'Correo que recibe los avisos',
         kind: 'email',
-        hint: 'Llegan aquí los registros de «Soy nuevo», las peticiones de oración y los mensajes de contacto.',
+        hint: 'Llegan aquí los registros de «Soy nuevo», las peticiones de oración y los mensajes de contacto. Si lo dejas vacío, llegan al correo público.',
       },
     ],
   },

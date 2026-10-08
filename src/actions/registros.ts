@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { requireAdmin } from '@/lib/auth';
-import { getSiteConfig } from '@/lib/config';
+import { getSiteConfig, noticeEmail } from '@/lib/config';
 import { execute, queryOne } from '@/lib/db';
 import type { FormState } from '@/lib/form-state';
 import { sendMail } from '@/lib/mail';
@@ -60,7 +60,7 @@ export async function registerNewcomer(_prev: FormState, formData: FormData): Pr
   );
   const config = await getSiteConfig();
   await sendMail({
-    to: config.email_avisos,
+    to: noticeEmail(config),
     replyTo: d.email,
     subject: `Nuevo registro: ${d.nombres}${d.apellidos ? ` ${d.apellidos}` : ''}`,
     text: [

@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { requireAdmin } from '@/lib/auth';
 import { deleteImage, resolveImageField } from '@/lib/cloudinary';
-import { getSiteConfig } from '@/lib/config';
+import { getSiteConfig, noticeEmail } from '@/lib/config';
 import { execute, queryOne } from '@/lib/db';
 import type { FormState } from '@/lib/form-state';
 import { sendMail } from '@/lib/mail';
@@ -176,7 +176,7 @@ export async function joinGroup(_prev: FormState, formData: FormData): Promise<F
   );
   const config = await getSiteConfig();
   await sendMail({
-    to: group.lider_email ?? config.email_avisos,
+    to: group.lider_email ?? noticeEmail(config),
     subject: `Nueva persona quiere unirse a «${group.nombre}»`,
     text: [
       `Hola${group.lider_nombre ? ` ${group.lider_nombre}` : ''}:`,
@@ -185,7 +185,11 @@ export async function joinGroup(_prev: FormState, formData: FormData): Promise<F
       `Teléfono / WhatsApp: ${formatPhoneEc(d.telefono)}`,
       d.mensaje ? `Mensaje: ${d.mensaje}` : '',
       '',
-      `Escríbele pronto y marca la solicitud en el panel: ${siteUrl()}/admin/grupos/solicitudes`,
+      // El líder normalmente no entra al panel: a él solo se le pide escribir; el enlace al panel
+      // va cuando el aviso llega al correo de la iglesia.
+      group.lider_email
+        ? 'Escríbele pronto por WhatsApp para darle la bienvenida.'
+        : `Escríbele pronto y marca la solicitud en el panel: ${siteUrl()}/admin/grupos/solicitudes`,
     ]
       .filter((line) => line !== null)
       .join('\n'),

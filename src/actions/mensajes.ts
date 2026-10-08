@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth';
-import { getSiteConfig } from '@/lib/config';
+import { getSiteConfig, noticeEmail } from '@/lib/config';
 import { execute } from '@/lib/db';
 import type { FormState } from '@/lib/form-state';
 import { sendMail } from '@/lib/mail';
@@ -46,7 +46,7 @@ export async function sendPeticion(_prev: FormState, formData: FormData): Promis
   // Una petición privada solo la leen los pastores (rol admin) en el panel: el texto y los
   // datos no viajan por correo, que puede ser una casilla compartida.
   await sendMail({
-    to: config.email_avisos,
+    to: noticeEmail(config),
     subject: d.es_privada
       ? 'Nueva petición de oración privada'
       : `Nueva petición de oración${d.nombre ? ` de ${d.nombre}` : ''}`,
@@ -95,7 +95,7 @@ export async function sendContacto(_prev: FormState, formData: FormData): Promis
   );
   const config = await getSiteConfig();
   await sendMail({
-    to: config.email_avisos,
+    to: noticeEmail(config),
     replyTo: d.email,
     subject: `Mensaje de ${d.nombre} desde la página web`,
     text: [

@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth';
 import { deleteImage, resolveImageField } from '@/lib/cloudinary';
-import { getSiteConfig } from '@/lib/config';
+import { getSiteConfig, noticeEmail } from '@/lib/config';
 import { execute, queryOne } from '@/lib/db';
 import type { FormState } from '@/lib/form-state';
 import { sendMail } from '@/lib/mail';
@@ -147,7 +147,7 @@ export async function ofrecerme(_prev: FormState, formData: FormData): Promise<F
   );
   const config = await getSiteConfig();
   await sendMail({
-    to: config.email_avisos,
+    to: noticeEmail(config),
     subject: `${d.nombre} quiere servir en ${area.nombre}`,
     text: [
       `${d.nombre} se ofreció para servir en ${area.nombre}.`,
