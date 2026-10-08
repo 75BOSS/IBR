@@ -2,6 +2,7 @@ import 'server-only';
 import { getSiteConfig } from '@/lib/config';
 import { query } from '@/lib/db';
 import { type LiveSlot, isInBroadcastWindow } from '@/lib/live';
+import { youTubeLiveUrl } from '@/lib/youtube';
 
 export type LiveStatus = {
   activo: boolean;
@@ -25,6 +26,7 @@ export async function getLiveStatus(now = new Date()): Promise<LiveStatus> {
     activo: config.en_vivo_activo === '1' || isInBroadcastWindow(slots, now),
     youtube_id: null,
     channel_id: config.youtube_channel_id,
-    canal_url: config.youtube,
+    // «Ver en YouTube» abre la transmisión, no la portada del canal.
+    canal_url: config.youtube ? youTubeLiveUrl(config.youtube) : null,
   };
 }

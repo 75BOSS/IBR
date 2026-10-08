@@ -36,3 +36,24 @@ export function youTubeThumbnail(videoId: string): string {
 export function youTubeWatchUrl(videoId: string): string {
   return `https://www.youtube.com/watch?v=${videoId}`;
 }
+
+/**
+ * Enlace a la transmisión en vivo de un canal (`…/@canal/live`), para «Ver en YouTube» del aviso
+ * «En vivo». Si el enlace no es de un canal (ej. una lista), se devuelve tal cual.
+ */
+export function youTubeLiveUrl(channelUrl: string): string {
+  let url: URL;
+  try {
+    url = new URL(channelUrl.trim());
+  } catch {
+    return channelUrl; // valor mal pegado en /admin/config: se usa como está
+  }
+  const host = url.hostname.replace(/^(www\.|m\.)/, '');
+  const [, first = '', second = ''] = url.pathname.split('/');
+  if (host !== 'youtube.com') return channelUrl;
+  if (first.startsWith('@')) return `https://www.youtube.com/${first}/live`;
+  if (['channel', 'c', 'user'].includes(first) && second) {
+    return `https://www.youtube.com/${first}/${second}/live`;
+  }
+  return channelUrl;
+}

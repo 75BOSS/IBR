@@ -4,7 +4,7 @@ import { rateLimitIp } from '@/lib/ip';
 import { safeMapsEmbedUrl } from '@/lib/maps';
 import { safeAdminPath } from '@/lib/validators/auth';
 import { formatPhoneEc, whatsappHref } from '@/lib/whatsapp';
-import { parseYouTubeId } from '@/lib/youtube';
+import { parseYouTubeId, youTubeLiveUrl } from '@/lib/youtube';
 
 describe('parseYouTubeId', () => {
   const id = 'dQw4w9WgXcQ';
@@ -28,6 +28,24 @@ describe('parseYouTubeId', () => {
   ]) {
     it(`rechaza ${input}`, () => assert.equal(parseYouTubeId(input), null));
   }
+});
+
+describe('youTubeLiveUrl', () => {
+  it('lleva a la transmisión del canal', () => {
+    assert.equal(
+      youTubeLiveUrl('https://www.youtube.com/@ibr-riobamba/'),
+      'https://www.youtube.com/@ibr-riobamba/live',
+    );
+    assert.equal(
+      youTubeLiveUrl('https://youtube.com/channel/UCwL0afgA_8qr-75cUUPcglw/videos'),
+      'https://www.youtube.com/channel/UCwL0afgA_8qr-75cUUPcglw/live',
+    );
+  });
+  it('deja igual lo que no es un canal', () => {
+    const list = 'https://www.youtube.com/playlist?list=PL123';
+    assert.equal(youTubeLiveUrl(list), list);
+    assert.equal(youTubeLiveUrl('hola'), 'hola');
+  });
 });
 
 describe('safeMapsEmbedUrl', () => {
