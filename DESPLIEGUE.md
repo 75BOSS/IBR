@@ -55,6 +55,19 @@ la web app. Dos casos piden un paso extra:
 - **El build falló**: leer el log en hPanel, corregir la causa en el código (no en el servidor),
   subir el arreglo a `dev`.
 
+## B2. Ver el sitio «lleno» con datos de ejemplo (solo la copia de prueba)
+
+Para revisar el diseño con contenido antes de que la iglesia cargue el suyo:
+
+```
+DATABASE_URL='mysql://…' npm run db:ejemplo -- --cargar   # agrega horarios, grupos, eventos, equipo…
+DATABASE_URL='mysql://…' npm run db:ejemplo -- --quitar   # los borra (solo lo de ejemplo)
+```
+
+No pisa nada que la iglesia ya haya cargado y no inventa teléfonos ni cuentas reales. Las
+páginas se actualizan solas en unos 5 minutos. **Quitarlos antes de importar los datos del PHP
+y antes de pasar a `ibriglesia.com`.**
+
 ## C. Si falla algo conocido
 
 - `ECONNREFUSED` o `Access denied` en el build: la web app no llega a la BD (host, usuario o
