@@ -50,7 +50,15 @@ export default async function MinisteriosAdminPage({
       header: 'En el sitio',
       cell: (m) => (
         <span className="flex flex-wrap gap-1.5">
-          {m.activo ? <Tag tone="success">Activo</Tag> : <Tag>Inactivo</Tag>}
+          {!m.activo ? (
+            <Tag>Inactivo</Tag>
+          ) : m.con_contenido ? (
+            <Tag tone="success">Activo</Tag>
+          ) : (
+            <Tag tone="accent">
+              No aparece en el sitio: falta descripción, foto, grupo o reunión
+            </Tag>
+          )}
           <Tag>
             {m.reuniones} {m.reuniones === 1 ? 'reunión' : 'reuniones'}
           </Tag>
@@ -76,7 +84,7 @@ export default async function MinisteriosAdminPage({
           >
             Editar
           </ButtonLink>
-          {m.activo && (
+          {m.activo && Boolean(m.con_contenido) && (
             <ButtonLink
               href={`/ministerios/${m.slug}`}
               variant="ghost"
