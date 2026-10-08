@@ -81,48 +81,57 @@ export type ChannelVideo = { videoId: string; titulo: string; publicado: string 
  * Últimos videos del canal de la iglesia desde el feed público de YouTube (sin clave de API).
  * Respaldo de Prédicas mientras no haya prédicas cargadas en el panel: así «Prédicas» lleva a
  * los cultos reales desde el primer día. En caché 1 h (CLAUDE.md: YouTube nunca en cada visita).
+ *
+ * Solo se guarda en caché una lectura buena: el feed de YouTube a veces responde 404/500 por un
+ * rato, y una respuesta vacía guardada escondía «Último culto» durante una hora sin avisar. Si
+ * falla, se registra el motivo y se reintenta la próxima vez que la página se actualiza (≥ 5 min).
  */
-export const latestChannelVideos = unstable_cache(
+const cachedChannelVideos = unstable_cache(
   async (channelId: string): Promise<ChannelVideo[]> => {
-    try {
-      const url = new URL('https://www.youtube.com/feeds/videos.xml');
-      url.searchParams.set('channel_id', channelId);
-      const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
-      if (!res.ok) return [];
-      const xml = await res.text();
-      const decode = (text: string) =>
-        text
-          .replace(/&amp;/g, '&')
-          .replace(/&quot;/g, '"')
-          .replace(/&#39;/g, "'")
-          .replace(/&lt;/g, '<')
-          .replace(/&gt;/g, '>');
-      const videos = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].flatMap(([, entry = '']) => {
-        const videoId = entry.match(/<yt:videoId>([\w-]{11})<\/yt:videoId>/)?.[1];
-        const titulo = entry.match(/<title>([\s\S]*?)<\/title>/)?.[1];
-        const publicado = entry.match(/<published>([^<]+)<\/published>/)?.[1];
-        // «🔴» marca la transmisión en vivo; aquí ya es una grabación.
-        return videoId && titulo && publicado
-          ? [
-              {
-                videoId,
-                titulo: decode(titulo)
-                  .replace(/^🔴\s*/u, '')
-                  .trim(),
-                publicado,
-              },
-            ]
-          : [];
-      });
-      // El canal sube la transmisión y luego la versión editada con el mismo título: se queda
-      // la más reciente (el feed viene de la más nueva a la más antigua).
-      const seen = new Set<string>();
-      return videos.filter((v) => !seen.has(v.titulo) && Boolean(seen.add(v.titulo)));
-    } catch (error) {
-      console.warn('[youtube] no se pudo leer el feed del canal:', error);
-      return [];
-    }
+    const url = new URL('https://www.youtube.com/feeds/videos.xml');
+    url.searchParams.set('channel_id', channelId);
+    const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
+    if (!res.ok) throw new Error(`YouTube respondió ${res.status} al pedir el feed del canal`);
+    const xml = await res.text();
+    const decode = (text: string) =>
+      text
+        .replace(/&amp;/g, '&')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>');
+    const videos = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].flatMap(([, entry = '']) => {
+      const videoId = entry.match(/<yt:videoId>([\w-]{11})<\/yt:videoId>/)?.[1];
+      const titulo = entry.match(/<title>([\s\S]*?)<\/title>/)?.[1];
+      const publicado = entry.match(/<published>([^<]+)<\/published>/)?.[1];
+      // «🔴» marca la transmisión en vivo; aquí ya es una grabación.
+      return videoId && titulo && publicado
+        ? [
+            {
+              videoId,
+              titulo: decode(titulo)
+                .replace(/^🔴\s*/u, '')
+                .trim(),
+              publicado,
+            },
+          ]
+        : [];
+    });
+    // El canal sube la transmisión y luego la versión editada con el mismo título: se queda
+    // la más reciente (el feed viene de la más nueva a la más antigua).
+    const seen = new Set<string>();
+    return videos.filter((v) => !seen.has(v.titulo) && Boolean(seen.add(v.titulo)));
   },
   ['youtube-canal'],
   { revalidate: 3600 },
 );
+
+export async function latestChannelVideos(channelId: string): Promise<ChannelVideo[]> {
+  try {
+    return await cachedChannelVideos(channelId);
+  } catch (error) {
+    // Sin videos la página muestra su estado vacío con el enlace al canal; no se rompe.
+    console.warn('[youtube] no se pudo leer el feed del canal (se reintenta luego):', error);
+    return [];
+  }
+}
