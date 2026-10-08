@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 /**
  * Encabezado de página único (sitio y panel): etiqueta superior + título + introducción.
- * `display` es el titular editorial de las páginas públicas (Fraunces grande; un `<em>` dentro
+ * `display` es el titular editorial de las páginas públicas (Poppins grande; un `<em>` dentro
  * del título sale en cursiva terracota). `h1` es el del panel.
  */
 export function PageHeader({

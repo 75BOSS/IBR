@@ -1,7 +1,7 @@
 /**
- * Título con la última palabra en cursiva («Bienvenido a <em>casa</em>»): textos que vienen de
+ * Título con la última palabra destacada («Bienvenido a <em>casa</em>»): textos que vienen de
  * la configuración, donde la iglesia escribe solo el texto. El estilo del `<em>` está en
- * globals.css (Fraunces cursiva en terracota).
+ * globals.css (la letra manuscrita de la marca, en naranja).
  */
 export function EmphasizeLast({ text }: { text: string }) {
   const trimmed = text.trim();

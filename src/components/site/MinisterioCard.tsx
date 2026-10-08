@@ -47,7 +47,7 @@ export function MinisterioCard({
       ) : (
         <span
           aria-hidden="true"
-          className="absolute -top-8 -right-4 -z-20 font-display text-[clamp(8rem,5rem+10vw,13rem)] leading-none text-surface/20 italic transition-transform duration-700 ease-(--ease-out-soft) motion-safe:group-hover:-translate-x-3"
+          className="absolute -top-8 -right-4 -z-20 font-script text-[clamp(9rem,6rem+11vw,15rem)] leading-none text-surface/20 transition-transform duration-700 ease-(--ease-out-soft) motion-safe:group-hover:-translate-x-3"
         >
           {name.charAt(0)}
         </span>

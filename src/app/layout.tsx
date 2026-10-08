@@ -1,16 +1,24 @@
 import type { Metadata, Viewport } from 'next';
-import { Figtree, Fraunces } from 'next/font/google';
+import { Figtree, Pinyon_Script, Poppins } from 'next/font/google';
 import { ToastProvider } from '@/components/Toast';
 import { DEFAULT_OG_IMAGE, SITE_NAME } from '@/lib/seo';
 import { isIndexable, siteUrl } from '@/lib/site';
 import './globals.css';
 
-const fraunces = Fraunces({
-  variable: '--font-fraunces',
+// Tipografía de la marca «Somos Familia» (ver sus piezas en redes): Poppins en los títulos (la
+// letra del logo), Pinyon Script para la palabra destacada (como «en familia») y Figtree para
+// leer (geométrica como Poppins, pero más angosta y cómoda en párrafos).
+const poppins = Poppins({
+  variable: '--font-poppins',
   subsets: ['latin'],
-  // Variable: tamaño óptico, suavidad y letras «traviesas» (WONK) para la cursiva de los títulos.
-  axes: ['opsz', 'SOFT', 'WONK'],
-  style: ['normal', 'italic'],
+  weight: ['500', '600', '700', '800'],
+  display: 'swap',
+});
+
+const pinyon = Pinyon_Script({
+  variable: '--font-pinyon',
+  subsets: ['latin'],
+  weight: '400',
   display: 'swap',
 });
 
@@ -47,7 +55,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={`${fraunces.variable} ${figtree.variable}`}>
+    <html lang="es" className={`${poppins.variable} ${pinyon.variable} ${figtree.variable}`}>
       <body>
         <ToastProvider>{children}</ToastProvider>
       </body>

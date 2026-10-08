@@ -62,8 +62,13 @@
   --color-electric-soft: #cdd8f3;
   --color-night: #0a1a33;
 
-  /* Tipografía con carácter: Fraunces (títulos) + Figtree (texto). */
-  --font-display: var(--font-fraunces), 'Iowan Old Style', Georgia, serif;
+  /* Crema del logo oficial (versión clara de «Somos Familia»): el logo sobre fondos oscuros. */
+  --color-cream: #fdf1dc;
+
+  /* Tipografía de la marca «Somos Familia»: Poppins (títulos, la letra del logo), Pinyon Script
+     (la palabra destacada, como «en familia») y Figtree (texto para leer). */
+  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-pinyon), 'Snell Roundhand', 'Apple Chancery', cursive;
   --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
 
   /* Escala fluida: se redimensiona entre 360 y 1280 px, no solo se reacomoda.
@@ -112,18 +117,24 @@
   h2,
   h3 {
     font-family: var(--font-display);
-    font-optical-sizing: auto;
-    letter-spacing: -0.01em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
     text-wrap: balance;
   }
 
-  /* Énfasis de los títulos («Bienvenido a <em>casa</em>»): Fraunces cursiva, suave y con sus
-     letras «traviesas» (eje WONK), en terracota. Sobre fondos oscuros, on-dark la aclara. */
+  /* Énfasis de los títulos («Bienvenido a <em>casa</em>»): la letra manuscrita de la marca
+     (como «Domingo en familia»), más grande porque su cuerpo es chico, en naranja. Sobre fondos
+     oscuros, on-dark la pasa a durazno. */
   :is(h1, h2, h3, .font-headline) em {
-    font-style: italic;
-    font-variation-settings:
-      'SOFT' 100,
-      'WONK' 1;
+    font-family: var(--font-script);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 1.3em;
+    line-height: 0.8;
+    letter-spacing: 0;
+    /* Los trazos de la manuscrita salen de su caja y casi no tiene espacio a los lados: un
+       respiro para que no se pegue a la palabra anterior ni se corte al final. */
+    padding-inline: 0.07em 0.1em;
     color: var(--title-em, var(--color-accent-strong));
   }
 
@@ -221,10 +232,10 @@
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  font-family: var(--font-sans);
+  font-family: var(--font-display);
   font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
+  font-weight: 600;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   &::before {
     content: '';
@@ -236,12 +247,20 @@
   }
 }
 
-/* Titulares grandes de Fraunces: tamaño óptico alto, trazo suave y letras más juntas. */
+/* Titulares grandes: Poppins gruesa y con las letras juntas, como «Somos Familia». */
 @utility font-headline {
   font-family: var(--font-display);
-  font-weight: 420;
-  font-variation-settings: 'SOFT' 50;
-  letter-spacing: -0.035em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Letra manuscrita de la marca para frases cortas y adornos (fecha de un evento, la visión en la
+   franja, iniciales). Nunca para párrafos: a tamaño chico no se lee. */
+@utility font-script {
+  font-family: var(--font-script);
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 /* Superficies oscuras (barra lateral, pie, franjas petróleo): anillo de foco claro (≥ 9:1). */

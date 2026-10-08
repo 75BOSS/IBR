@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { buttonClasses } from '@/components/button-styles';
-import { EmphasizeLast } from '@/components/Emphasis';
+import { BrandLogo } from '@/components/BrandMark';
 import { Icon } from '@/components/Icon';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import type { SiteConfig } from '@/lib/config';
@@ -31,13 +31,14 @@ export function SiteFooter({
     <footer className="mt-auto bg-footer text-footer-ink on-dark">
       <div className="container-page flex flex-col gap-[clamp(2.5rem,6vw,4.5rem)] py-[clamp(3rem,8vw,6rem)]">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="flex max-w-3xl flex-col gap-4">
-            <p className="font-headline text-section text-footer-ink">
-              <EmphasizeLast text={config.nombre_iglesia ?? 'Iglesia Bíblica Riobamba'} />
+          <div className="flex max-w-3xl flex-col gap-5">
+            <p className="text-cream">
+              <BrandLogo className="h-[clamp(4rem,3rem+4vw,6.5rem)]" />
+              <span className="sr-only">{config.nombre_iglesia ?? 'Iglesia Bíblica Riobamba'}</span>
             </p>
             {config.vision && (
-              <p className="max-w-xl font-display text-h3 leading-snug text-footer-ink/85 italic">
-                «{config.vision}»
+              <p className="max-w-xl font-script text-[clamp(1.75rem,1.4rem+1.4vw,2.5rem)] leading-tight text-peach">
+                {config.vision}
               </p>
             )}
           </div>
@@ -158,7 +159,7 @@ export function SiteFooter({
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="font-display text-lg text-footer-ink/90 transition-colors hover:text-peach hover:italic"
+                      className="font-display text-lg text-footer-ink/90 transition-colors hover:text-peach"
                     >
                       {item.label}
                     </Link>

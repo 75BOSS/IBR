@@ -437,7 +437,10 @@ export default async function HomePage() {
               {sermon.meta && <p className="text-lead text-surface/80">{sermon.meta}</p>}
               {sermon.serie && (
                 <p className="text-surface/70">
-                  Serie <span className="font-display italic">«{sermon.serie}»</span>
+                  Serie{' '}
+                  <span className="font-script text-[1.6em] leading-none text-peach">
+                    {sermon.serie}
+                  </span>
                 </p>
               )}
               <div className="flex flex-wrap gap-3 pt-2">
@@ -495,7 +498,7 @@ export default async function HomePage() {
                     {p.foto_url ? (
                       <Image src={p.foto_url} alt="" fill sizes="136px" className="object-cover" />
                     ) : (
-                      <span className="grid size-full place-items-center font-display text-[clamp(2.5rem,2rem+2vw,3.5rem)] text-electric-strong italic">
+                      <span className="grid size-full place-items-center font-script text-[clamp(3rem,2.4rem+2.4vw,4.25rem)] text-electric-strong">
                         {p.nombre.replace(/^(Pastora?|Ps\.)\s+/i, '').charAt(0)}
                       </span>
                     )}

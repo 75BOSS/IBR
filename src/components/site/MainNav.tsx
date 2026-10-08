@@ -234,7 +234,7 @@ export function MainNav({
                         <span className="flex flex-col">
                           <span
                             className={`font-display text-[clamp(1.375rem,1.1rem+1.2vw,1.75rem)] leading-tight ${
-                              active ? 'text-accent-strong italic' : 'text-ink'
+                              active ? 'text-accent-strong' : 'text-ink'
                             }`}
                           >
                             {item.label}

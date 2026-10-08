@@ -27,7 +27,7 @@ Idioma del código: inglés en identificadores; español en UI, comentarios de d
    - Nada de blanco puro (`#fff`): fondos y superficies usan los tokens cálidos del tema.
    - Nada de tarjetas idénticas en cuadrícula: variar jerarquía (destacada + secundarias, tamaños, acentos).
    - Cabeceras de tabla y paneles con color diferenciado; **ningún encabezado de tabla en blanco**.
-   - Tipografía con carácter (títulos en serif `Fraunces`, texto en `Figtree`); prohibido usar Inter o Space Grotesk por defecto.
+   - Tipografía de la marca «Somos Familia»: títulos en `Poppins` (la letra del logo), la palabra destacada en `Pinyon Script` (como «Domingo en familia») y el texto en `Figtree`; prohibido usar Inter o Space Grotesk por defecto.
 
 ## Stack (fijo, no cambiar sin decisión explícita)
 
@@ -120,7 +120,7 @@ sql/
 - **Avisos externos** (correo, WhatsApp Cloud API): se llaman después de guardar, nunca hacen fallar el formulario y registran el motivo si no salen.
 - **Formularios públicos en ventana emergente**: la página muestra un `FormPanel` (título, por qué llenarlo) y dentro un `FormDialog` con el formulario (`PublicForm`) como hijo. El formulario queda montado al cerrar (no se pierde lo escrito ni el agradecimiento) y se abre también con un enlace a `#id` (ej. `/servir?area=x#quiero-servir`, `/agenda#suscribirme`). Filtros y el acceso de «Mi cuenta» siguen en la página.
 - **Botones con destino**: un enlace solo se muestra si a donde lleva tiene contenido. Leer `getSiteContent()` (`src/lib/site-content.ts`) y usar sus claves; en `PUBLIC_MENU` cada entrada lleva `needs`, y `visibleNav(content)` arma menú, pie, 404 y sitemap. Cada estado vacío ofrece un paso siguiente que sí existe (casi siempre `/contacto#mensaje`). `WhatsAppButton` sin número cae a «Escríbenos un mensaje» (`fallback={false}` para no mostrar nada).
-- **Sitio público (diseño)**: título de página con `PageHeader size="display"`; títulos de sección con `SectionHeading`; un `<em>` dentro de un título sale en cursiva terracota (textos de la config: `EmphasizeLast`). Etiquetas con la utilidad `eyebrow`, titulares con `font-headline`. Botones de llamada a la acción con `shape: 'pill'`. Tarjetas que entran al hacer scroll: clase `reveal` (solo CSS). Fotos con zoom al pasar el mouse: `motion-safe:group-hover:scale-105`. Toda animación respeta «reducir movimiento» (`motion-safe:`/`motion-reduce:`) y nada queda oculto sin JavaScript.
+- **Sitio público (diseño)**: título de página con `PageHeader size="display"`; títulos de sección con `SectionHeading`; un `<em>` dentro de un título sale en la manuscrita de la marca, en naranja (textos de la config: `EmphasizeLast`); para frases cortas y adornos, la utilidad `font-script` (nunca párrafos). Etiquetas con la utilidad `eyebrow`, titulares con `font-headline`. Logo: `BrandLogo` (sello + «Somos Familia») y `BrandMark` (solo el sello), en `src/components/BrandMark.tsx`; toman el color del texto (azul marino en claro, `text-cream` en oscuro). Botones de llamada a la acción con `shape: 'pill'`. Tarjetas que entran al hacer scroll: clase `reveal` (solo CSS). Fotos con zoom al pasar el mouse: `motion-safe:group-hover:scale-105`. Toda animación respeta «reducir movimiento» (`motion-safe:`/`motion-reduce:`) y nada queda oculto sin JavaScript.
 
 ## Reglas de código
 

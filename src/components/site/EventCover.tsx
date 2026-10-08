@@ -59,10 +59,10 @@ export function EventCover({
             aria-hidden="true"
             className="absolute -top-[18%] -right-[12%] size-[75%] rounded-full bg-surface/10 transition-transform duration-700 ease-(--ease-out-soft) motion-safe:group-hover:scale-110"
           />
-          <span className="font-display text-[clamp(3.5rem,2.6rem+3vw,5.5rem)] leading-[0.8] font-light">
+          <span className="font-display text-[clamp(3.5rem,2.6rem+3vw,5.5rem)] leading-[0.8] font-extrabold tracking-tighter">
             {date.day}
           </span>
-          <span className="mt-2 font-display text-h3 italic first-letter:uppercase">
+          <span className="mt-1 font-script text-[clamp(1.75rem,1.4rem+1.2vw,2.375rem)] leading-tight first-letter:uppercase">
             {date.weekday} · {date.month}
           </span>
         </div>

@@ -30,7 +30,7 @@ export default async function ContactoPage() {
         eyebrow="Contacto"
         title={
           <>
-            <em>Conversemos</em>
+            Queremos <em>escucharte</em>
           </>
         }
         intro="¿Tienes una pregunta, quieres visitarnos o necesitas hablar con un pastor? Escríbenos por donde prefieras."

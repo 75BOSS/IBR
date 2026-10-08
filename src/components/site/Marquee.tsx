@@ -18,7 +18,7 @@ export function Marquee({ text }: { text: string }) {
           <div key={copy} className="flex shrink-0 items-center">
             {items.map((i) => (
               <span key={i} className="flex items-center">
-                <span className="px-[clamp(1rem,3vw,2.5rem)] font-display text-[clamp(2rem,1.3rem+3.2vw,4.5rem)] leading-none whitespace-nowrap text-peach italic [font-variation-settings:'SOFT'_100,'WONK'_1]">
+                <span className="px-[clamp(1rem,3vw,2.5rem)] font-script text-[clamp(2.5rem,1.6rem+4vw,5.5rem)] leading-[1.15] whitespace-nowrap text-peach">
                   {text}
                 </span>
                 <Icon

@@ -53,8 +53,8 @@ function Person({ person, featured }: { person: EquipoRow; featured: boolean }) 
           />
         ) : (
           <span
-            className={`grid size-full place-items-center font-display text-electric-strong italic ${
-              featured ? 'text-[clamp(2.5rem,2rem+2vw,3.5rem)]' : 'text-2xl'
+            className={`grid size-full place-items-center font-script text-electric-strong ${
+              featured ? 'text-[clamp(3rem,2.4rem+2.4vw,4.25rem)]' : 'text-4xl'
             }`}
           >
             {initial(person.nombre)}
@@ -156,7 +156,9 @@ export default async function NosotrosPage() {
           {config.vision && (
             <div className="rounded-(--radius-frame) bg-brand-strong p-[clamp(1.25rem,3vw,2rem)] text-surface on-dark">
               <p className="eyebrow text-peach">Visión</p>
-              <p className="mt-3 font-display text-h2 leading-snug italic">«{config.vision}»</p>
+              <p className="mt-3 font-script text-[clamp(2rem,1.6rem+1.6vw,2.75rem)] leading-tight">
+                {config.vision}
+              </p>
             </div>
           )}
         </div>
@@ -223,7 +225,7 @@ export default async function NosotrosPage() {
               <li key={i} className="flex reveal gap-5 border-t border-line py-6">
                 <span
                   aria-hidden="true"
-                  className="font-display text-[clamp(2rem,1.5rem+2vw,3rem)] leading-none text-accent italic"
+                  className="w-[2.2ch] shrink-0 font-display text-[clamp(2rem,1.5rem+2vw,3rem)] leading-none font-extrabold tracking-tighter text-accent tabular-nums"
                 >
                   {String(i + 1).padStart(2, '0')}
                 </span>
