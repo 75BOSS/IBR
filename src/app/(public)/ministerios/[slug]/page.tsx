@@ -12,6 +12,7 @@ import { listGruposPublicos } from '@/lib/grupos';
 import { edadText, getMinisterioPublico, ministerioName } from '@/lib/ministerios';
 import { listReuniones } from '@/lib/reuniones';
 import { pageMetadata } from '@/lib/seo';
+import { getSiteContent } from '@/lib/site-content';
 import { paragraphs } from '@/lib/text';
 
 export const revalidate = 300;
@@ -34,7 +35,8 @@ export async function generateMetadata({ params }: Props) {
 export default async function MinisterioPage({ params }: Props) {
   const m = await getMinisterioPublico((await params).slug);
   if (!m) notFound();
-  const [reuniones, grupos, eventos] = await Promise.all([
+  const [content, reuniones, grupos, eventos] = await Promise.all([
+    getSiteContent(),
     listReuniones({ soloActivas: true, rangoId: m.id }),
     listGruposPublicos({ rango: m.id }),
     listUpcomingEventos(3, { rangoId: m.id }),
@@ -66,7 +68,7 @@ export default async function MinisterioPage({ params }: Props) {
             </p>
           ))}
           <div className="flex flex-wrap gap-3 pt-2">
-            <Link href="/soy-nuevo" className={buttonClasses({ variant: 'accent' })}>
+            <Link href="/soy-nuevo#mis-datos" className={buttonClasses({ variant: 'accent' })}>
               Quiero conectarme
             </Link>
             {grupos.length > 0 && (
@@ -110,10 +112,20 @@ export default async function MinisterioPage({ params }: Props) {
             </ul>
           ) : (
             <p className="text-ink-soft">
-              Escríbenos y te contamos cuándo se reúne este ministerio.{' '}
-              <Link href="/reuniones" className="font-semibold text-brand-strong underline">
-                Ver todos los horarios
-              </Link>
+              <Link href="/contacto#mensaje" className="font-semibold text-brand-strong underline">
+                Escríbenos
+              </Link>{' '}
+              y te contamos cuándo se reúne este ministerio.
+              {content.horarios && (
+                <>
+                  {' '}
+                  También puedes{' '}
+                  <Link href="/reuniones" className="font-semibold text-brand-strong underline">
+                    ver todos los horarios
+                  </Link>
+                  .
+                </>
+              )}
             </p>
           )}
         </Card>

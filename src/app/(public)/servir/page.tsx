@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Image from 'next/image';
 import { Card } from '@/components/Card';
 import { PageHeader } from '@/components/PageHeader';
@@ -102,8 +103,11 @@ export default async function ServirPage({
       ) : (
         <Card tone="sunken">
           <p className="text-ink-soft">
-            Estamos organizando las áreas de servicio. Déjanos tus datos igual desde Contacto y te
-            escribimos.
+            Estamos organizando las áreas de servicio.{' '}
+            <Link href="/contacto#mensaje" className="font-semibold text-brand-strong underline">
+              Escríbenos un mensaje
+            </Link>{' '}
+            contándonos qué te gustaría hacer y te avisamos.
           </p>
         </Card>
       )}

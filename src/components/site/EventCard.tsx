@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Icon } from '@/components/Icon';
 import { Tag } from '@/components/Tag';
 import { EventCover } from '@/components/site/EventCover';
+import { cupoStatus } from '@/lib/cupo';
 import { formatDateTime } from '@/lib/dates';
 import type { Evento } from '@/lib/eventos';
 import { TIME_ZONE } from '@/lib/site';
@@ -24,11 +25,23 @@ export function eventWhen(e: Pick<Evento, 'fecha_inicio' | 'todo_el_dia'>): stri
   );
 }
 
+/**
+ * Estado de la inscripción en palabras: «Con inscripción» solo mientras se puede inscribir;
+ * con el cupo lleno se avisa en vez de invitar a un formulario cerrado.
+ */
+function inscripcionTag(event: Evento): string | null {
+  if (!event.requiere_inscripcion) return null;
+  const status = cupoStatus(event);
+  if (status.abierto) return 'Con inscripción';
+  return status.disponibles === 0 ? 'Cupo lleno' : null;
+}
+
 function Meta({ event }: { event: Evento }) {
-  if (!event.ubicacion && !event.rango_edad && !event.requiere_inscripcion) return null;
+  const inscripcion = inscripcionTag(event);
+  if (!event.ubicacion && !event.rango_edad && !inscripcion) return null;
   return (
     <p className="flex flex-wrap gap-1.5 pt-1">
-      {event.requiere_inscripcion && <Tag tone="accent">Con inscripción</Tag>}
+      {inscripcion && <Tag tone="accent">{inscripcion}</Tag>}
       {event.ubicacion && (
         <Tag tone="brand">
           <Icon name="mapPin" className="size-3" /> {event.ubicacion}
@@ -113,7 +126,7 @@ export function EventCard({
         )}
         <Meta event={event} />
         <span className="mt-auto inline-flex items-center gap-2 pt-3 font-semibold text-brand-strong">
-          {event.requiere_inscripcion ? 'Ver e inscribirme' : 'Ver detalles'}
+          {cupoStatus(event).abierto ? 'Ver e inscribirme' : 'Ver detalles'}
           <Icon
             name="arrowRight"
             className="size-4 transition-transform motion-safe:group-hover:translate-x-1"

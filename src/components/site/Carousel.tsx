@@ -21,7 +21,9 @@ export function Carousel({
   itemClassName?: string;
 }) {
   const trackRef = useRef<HTMLUListElement>(null);
-  const [edges, setEdges] = useState({ start: true, end: false });
+  // Arranca «sin desborde» (sin flechas): sin JavaScript las flechas no servirían; al montar se
+  // mide y aparecen solo si las tarjetas no caben en el ancho.
+  const [edges, setEdges] = useState({ start: true, end: true });
 
   const update = useCallback(() => {
     const track = trackRef.current;
@@ -61,7 +63,7 @@ export function Carousel({
     <section aria-roledescription="carrusel" aria-label={label} className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         {heading}
-        {items.length > 1 && (
+        {!(edges.start && edges.end) && (
           <div className="flex gap-2">
             <button type="button" className={arrow} onClick={() => move(-1)} disabled={edges.start}>
               <Icon name="arrowLeft" />

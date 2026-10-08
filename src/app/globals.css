@@ -97,6 +97,9 @@
     background-color: var(--color-canvas);
     color: var(--color-ink);
     -webkit-text-size-adjust: 100%;
+    /* El encabezado del sitio es fijo (sticky, 4–4.5rem): al saltar a un `#ancla` el destino
+       queda debajo de él y no tapado. Una sola regla para todas las anclas. */
+    scroll-padding-top: 6rem;
   }
 
   body {

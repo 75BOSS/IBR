@@ -4,7 +4,10 @@ import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { EventCard } from '@/components/site/EventCard';
 import { listPastEventos, listUpcomingEventos } from '@/lib/eventos';
+import { getSiteConfig } from '@/lib/config';
+import { socialLinks } from '@/lib/nav';
 import { pageMetadata } from '@/lib/seo';
+import { getSiteContent } from '@/lib/site-content';
 import { CategoriaTabs } from './CategoriaTabs';
 
 export const metadata = pageMetadata({
@@ -17,7 +20,14 @@ export const metadata = pageMetadata({
 export const revalidate = 300;
 
 export default async function EventosPage() {
-  const [upcoming, past] = await Promise.all([listUpcomingEventos(30), listPastEventos(6)]);
+  const [upcoming, past, content, config] = await Promise.all([
+    listUpcomingEventos(30),
+    listPastEventos(6),
+    getSiteContent(),
+    getSiteConfig(),
+  ]);
+  // Sin horarios ni agenda por correo, las redes son donde se avisa lo próximo.
+  const [social] = content.horarios || content.agenda ? [] : socialLinks(config);
   const [first, ...rest] = upcoming;
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
@@ -31,12 +41,14 @@ export default async function EventosPage() {
         }
         intro="Lo que viene en la iglesia. ¡Trae a alguien contigo!"
         actions={
-          <Link
-            href="/agenda"
-            className="inline-flex items-center gap-1.5 font-semibold text-brand-strong underline decoration-accent decoration-2 underline-offset-4"
-          >
-            <Icon name="mail" className="size-4" /> Recibir la agenda por correo
-          </Link>
+          content.agenda && (
+            <Link
+              href="/agenda"
+              className="inline-flex items-center gap-1.5 font-semibold text-brand-strong underline decoration-accent decoration-2 underline-offset-4"
+            >
+              <Icon name="mail" className="size-4" /> Recibir la agenda por correo
+            </Link>
+          )
         }
       />
       <CategoriaTabs active={null} />
@@ -52,7 +64,45 @@ export default async function EventosPage() {
       ) : (
         <Card tone="sunken">
           <p className="text-ink-soft">
-            No hay eventos programados por ahora. Revisa las reuniones de cada semana.
+            No hay eventos programados por ahora.
+            {content.horarios && (
+              <>
+                {' '}
+                Mientras tanto, te esperamos en las{' '}
+                <Link href="/reuniones" className="font-semibold text-brand-strong underline">
+                  reuniones de cada semana
+                </Link>
+                .
+              </>
+            )}
+            {content.agenda && (
+              <>
+                {' '}
+                <Link
+                  href="/agenda#suscribirme"
+                  className="font-semibold text-brand-strong underline"
+                >
+                  Suscríbete a la agenda
+                </Link>{' '}
+                y te avisamos cuando haya algo nuevo.
+              </>
+            )}
+            {social && (
+              <>
+                {' '}
+                Para enterarte primero, síguenos en{' '}
+                <a
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-brand-strong underline"
+                >
+                  {social.label}
+                  <span className="sr-only"> (se abre en una pestaña nueva)</span>
+                </a>
+                .
+              </>
+            )}
           </p>
         </Card>
       )}

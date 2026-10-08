@@ -4,6 +4,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { FormDialog } from '@/components/site/FormDialog';
 import { FormPanel } from '@/components/site/FormPanel';
 import { pageMetadata } from '@/lib/seo';
+import { getSiteContent } from '@/lib/site-content';
 import { SuscripcionForm } from './SuscripcionForm';
 
 export const revalidate = 300;
@@ -21,7 +22,9 @@ const POINTS: { icon: IconName; text: string }[] = [
   { icon: 'mail', text: 'Un correo por semana, como máximo. Te das de baja con un clic.' },
 ];
 
-export default function AgendaPage() {
+export default async function AgendaPage() {
+  // Sin correo saliente la confirmación no llegaría: se avisa en vez de ofrecer el formulario.
+  const { agenda: canSend } = await getSiteContent();
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
       <PageHeader
@@ -54,22 +57,28 @@ export default function AgendaPage() {
               Recíbela <em>cada semana</em>
             </>
           }
-          text="Solo tu correo. Te llega un mensaje para confirmar y listo."
+          text={
+            canSend
+              ? 'Solo tu correo. Te llega un mensaje para confirmar y listo.'
+              : 'Muy pronto podrás suscribirte: estamos preparando el envío por correo.'
+          }
         >
-          <FormDialog
-            id="suscribirme"
-            eyebrow="Agenda semanal"
-            title={
-              <>
-                Lo que viene, <em>en tu correo</em>
-              </>
-            }
-            triggerLabel="Quiero recibirla"
-            triggerIcon="mail"
-            triggerVariant="primary"
-          >
-            <SuscripcionForm />
-          </FormDialog>
+          {canSend && (
+            <FormDialog
+              id="suscribirme"
+              eyebrow="Agenda semanal"
+              title={
+                <>
+                  Lo que viene, <em>en tu correo</em>
+                </>
+              }
+              triggerLabel="Quiero recibirla"
+              triggerIcon="mail"
+              triggerVariant="primary"
+            >
+              <SuscripcionForm />
+            </FormDialog>
+          )}
         </FormPanel>
       </div>
     </div>

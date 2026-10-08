@@ -7,6 +7,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { Tag } from '@/components/Tag';
 import { formatDateTime } from '@/lib/dates';
 import { getMemberOverview, getMemberPhone } from '@/lib/miembro';
+import { getSiteContent } from '@/lib/site-content';
 import { SOLICITUD_ESTADOS } from '@/lib/validators/grupos';
 import { VOLUNTARIO_ESTADOS } from '@/lib/validators/servir';
 import { formatPhoneEc } from '@/lib/whatsapp';
@@ -29,9 +30,12 @@ const INSCRIPCION = {
 };
 
 export default async function MiCuentaPage() {
-  const telefono = await getMemberPhone();
+  const [telefono, content] = await Promise.all([getMemberPhone(), getSiteContent()]);
 
   if (!telefono) {
+    // Sin la plantilla de WhatsApp no se puede enviar el código: se avisa en vez de mostrar un
+    // formulario que siempre fallaría (la página sigue abierta por enlaces viejos y marcadores).
+    const loginReady = content.cuenta;
     return (
       <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
         <PageHeader
@@ -44,9 +48,22 @@ export default async function MiCuentaPage() {
           }
           intro="Consulta tus inscripciones a eventos, los grupos a los que pediste unirte y dónde sirves. Sin contraseñas: te enviamos un código."
         />
-        <Card emphasis="featured" className="max-w-xl">
-          <MemberLogin />
-        </Card>
+        {loginReady ? (
+          <Card emphasis="featured" className="max-w-xl">
+            <MemberLogin />
+          </Card>
+        ) : (
+          <Card tone="sunken" className="max-w-xl">
+            <p className="text-ink-soft">
+              Muy pronto podrás entrar con tu WhatsApp. Si necesitas saber algo de tu inscripción o
+              de tu grupo,{' '}
+              <Link href="/contacto#mensaje" className="font-semibold text-brand-strong underline">
+                escríbenos un mensaje
+              </Link>
+              .
+            </p>
+          </Card>
+        )}
       </div>
     );
   }

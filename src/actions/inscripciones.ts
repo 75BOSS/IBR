@@ -110,7 +110,7 @@ export async function inscribirse(_prev: FormState, formData: FormData): Promise
         state: {
           status: 'error',
           message:
-            'Ya hay una inscripción con ese WhatsApp para este evento. Si necesitas cambiarla, usa el enlace que te enviamos o escríbenos.',
+            'Ya hay una inscripción con ese WhatsApp para este evento. Para cambiarla, abre la página de tu inscripción o escríbenos desde la página de Contacto.',
         },
       };
     }
@@ -132,27 +132,27 @@ export async function inscribirse(_prev: FormState, formData: FormData): Promise
 
   if (!outcome.ok) return { ...outcome.state, values };
   const { codigo, evento } = outcome;
-  if (d.email) {
-    await sendMail({
-      to: d.email,
-      subject: `Inscripción confirmada: ${evento.titulo}`,
-      text: [
-        `Hola ${d.nombre}, tu inscripción quedó confirmada.`,
-        '',
-        evento.titulo,
-        whenText(evento),
-        evento.ubicacion ? `Lugar: ${evento.ubicacion}` : null,
-        `Personas: ${d.personas}`,
-        '',
-        `Tu código: ${codigo}`,
-        `Para ver o cancelar tu inscripción: ${inscripcionUrl(codigo)}`,
-        '',
-        'Iglesia Bíblica Riobamba',
-      ]
-        .filter((l) => l !== null)
-        .join('\n'),
-    });
-  }
+  const mail = d.email
+    ? await sendMail({
+        to: d.email,
+        subject: `Inscripción confirmada: ${evento.titulo}`,
+        text: [
+          `Hola ${d.nombre}, tu inscripción quedó confirmada.`,
+          '',
+          evento.titulo,
+          whenText(evento),
+          evento.ubicacion ? `Lugar: ${evento.ubicacion}` : null,
+          `Personas: ${d.personas}`,
+          '',
+          `Tu código: ${codigo}`,
+          `Para ver o cancelar tu inscripción: ${inscripcionUrl(codigo)}`,
+          '',
+          'Iglesia Bíblica Riobamba',
+        ]
+          .filter((l) => l !== null)
+          .join('\n'),
+      })
+    : null;
   revalidatePath(`/eventos/${evento.slug}`);
   revalidatePath('/admin/eventos');
   return {
@@ -161,7 +161,16 @@ export async function inscribirse(_prev: FormState, formData: FormData): Promise
     secret: {
       label: 'Tu código de inscripción',
       value: codigo,
-      hint: `Guárdalo o toma captura: con él ves o cancelas tu inscripción en ${inscripcionUrl(codigo)}${d.email ? '. También te lo enviamos por correo.' : '.'}`,
+      // «Te lo enviamos por correo» solo si de verdad salió (el correo es opcional y el SMTP
+      // puede faltar o fallar).
+      hint: `Guárdalo o toma captura: con él ves o cancelas tu inscripción.${
+        mail?.sent
+          ? ' También te lo enviamos por correo.'
+          : mail
+            ? ' No pudimos enviarte el correo: guarda este código.'
+            : ''
+      }`,
+      link: { href: `/inscripcion/${codigo}`, label: 'Ver mi inscripción y mi QR' },
     },
   };
 }
@@ -177,7 +186,7 @@ export async function cancelarInscripcion(
   if (limit.blocked) {
     return {
       status: 'error',
-      message: `Demasiados intentos. Espera ${minutesText(limit.retryAfterMinutes)} o escríbenos por WhatsApp.`,
+      message: `Demasiados intentos. Espera ${minutesText(limit.retryAfterMinutes)} o escríbenos desde la página de Contacto.`,
     };
   }
   // Mismo orden de bloqueo que la inscripción y el panel (primero el evento, después la
@@ -201,7 +210,7 @@ export async function cancelarInscripcion(
     return {
       status: 'error',
       message:
-        'No se pudo cancelar: ya estaba cancelada o el evento ya empezó. Si necesitas ayuda, escríbenos.',
+        'No se pudo cancelar: ya estaba cancelada o el evento ya empezó. Si necesitas ayuda, escríbenos desde la página de Contacto.',
     };
   }
   revalidatePath(`/inscripcion/${codigo}`);

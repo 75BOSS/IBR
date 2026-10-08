@@ -10,6 +10,8 @@ import { getSiteConfig } from '@/lib/config';
 import { parseCreencias } from '@/lib/config-fields';
 import { type EquipoRow, listEquipoVisible } from '@/lib/equipo';
 import { pageMetadata } from '@/lib/seo';
+import { directionsUrl } from '@/lib/maps';
+import { getSiteContent } from '@/lib/site-content';
 import { getChurchStats } from '@/lib/stats';
 import { paragraphs } from '@/lib/text';
 
@@ -32,7 +34,8 @@ function Person({ person, featured }: { person: EquipoRow; featured: boolean }) 
       className={`flex reveal gap-4 rounded-(--radius-frame) bg-surface ring-1 ring-line/70 ${
         featured
           ? 'flex-col p-[clamp(1.25rem,3vw,2rem)] xs:flex-row xs:items-center'
-          : 'items-center p-3 pr-4'
+          : // En celular, dos por fila: la foto arriba para que el nombre y el rol no se aprieten.
+            'flex-col items-center p-3 text-center md:flex-row md:pr-4 md:text-left'
       }`}
     >
       <span
@@ -71,11 +74,13 @@ function Person({ person, featured }: { person: EquipoRow; featured: boolean }) 
 }
 
 export default async function NosotrosPage() {
-  const [config, team, stats] = await Promise.all([
+  const [config, team, stats, content] = await Promise.all([
     getSiteConfig(),
     listEquipoVisible(),
     getChurchStats(),
+    getSiteContent(),
   ]);
+  const directions = directionsUrl(config.maps_url, config.direccion);
   const historia = paragraphs(config.nosotros_historia);
   const creencias = parseCreencias(config.nosotros_creencias);
   const pastores = team.filter((p) => p.es_pastor);
@@ -86,7 +91,10 @@ export default async function NosotrosPage() {
   const figures = [
     { value: years, label: years === 1 ? 'año en Riobamba' : 'años en Riobamba' },
     { value: stats.grupos, label: stats.grupos === 1 ? 'grupo en casa' : 'grupos en casas' },
-    { value: stats.ministerios, label: 'ministerios por edad' },
+    {
+      value: stats.ministerios,
+      label: stats.ministerios === 1 ? 'ministerio por edad' : 'ministerios por edad',
+    },
     {
       value: stats.areas,
       label: stats.areas === 1 ? 'área de servicio' : 'áreas de servicio',
@@ -199,7 +207,7 @@ export default async function NosotrosPage() {
       {creencias.length > 0 && (
         <section
           aria-labelledby="creencias"
-          className="flex scroll-mt-28 flex-col gap-[clamp(1.5rem,4vw,2.5rem)]"
+          className="flex flex-col gap-[clamp(1.5rem,4vw,2.5rem)]"
         >
           <SectionHeading
             id="creencias"
@@ -230,10 +238,7 @@ export default async function NosotrosPage() {
       )}
 
       {team.length > 0 && (
-        <section
-          aria-labelledby="equipo"
-          className="flex scroll-mt-28 flex-col gap-[clamp(1.5rem,4vw,2.5rem)]"
-        >
+        <section aria-labelledby="equipo" className="flex flex-col gap-[clamp(1.5rem,4vw,2.5rem)]">
           <SectionHeading
             id="equipo"
             eyebrow="Equipo"
@@ -283,12 +288,26 @@ export default async function NosotrosPage() {
           >
             Es mi primera vez
           </Link>
-          <Link
-            href="/reuniones"
-            className={buttonClasses({ variant: 'inverseOutline', size: 'lg', shape: 'pill' })}
-          >
-            <Icon name="clock" className="size-5" /> Horarios
-          </Link>
+          {content.horarios ? (
+            <Link
+              href="/reuniones"
+              className={buttonClasses({ variant: 'inverseOutline', size: 'lg', shape: 'pill' })}
+            >
+              <Icon name="clock" className="size-5" /> Horarios
+            </Link>
+          ) : (
+            directions && (
+              <a
+                href={directions}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={buttonClasses({ variant: 'inverseOutline', size: 'lg', shape: 'pill' })}
+              >
+                <Icon name="mapPin" className="size-5" /> Cómo llegar
+                <span className="sr-only"> (abre Google Maps en una pestaña nueva)</span>
+              </a>
+            )
+          )}
         </div>
       </section>
     </div>

@@ -15,13 +15,17 @@ import { Marquee } from '@/components/site/Marquee';
 import { MinisterioCard, ministerioSpan } from '@/components/site/MinisterioCard';
 import { SectionHeading } from '@/components/site/SectionHeading';
 import { CONFIG_DEFAULTS, getSiteConfig } from '@/lib/config';
-import { DAY_NAMES, formatDateOnly, formatTime } from '@/lib/dates';
+import { DAY_NAMES, formatDateOnly, formatDateTime, formatTime } from '@/lib/dates';
 import { listPastores } from '@/lib/equipo';
 import { listUpcomingEventos } from '@/lib/eventos';
 import { listMinisterios } from '@/lib/ministerios';
 import { listPredicas } from '@/lib/predicas';
 import { listReuniones } from '@/lib/reuniones';
+import { directionsUrl } from '@/lib/maps';
+import { type SiteContent, socialLinks } from '@/lib/nav';
 import { pageMetadata } from '@/lib/seo';
+import { getSiteContent } from '@/lib/site-content';
+import { latestChannelVideos } from '@/lib/youtube-api';
 
 export const revalidate = 300;
 
@@ -39,20 +43,24 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /** Accesos rápidos: cada uno con su color; el primero ocupa el doble (bento, no grilla igual). */
-const ACCESSES: {
+type Access = {
   href: string;
   icon: IconName;
   title: string;
   text: string;
   tone: string;
-  span?: string;
-}[] = [
+  /** Solo se muestra si su destino tiene contenido. */
+  needs?: keyof SiteContent;
+};
+
+const ACCESSES: Access[] = [
   {
     href: '/reuniones',
     icon: 'clock',
     title: 'Horarios',
     text: 'Días, horas y cómo llegar.',
     tone: 'bg-brand-strong text-surface on-dark',
+    needs: 'horarios',
   },
   {
     href: '/grupos',
@@ -60,6 +68,7 @@ const ACCESSES: {
     title: 'Grupos',
     text: 'Un grupo en casa cerca de ti.',
     tone: 'bg-electric-soft text-ink',
+    needs: 'grupos',
   },
   {
     href: '/oracion',
@@ -74,12 +83,25 @@ const ACCESSES: {
     title: 'Prédicas',
     text: 'Los mensajes de cada domingo.',
     tone: 'bg-night text-surface on-dark',
+    needs: 'predicas',
   },
 ];
 
-function AccessTile({ access }: { access: (typeof ACCESSES)[number] }) {
+/**
+ * Lugar de cada acceso en la grilla (2 columnas en celular, 2×2 junto a «Soy nuevo» en
+ * escritorio): si faltan accesos porque su destino aún no tiene contenido, los que quedan se
+ * estiran y no quedan huecos.
+ */
+function accessSpan(index: number, total: number): string {
+  if (total === 1) return 'xs:col-span-2 lg:col-span-2 lg:row-span-2';
+  if (total === 2) return 'lg:col-span-2';
+  if (total === 3 && index === 2) return 'xs:col-span-2 lg:col-span-2';
+  return '';
+}
+
+function AccessTile({ access, className }: { access: Access; className: string }) {
   return (
-    <li className="reveal">
+    <li className={`reveal ${className}`}>
       <Link
         href={access.href}
         className={`group flex h-full min-h-[clamp(8.5rem,16vw,10.5rem)] flex-col justify-between gap-6 rounded-[1.75rem] p-[clamp(1.125rem,2.5vw,1.75rem)] transition duration-300 ease-(--ease-out-soft) hover:-translate-y-1 hover:shadow-lift motion-reduce:hover:translate-y-0 ${access.tone}`}
@@ -102,14 +124,48 @@ function AccessTile({ access }: { access: (typeof ACCESSES)[number] }) {
 }
 
 export default async function HomePage() {
-  const [config, reuniones, eventos, [predica], pastores, ministerios] = await Promise.all([
+  const [config, content, reuniones, eventos, predicas, pastores, ministerios] = await Promise.all([
     getSiteConfig(),
+    getSiteContent(),
     listReuniones({ soloActivas: true }),
     listUpcomingEventos(8),
-    listPredicas({ soloPublicadas: true, limit: 1 }),
+    listPredicas({ soloPublicadas: true, limit: 2 }),
     listPastores(),
-    listMinisterios({ soloActivos: true }),
+    listMinisterios({ soloActivos: true, conContenido: true }),
   ]);
+  // Última prédica: la del panel o, si aún no hay, el último culto del canal de YouTube.
+  const [predica] = predicas;
+  const [ultimoVideo] =
+    predica || !config.youtube_channel_id
+      ? []
+      : await latestChannelVideos(config.youtube_channel_id);
+  const sermon = predica
+    ? {
+        videoId: predica.youtube_id,
+        titulo: predica.titulo,
+        meta: [predica.predicador, predica.pasaje, formatDateOnly(predica.fecha)]
+          .filter(Boolean)
+          .join(' · '),
+        serie: predica.serie,
+      }
+    : ultimoVideo
+      ? {
+          videoId: ultimoVideo.videoId,
+          titulo: ultimoVideo.titulo,
+          meta: `Publicado el ${formatDateTime(new Date(ultimoVideo.publicado), { dateStyle: 'long' })}`,
+          serie: null,
+        }
+      : null;
+  // «Más prédicas» solo si hay más que la que ya se ve aquí (otra prédica o los videos del canal).
+  const morePredicas = predicas.length > 1 || (!predica && Boolean(ultimoVideo));
+  const accesses = ACCESSES.filter((a) => !a.needs || content[a.needs]);
+  const directions = directionsUrl(config.maps_url, config.direccion);
+  const channels: { href: string; label: string; icon: IconName }[] = [
+    ...(config.whatsapp_canal_url
+      ? [{ href: config.whatsapp_canal_url, label: 'Canal de WhatsApp', icon: 'whatsapp' as const }]
+      : []),
+    ...socialLinks(config),
+  ];
   // Hay reuniones a la misma hora para distintas edades: se muestra cada día y hora una vez.
   const horarios = [
     ...new Set(reuniones.map((r) => `${DAY_NAMES[r.dia_semana]} ${formatTime(r.hora_inicio)}`)),
@@ -188,17 +244,36 @@ export default async function HomePage() {
               >
                 Es mi primera vez
               </Link>
-              <Link
-                href="/reuniones"
-                className={buttonClasses({
-                  variant: 'inverseOutline',
-                  size: 'lg',
-                  shape: 'pill',
-                  className: 'backdrop-blur-sm',
-                })}
-              >
-                Cómo llegar
-              </Link>
+              {content.horarios ? (
+                <Link
+                  href="/reuniones"
+                  className={buttonClasses({
+                    variant: 'inverseOutline',
+                    size: 'lg',
+                    shape: 'pill',
+                    className: 'backdrop-blur-sm',
+                  })}
+                >
+                  Horarios y cómo llegar
+                </Link>
+              ) : (
+                directions && (
+                  <a
+                    href={directions}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={buttonClasses({
+                      variant: 'inverseOutline',
+                      size: 'lg',
+                      shape: 'pill',
+                      className: 'backdrop-blur-sm',
+                    })}
+                  >
+                    Cómo llegar
+                    <span className="sr-only"> (abre Google Maps en una pestaña nueva)</span>
+                  </a>
+                )
+              )}
             </div>
           </div>
         </div>
@@ -237,8 +312,12 @@ export default async function HomePage() {
                 </span>
               </Link>
             </li>
-            {ACCESSES.map((access) => (
-              <AccessTile key={access.href} access={access} />
+            {accesses.map((access, i) => (
+              <AccessTile
+                key={access.href}
+                access={access}
+                className={accessSpan(i, accesses.length)}
+              />
             ))}
           </ul>
         </nav>
@@ -262,23 +341,25 @@ export default async function HomePage() {
           </h2>
           <ul className="flex flex-wrap justify-center gap-x-8 gap-y-3 font-semibold text-brand-strong">
             {[
-              { href: '/nosotros', label: 'Conócenos' },
-              { href: '/nosotros#equipo', label: 'Nuestros pastores' },
-              { href: '/nosotros#creencias', label: 'En qué creemos' },
-            ].map((l) => (
-              <li key={l.href}>
-                <Link
-                  href={l.href}
-                  className="group inline-flex items-center gap-2 border-b-2 border-accent pb-1"
-                >
-                  {l.label}
-                  <Icon
-                    name="arrowRight"
-                    className="size-4 transition-transform motion-safe:group-hover:translate-x-1"
-                  />
-                </Link>
-              </li>
-            ))}
+              { href: '/nosotros', label: 'Conócenos', show: true },
+              { href: '/nosotros#equipo', label: 'Nuestros pastores', show: content.pastores },
+              { href: '/nosotros#creencias', label: 'En qué creemos', show: content.creencias },
+            ]
+              .filter((l) => l.show)
+              .map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    className="group inline-flex items-center gap-2 border-b-2 border-accent pb-1"
+                  >
+                    {l.label}
+                    <Icon
+                      name="arrowRight"
+                      className="size-4 transition-transform motion-safe:group-hover:translate-x-1"
+                    />
+                  </Link>
+                </li>
+              ))}
           </ul>
         </section>
 
@@ -308,8 +389,9 @@ export default async function HomePage() {
 
       {config.vision && <Marquee text={config.vision} />}
 
-      <div className="container-page flex flex-col gap-[clamp(3rem,7vw,5.5rem)] py-[clamp(2.5rem,7vw,5rem)]">
-        {ministerios.length > 0 && (
+      {/* Sin ministerios con contenido no queda una franja vacía entre la frase y la prédica. */}
+      {ministerios.length > 0 && (
+        <div className="container-page py-[clamp(2.5rem,7vw,5rem)]">
           <section
             aria-labelledby="ministerios"
             className="flex flex-col gap-[clamp(1.5rem,4vw,2.5rem)]"
@@ -338,37 +420,35 @@ export default async function HomePage() {
               ))}
             </ul>
           </section>
-        )}
-      </div>
+        </div>
+      )}
 
-      {predica && (
+      {sermon && (
         <section aria-labelledby="ultima-predica" className="bg-night text-surface on-dark">
           <div className="container-page grid items-center gap-[clamp(1.5rem,4vw,3.5rem)] py-[clamp(3rem,8vw,6rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
             <div className="reveal overflow-hidden rounded-(--radius-frame)">
-              <YouTubeEmbed videoId={predica.youtube_id} title={predica.titulo} />
+              <YouTubeEmbed videoId={sermon.videoId} title={sermon.titulo} />
             </div>
             <div className="flex flex-col gap-4">
-              <p className="eyebrow text-peach">Última prédica</p>
+              <p className="eyebrow text-peach">{predica ? 'Última prédica' : 'Último culto'}</p>
               <h2 id="ultima-predica" className="font-headline text-section">
-                {predica.titulo}
+                {sermon.titulo}
               </h2>
-              <p className="text-lead text-surface/80">
-                {[predica.predicador, predica.pasaje, formatDateOnly(predica.fecha)]
-                  .filter(Boolean)
-                  .join(' · ')}
-              </p>
-              {predica.serie && (
+              {sermon.meta && <p className="text-lead text-surface/80">{sermon.meta}</p>}
+              {sermon.serie && (
                 <p className="text-surface/70">
-                  Serie <span className="font-display italic">«{predica.serie}»</span>
+                  Serie <span className="font-display italic">«{sermon.serie}»</span>
                 </p>
               )}
               <div className="flex flex-wrap gap-3 pt-2">
-                <Link
-                  href="/predicas"
-                  className={buttonClasses({ variant: 'accent', shape: 'pill' })}
-                >
-                  Más prédicas
-                </Link>
+                {morePredicas && (
+                  <Link
+                    href="/predicas"
+                    className={buttonClasses({ variant: 'accent', shape: 'pill' })}
+                  >
+                    Más prédicas
+                  </Link>
+                )}
                 {config.youtube && (
                   <a
                     href={config.youtube}
@@ -469,77 +549,68 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
-          <div className="grid gap-3 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-            <div className="flex reveal flex-col justify-between gap-6 rounded-(--radius-frame) bg-accent-soft p-[clamp(1.5rem,4vw,2.5rem)] text-ink">
-              <div className="flex flex-col gap-2">
-                <Icon name="mailOpen" className="size-8 text-accent-strong" />
-                <h3 className="font-headline text-h2">
-                  La agenda de la semana, <em>en tu correo</em>
-                </h3>
-                <p className="max-w-md">
-                  Eventos y reuniones de los próximos 7 días. Un correo por semana; te das de baja
-                  con un clic.
-                </p>
-              </div>
-              <Link
-                href="/agenda#suscribirme"
-                className={buttonClasses({
-                  variant: 'primary',
-                  shape: 'pill',
-                  className: 'self-start',
-                })}
-              >
-                Suscribirme
-              </Link>
-            </div>
-            <div className="flex reveal flex-col justify-between gap-6 rounded-(--radius-frame) bg-electric p-[clamp(1.5rem,4vw,2.5rem)] text-surface on-dark">
-              <div className="flex flex-col gap-2">
-                <Icon name="message" className="size-8 text-peach" />
-                <h3 className="font-headline text-h2">
-                  Únete a nuestros <em>canales</em>
-                </h3>
-                <p className="text-surface/85">Avisos, versículos y transmisiones en vivo.</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {config.whatsapp_canal_url && (
-                  <a
-                    href={config.whatsapp_canal_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={buttonClasses({ variant: 'whatsapp', shape: 'pill' })}
-                  >
-                    <Icon name="whatsapp" className="size-5" /> Canal de WhatsApp
-                  </a>
-                )}
-                {config.youtube && (
-                  <a
-                    href={config.youtube}
-                    target="_blank"
-                    rel="noopener noreferrer"
+          {(content.agenda || channels.length > 0) && (
+            <div
+              className={`grid gap-3 ${
+                content.agenda && channels.length > 0
+                  ? 'md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]'
+                  : ''
+              }`}
+            >
+              {content.agenda && (
+                <div className="flex reveal flex-col justify-between gap-6 rounded-(--radius-frame) bg-accent-soft p-[clamp(1.5rem,4vw,2.5rem)] text-ink">
+                  <div className="flex flex-col gap-2">
+                    <Icon name="mailOpen" className="size-8 text-accent-strong" />
+                    <h3 className="font-headline text-h2">
+                      La agenda de la semana, <em>en tu correo</em>
+                    </h3>
+                    <p className="max-w-md">
+                      Eventos y reuniones de los próximos 7 días. Un correo por semana; te das de
+                      baja con un clic.
+                    </p>
+                  </div>
+                  <Link
+                    href="/agenda#suscribirme"
                     className={buttonClasses({
-                      variant: 'inverseOutline',
+                      variant: 'primary',
                       shape: 'pill',
+                      className: 'self-start',
                     })}
                   >
-                    <Icon name="youtube" className="size-5" /> YouTube
-                  </a>
-                )}
-                {config.instagram && (
-                  <a
-                    href={config.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={buttonClasses({
-                      variant: 'inverseOutline',
-                      shape: 'pill',
-                    })}
-                  >
-                    <Icon name="instagram" className="size-5" /> Instagram
-                  </a>
-                )}
-              </div>
+                    Suscribirme
+                  </Link>
+                </div>
+              )}
+              {channels.length > 0 && (
+                <div className="flex reveal flex-col justify-between gap-6 rounded-(--radius-frame) bg-electric p-[clamp(1.5rem,4vw,2.5rem)] text-surface on-dark">
+                  <div className="flex flex-col gap-2">
+                    <Icon name="message" className="size-8 text-peach" />
+                    <h3 className="font-headline text-h2">
+                      Únete a nuestros <em>canales</em>
+                    </h3>
+                    <p className="text-surface/85">Avisos, versículos y transmisiones en vivo.</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {channels.map((c) => (
+                      <a
+                        key={c.href}
+                        href={c.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={buttonClasses({
+                          variant: c.icon === 'whatsapp' ? 'whatsapp' : 'inverseOutline',
+                          shape: 'pill',
+                        })}
+                      >
+                        <Icon name={c.icon} className="size-5" /> {c.label}
+                        <span className="sr-only"> (se abre en una pestaña nueva)</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          )}
         </section>
 
         {/* Visítanos: dirección y horarios a la izquierda, mapa a la derecha. */}
@@ -583,9 +654,11 @@ export default async function HomePage() {
                 message="Hola, quiero conocer la iglesia."
                 label="Escríbenos por WhatsApp"
               />
-              <Link href="/reuniones" className={buttonClasses({ variant: 'secondary' })}>
-                Todos los horarios
-              </Link>
+              {content.horarios && (
+                <Link href="/reuniones" className={buttonClasses({ variant: 'secondary' })}>
+                  Todos los horarios
+                </Link>
+              )}
             </div>
           </div>
           <div className="reveal overflow-hidden rounded-(--radius-frame) ring-1 ring-line/70">

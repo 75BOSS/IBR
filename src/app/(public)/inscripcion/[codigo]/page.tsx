@@ -87,13 +87,15 @@ export default async function InscripcionPage({ params }: { params: Promise<{ co
             </p>
           </div>
         )}
-        <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-line/60 pt-4">
-          <Link
-            href={`/eventos/${insc.evento_slug}`}
-            className="inline-flex items-center gap-1.5 font-semibold text-brand-strong hover:underline"
-          >
-            Ver el evento <Icon name="arrowRight" className="size-4" />
-          </Link>
+        <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-line/60 pt-4 empty:hidden">
+          {insc.evento_publicado && (
+            <Link
+              href={`/eventos/${insc.evento_slug}`}
+              className="inline-flex items-center gap-1.5 font-semibold text-brand-strong hover:underline"
+            >
+              Ver el evento <Icon name="arrowRight" className="size-4" />
+            </Link>
+          )}
           {insc.estado === 'confirmada' && !started && (
             <ConfirmDialog
               action={cancelarInscripcion}

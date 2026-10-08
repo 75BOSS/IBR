@@ -27,6 +27,8 @@ export function listInscripciones(eventoId: number): Promise<Inscripcion[]> {
 export type InscripcionPublica = Inscripcion & {
   evento_titulo: string;
   evento_slug: string;
+  /** El evento puede despublicarse después: entonces no se enlaza (daría «no encontrado»). */
+  evento_publicado: boolean;
   fecha_inicio: Date;
   todo_el_dia: boolean;
   ubicacion: string | null;
@@ -35,7 +37,8 @@ export type InscripcionPublica = Inscripcion & {
 /** Para la página /inscripcion/[codigo]: la persona ve y puede cancelar la suya. */
 export function getInscripcionByCode(codigo: string): Promise<InscripcionPublica | null> {
   return queryOne<InscripcionPublica>(
-    `SELECT ${COLUMNS}, e.titulo AS evento_titulo, e.slug AS evento_slug, e.fecha_inicio, e.todo_el_dia,
+    `SELECT ${COLUMNS}, e.titulo AS evento_titulo, e.slug AS evento_slug,
+            e.publicado AS evento_publicado, e.fecha_inicio, e.todo_el_dia,
             u.nombre AS ubicacion
        FROM inscripciones i
        JOIN eventos e ON e.id = i.evento_id

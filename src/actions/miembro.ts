@@ -48,7 +48,7 @@ export async function solicitarCodigo(_prev: FormState, formData: FormData): Pro
     return {
       status: 'error',
       message:
-        'Todavía no podemos enviar códigos por WhatsApp. Mientras tanto, escríbenos y te ayudamos.',
+        'Todavía no podemos enviar códigos por WhatsApp. Mientras tanto, escríbenos desde la página de Contacto y te ayudamos.',
       values: { telefono: raw },
     };
   }

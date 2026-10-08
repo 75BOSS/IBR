@@ -13,7 +13,13 @@ export type FormState<Field extends string = string> = {
    * Dato que se muestra una sola vez y no se guarda en ningún lado visible (ej. una contraseña
    * generada). CrudForm y ConfirmDialog lo muestran con botón de copiar en vez de cerrar.
    */
-  secret?: { label: string; value: string; hint?: string };
+  secret?: {
+    label: string;
+    value: string;
+    hint?: string;
+    /** A dónde seguir con ese dato (ej. la página de la inscripción con su QR). */
+    link?: { href: string; label: string };
+  };
 };
 
 export const initialFormState: FormState = { status: 'idle' };

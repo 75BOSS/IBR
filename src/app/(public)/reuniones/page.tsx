@@ -9,6 +9,9 @@ import { getSiteConfig } from '@/lib/config';
 import { DAY_NAMES, formatTime } from '@/lib/dates';
 import { type Reunion, listReuniones } from '@/lib/reuniones';
 import { pageMetadata } from '@/lib/seo';
+import { getSiteContent } from '@/lib/site-content';
+import { whatsappHref } from '@/lib/whatsapp';
+import { youTubeLiveUrl } from '@/lib/youtube';
 
 export const revalidate = 300;
 
@@ -24,10 +27,12 @@ function timeRange(m: Reunion) {
 }
 
 export default async function ReunionesPublicPage() {
-  const [config, meetings] = await Promise.all([
+  const [config, content, meetings] = await Promise.all([
     getSiteConfig(),
+    getSiteContent(),
     listReuniones({ soloActivas: true }),
   ]);
+  const whatsapp = whatsappHref(config.whatsapp, 'Hola, quiero saber los horarios de la iglesia.');
   const main = meetings.find((m) => m.dia_semana === 7) ?? meetings[0];
   const byDay = new Map<number, Reunion[]>();
   for (const m of meetings) byDay.set(m.dia_semana, [...(byDay.get(m.dia_semana) ?? []), m]);
@@ -43,7 +48,11 @@ export default async function ReunionesPublicPage() {
             Reuniones y <em>horarios</em>
           </>
         }
-        intro="Ven tal como eres. Aquí están los días, las horas y cómo llegar."
+        intro={
+          meetings.length > 0
+            ? 'Ven tal como eres. Aquí están los días, las horas y cómo llegar.'
+            : 'Ven tal como eres. Aquí está cómo llegar; muy pronto publicaremos los horarios.'
+        }
       />
 
       <div className="grid gap-[clamp(1.25rem,3vw,2rem)] lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
@@ -80,8 +89,26 @@ export default async function ReunionesPublicPage() {
           <Card title="Durante la semana" as="section">
             {meetings.length === 0 ? (
               <p className="text-ink-soft">
-                Pronto publicaremos los horarios. Mientras tanto, escríbenos por WhatsApp y te
-                contamos.
+                Pronto publicaremos los horarios. Mientras tanto,{' '}
+                {whatsapp ? (
+                  <a
+                    href={whatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-brand-strong underline"
+                  >
+                    escríbenos por WhatsApp
+                    <span className="sr-only"> (se abre en una pestaña nueva)</span>
+                  </a>
+                ) : (
+                  <Link
+                    href="/contacto#mensaje"
+                    className="font-semibold text-brand-strong underline"
+                  >
+                    escríbenos un mensaje
+                  </Link>
+                )}{' '}
+                y te contamos.
               </p>
             ) : (
               <ol className="flex flex-col divide-y divide-line/60">
@@ -129,7 +156,10 @@ export default async function ReunionesPublicPage() {
                   )}
                 </address>
               ) : (
-                <p className="text-ink-soft">Pronto publicaremos la dirección del auditorio.</p>
+                // Con el enlace de Google Maps el mapa ya muestra dónde es; el aviso sobra.
+                !config.maps_url && (
+                  <p className="text-ink-soft">Pronto publicaremos la dirección del auditorio.</p>
+                )
               )}
               <MapEmbed
                 embedUrl={config.maps_embed_url}
@@ -151,13 +181,29 @@ export default async function ReunionesPublicPage() {
                 ¿No puedes venir? Transmitimos{' '}
                 {online.map((m) => m.nombre.toLowerCase()).join(', ')} por YouTube.
               </p>
-              <Link
-                href="/predicas"
-                className="mt-3 inline-flex items-center gap-1.5 font-semibold text-brand-strong underline decoration-accent decoration-2 underline-offset-4"
-              >
-                Ver prédicas y transmisión en vivo
-                <Icon name="arrowRight" className="size-4" />
-              </Link>
+              <p className="mt-3 flex flex-wrap gap-x-6 gap-y-2 empty:hidden">
+                {config.youtube && (
+                  <a
+                    href={youTubeLiveUrl(config.youtube)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 font-semibold text-brand-strong underline decoration-accent decoration-2 underline-offset-4"
+                  >
+                    <Icon name="youtube" className="size-5" />
+                    Ver la transmisión en YouTube
+                    <span className="sr-only"> (se abre en una pestaña nueva)</span>
+                  </a>
+                )}
+                {content.predicas && (
+                  <Link
+                    href="/predicas"
+                    className="inline-flex items-center gap-1.5 font-semibold text-brand-strong underline decoration-accent decoration-2 underline-offset-4"
+                  >
+                    Prédicas anteriores
+                    <Icon name="arrowRight" className="size-4" />
+                  </Link>
+                )}
+              </p>
             </Card>
           )}
         </div>

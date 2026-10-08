@@ -51,6 +51,14 @@ export async function suscribirse(_prev: FormState, formData: FormData): Promise
       values,
     };
   }
+  // Sin correo saliente no llegaría la confirmación: no se guarda una suscripción a medias.
+  if (!isMailConfigured()) {
+    return {
+      status: 'error',
+      message: 'Todavía no podemos enviar la agenda por correo. Vuelve pronto.',
+      values,
+    };
+  }
   const ok = `Te enviamos un correo a ${parsed.data.email}. Ábrelo y confirma tu suscripción.`;
   const guard = await guardPublicForm(formData, 'agenda', ok);
   if (!guard.ok)

@@ -11,6 +11,7 @@ import { DAY_OPTIONS } from '@/lib/dates';
 import { grupoFacets, listGruposPublicos } from '@/lib/grupos';
 import type { GrupoPublico } from '@/lib/grupos-public';
 import { pageMetadata } from '@/lib/seo';
+import { getSiteContent } from '@/lib/site-content';
 
 export const revalidate = 300;
 
@@ -37,13 +38,26 @@ export default async function GruposPage({ searchParams }: { searchParams: Promi
     rango: num(params.edad),
     tipo: text(params.tipo),
   };
-  const [groups, facets, rangos, config] = await Promise.all([
+  const [groups, facets, rangos, config, content] = await Promise.all([
     listGruposPublicos(filter),
     grupoFacets(),
     rangoOptions(),
     getSiteConfig(),
+    getSiteContent(),
   ]);
   const filtered = Object.values(filter).some((v) => v !== null);
+  // Cada filtro ofrece solo opciones con grupos y aparece si hay entre qué elegir (o si ya está
+  // en uso, para poder quitarlo). Sin grupos publicados no hay filtros.
+  const edadOptions = rangos.filter((o) => facets.rangos.includes(Number(o.value)));
+  const diaOptions = DAY_OPTIONS.filter((o) => facets.dias.includes(Number(o.value)));
+  const show = (options: unknown[], value: unknown) => options.length > 1 || value !== null;
+  const filters = {
+    edad: show(edadOptions, filter.rango),
+    zona: show(facets.zonas, filter.zona),
+    dia: show(diaOptions, filter.dia),
+    tipo: show(facets.tipos, filter.tipo),
+  };
+  const showFilters = content.grupos && Object.values(filters).some(Boolean);
   const sections = new Map<string, { color: string | null; items: GrupoPublico[] }>();
   for (const g of groups) {
     const key = g.rango_edad ?? 'Para todas las edades';
@@ -65,54 +79,68 @@ export default async function GruposPage({ searchParams }: { searchParams: Promi
         intro="La iglesia también se vive en casa. Busca un grupo cerca de ti y para tu edad, y únete."
       />
 
-      <form
-        method="get"
-        action="/grupos"
-        className="grid items-end gap-3 rounded-2xl bg-sunken/70 p-4 md:grid-cols-2 xl:grid-cols-[repeat(4,minmax(0,1fr))_auto]"
-      >
-        <Field
-          as="select"
-          label="Edad"
-          name="edad"
-          emptyOption="Todas"
-          options={rangos}
-          defaultValue={filter.rango ? String(filter.rango) : ''}
-        />
-        <Field
-          as="select"
-          label="Zona"
-          name="zona"
-          emptyOption="Todas"
-          options={facets.zonas.map((z) => ({ value: z, label: z }))}
-          defaultValue={filter.zona ?? ''}
-        />
-        <Field
-          as="select"
-          label="Día"
-          name="dia"
-          emptyOption="Cualquiera"
-          options={DAY_OPTIONS}
-          defaultValue={filter.dia ? String(filter.dia) : ''}
-        />
-        <Field
-          as="select"
-          label="Tipo"
-          name="tipo"
-          emptyOption="Todos"
-          options={facets.tipos.map((t) => ({ value: t, label: t }))}
-          defaultValue={filter.tipo ?? ''}
-        />
-        <div className="flex gap-2 md:col-span-2 xl:col-span-1">
-          <button type="submit" className={buttonClasses({ className: 'flex-1 xl:flex-none' })}>
-            Buscar
-          </button>
-          {filtered && (
-            <Link href="/grupos" className={buttonClasses({ variant: 'ghost' })}>
-              Limpiar
-            </Link>
+      {showFilters && (
+        <form
+          method="get"
+          action="/grupos"
+          className="flex flex-col gap-3 rounded-2xl bg-sunken/70 p-4 md:flex-row md:flex-wrap md:items-end"
+        >
+          {filters.edad && (
+            <Field
+              as="select"
+              label="Edad"
+              name="edad"
+              emptyOption="Todas"
+              options={edadOptions}
+              defaultValue={filter.rango ? String(filter.rango) : ''}
+              className="md:min-w-[12rem] md:flex-1"
+            />
           )}
-        </div>
-      </form>
+          {filters.zona && (
+            <Field
+              as="select"
+              label="Zona"
+              name="zona"
+              emptyOption="Todas"
+              options={facets.zonas.map((z) => ({ value: z, label: z }))}
+              defaultValue={filter.zona ?? ''}
+              className="md:min-w-[12rem] md:flex-1"
+            />
+          )}
+          {filters.dia && (
+            <Field
+              as="select"
+              label="Día"
+              name="dia"
+              emptyOption="Cualquiera"
+              options={diaOptions}
+              defaultValue={filter.dia ? String(filter.dia) : ''}
+              className="md:min-w-[12rem] md:flex-1"
+            />
+          )}
+          {filters.tipo && (
+            <Field
+              as="select"
+              label="Tipo"
+              name="tipo"
+              emptyOption="Todos"
+              options={facets.tipos.map((t) => ({ value: t, label: t }))}
+              defaultValue={filter.tipo ?? ''}
+              className="md:min-w-[12rem] md:flex-1"
+            />
+          )}
+          <div className="flex gap-2">
+            <button type="submit" className={buttonClasses({ className: 'flex-1 md:flex-none' })}>
+              Buscar
+            </button>
+            {filtered && (
+              <Link href="/grupos" className={buttonClasses({ variant: 'ghost' })}>
+                Limpiar
+              </Link>
+            )}
+          </div>
+        </form>
+      )}
 
       {groups.length === 0 ? (
         <Card tone="sunken">

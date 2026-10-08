@@ -64,8 +64,21 @@ export default async function ContactoPage() {
         </FormPanel>
         <div className="flex flex-col gap-4">
           <Card tone="brand" emphasis="featured" as="section">
-            <h2 className="font-display text-h3 font-medium">La forma más rápida</h2>
-            <p className="mt-1 text-surface/80">Te respondemos por WhatsApp lo antes posible.</p>
+            <h2 className="font-display text-h3 font-medium">
+              {config.whatsapp ? 'La forma más rápida' : 'Otras formas de escribirnos'}
+            </h2>
+            <p className="mt-1 text-surface/80 empty:hidden">
+              {config.whatsapp
+                ? 'Te respondemos por WhatsApp lo antes posible.'
+                : `También nos encuentras ${[
+                    config.telefono && 'por teléfono',
+                    config.email && 'por correo',
+                    socials.length > 0 && 'en redes sociales',
+                  ]
+                    .filter(Boolean)
+                    .join(', ')
+                    .replace(/, ([^,]*)$/, ' y $1')}.`}
+            </p>
             <ul className="mt-4 flex flex-col gap-3">
               {config.whatsapp && (
                 <li>
@@ -90,9 +103,14 @@ export default async function ContactoPage() {
                 <li>
                   <a
                     href={`mailto:${config.email}`}
-                    className="inline-flex items-center gap-2 font-semibold break-all hover:underline"
+                    className="inline-flex items-center gap-2 font-semibold hover:underline"
                   >
-                    <Icon name="mail" className="size-5 shrink-0" /> {config.email}
+                    <Icon name="mail" className="size-5 shrink-0" />
+                    {/* Si no cabe, se corta antes de la @ y no a mitad de palabra. */}
+                    <span className="min-w-0 [overflow-wrap:anywhere]">
+                      {config.email.split('@')[0]}
+                      <wbr />@{config.email.split('@').slice(1).join('@')}
+                    </span>
                   </a>
                 </li>
               )}

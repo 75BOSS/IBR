@@ -160,11 +160,29 @@ export default async function EventoPage({ params }: Props) {
           titleId="inscripcion-titulo"
           eyebrow="Inscripción"
           title={
-            <>
-              Reserva <em>tu lugar</em>
-            </>
+            cupo.abierto ? (
+              <>
+                Reserva <em>tu lugar</em>
+              </>
+            ) : (
+              <>
+                Inscripciones <em>cerradas</em>
+              </>
+            )
           }
-          text="Déjanos tus datos y recibirás un código para ver o cancelar tu inscripción."
+          text={
+            cupo.abierto ? (
+              'Déjanos tus datos y recibirás un código para ver o cancelar tu inscripción.'
+            ) : (
+              <>
+                {cupo.motivo}{' '}
+                <Link href="/contacto#mensaje" className="font-semibold underline">
+                  Escríbenos
+                </Link>{' '}
+                si tienes una pregunta.
+              </>
+            )
+          }
           aside={
             <CupoCounter
               key={`${cupo.inscritos}-${cupo.abierto}`}

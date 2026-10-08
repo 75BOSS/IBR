@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { inscribirse } from '@/actions/inscripciones';
 import { Field } from '@/components/Field';
 import { PublicForm } from '@/components/site/PublicForm';
@@ -17,13 +18,22 @@ export function InscripcionForm({
       action={inscribirse}
       submitLabel="Inscribirme"
       hidden={{ evento_id: String(eventoId) }}
-      thanks={<p>Te esperamos. Si al final no puedes ir, cancela para liberar tu lugar.</p>}
+      thanks={
+        <p>
+          Te esperamos. Si al final no puedes ir, cancélala desde «Ver mi inscripción» para liberar
+          tu lugar.
+        </p>
+      }
       closed={
         closedReason && (
           <div className="flex flex-col gap-1">
             <p className="font-semibold text-ink">{closedReason}</p>
             <p className="text-ink-soft">
-              Si tienes una pregunta, escríbenos desde la página de contacto.
+              ¿Tienes una pregunta?{' '}
+              <Link href="/contacto#mensaje" className="font-semibold text-brand-strong underline">
+                Escríbenos un mensaje
+              </Link>
+              .
             </p>
           </div>
         )
@@ -70,7 +80,7 @@ export function InscripcionForm({
             defaultValue={v('personas', 1)}
             error={e.personas}
             required
-            className="max-w-48"
+            className="max-w-xs"
           />
         </>
       )}

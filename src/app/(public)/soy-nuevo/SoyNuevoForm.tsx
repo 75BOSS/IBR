@@ -1,21 +1,42 @@
 'use client';
 
+import Link from 'next/link';
 import { registerNewcomer } from '@/actions/registros';
 import { Field } from '@/components/Field';
 import { PublicForm } from '@/components/site/PublicForm';
 import type { Option } from '@/lib/catalogs';
 import { COMO_LLEGO, SITUACIONES } from '@/lib/validators/registros';
 
-export function SoyNuevoForm({ rangos }: { rangos: Option[] }) {
+export function SoyNuevoForm({
+  rangos,
+  nextSteps,
+}: {
+  rangos: Option[];
+  /** Qué hacer mientras tanto (solo destinos con contenido: horarios, grupos). */
+  nextSteps: { href: string; label: string }[];
+}) {
   return (
     <PublicForm
       action={registerNewcomer}
       submitLabel="Enviar mis datos"
       thanks={
-        <p>
-          Te escribiremos por WhatsApp. Si quieres, mira los horarios de reunión o busca un grupo
-          cerca de tu casa.
-        </p>
+        <>
+          <p>Te escribiremos por WhatsApp.</p>
+          {nextSteps.length > 0 && (
+            <p className="mt-2 flex flex-wrap gap-x-5 gap-y-2">
+              <span>Mientras tanto:</span>
+              {nextSteps.map((step) => (
+                <Link
+                  key={step.href}
+                  href={step.href}
+                  className="font-semibold text-brand-strong underline"
+                >
+                  {step.label}
+                </Link>
+              ))}
+            </p>
+          )}
+        </>
       }
     >
       {({ v, e }) => (

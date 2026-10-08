@@ -5,8 +5,11 @@ import { PageHeader } from '@/components/PageHeader';
 import { FormDialog } from '@/components/site/FormDialog';
 import { FormPanel } from '@/components/site/FormPanel';
 import { rangoOptions } from '@/lib/catalogs';
+import { getSiteConfig } from '@/lib/config';
+import { directionsUrl } from '@/lib/maps';
 import { listMinisterios } from '@/lib/ministerios';
 import { pageMetadata } from '@/lib/seo';
+import { getSiteContent } from '@/lib/site-content';
 import { SoyNuevoForm } from './SoyNuevoForm';
 
 export const revalidate = 300;
@@ -37,10 +40,19 @@ const EXPECT: { icon: IconName; title: string; text: string }[] = [
 ];
 
 export default async function SoyNuevoPage() {
-  const [rangos, ministerios] = await Promise.all([
+  const [rangos, ministerios, content, config] = await Promise.all([
     rangoOptions(),
-    listMinisterios({ soloActivos: true }),
+    listMinisterios({ soloActivos: true, conContenido: true }),
+    getSiteContent(),
+    getSiteConfig(),
   ]);
+  const directions = directionsUrl(config.maps_url, config.direccion);
+  const nextSteps = [
+    ...(content.horarios ? [{ href: '/reuniones', label: 'Ver los horarios' }] : []),
+    ...(content.grupos ? [{ href: '/grupos', label: 'Buscar un grupo cerca' }] : []),
+  ];
+  const linkClass =
+    'mt-6 inline-flex items-center gap-1.5 font-semibold underline decoration-accent-soft underline-offset-4';
   return (
     <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)]">
       <PageHeader
@@ -66,12 +78,18 @@ export default async function SoyNuevoPage() {
             «Nadie tiene mayor amor que este, que uno ponga su vida por sus amigos.»
           </p>
           <p className="mt-3 text-surface/80">Juan 15:13</p>
-          <Link
-            href="/reuniones"
-            className="mt-6 inline-flex items-center gap-1.5 font-semibold underline decoration-accent-soft underline-offset-4"
-          >
-            Ver horarios y cómo llegar <Icon name="arrowRight" className="size-4" />
-          </Link>
+          {content.horarios ? (
+            <Link href="/reuniones" className={linkClass}>
+              Ver horarios y cómo llegar <Icon name="arrowRight" className="size-4" />
+            </Link>
+          ) : (
+            directions && (
+              <a href={directions} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                Cómo llegar <Icon name="external" className="size-4" />
+                <span className="sr-only"> (abre Google Maps en una pestaña nueva)</span>
+              </a>
+            )
+          )}
         </Card>
         <ul className="flex flex-col gap-3">
           {EXPECT.map((item) => (
@@ -96,7 +114,9 @@ export default async function SoyNuevoPage() {
           <h2 id="ministerios" className="font-headline text-h1 text-ink">
             Un lugar para cada edad
           </h2>
-          <ul className="grid gap-3 xs:grid-cols-2 lg:grid-cols-5">
+          {/* Las columnas se ajustan a cuántos ministerios hay (sin huecos a la derecha); en
+              dos columnas, si queda uno solo al final, ocupa la fila. */}
+          <ul className="grid gap-3 xs:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(11rem,1fr))] xs:[&>li:last-child:nth-child(odd)]:col-span-2 lg:[&>li:last-child:nth-child(odd)]:col-span-1">
             {ministerios.map((m) => (
               <li key={m.id}>
                 <Link
@@ -145,7 +165,7 @@ export default async function SoyNuevoPage() {
           triggerLabel="Dejar mis datos"
           triggerVariant="primary"
         >
-          <SoyNuevoForm rangos={rangos} />
+          <SoyNuevoForm rangos={rangos} nextSteps={nextSteps} />
         </FormDialog>
       </FormPanel>
     </div>

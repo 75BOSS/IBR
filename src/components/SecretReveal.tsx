@@ -1,6 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { buttonClasses } from '@/components/button-styles';
 import { CopyButton } from '@/components/CopyButton';
 import { Icon } from '@/components/Icon';
 import type { FormState } from '@/lib/form-state';
@@ -36,6 +38,14 @@ export function SecretReveal({
         </div>
         {secret.hint && <p className="text-sm text-ink-soft">{secret.hint}</p>}
       </div>
+      {secret.link && (
+        <Link
+          href={secret.link.href}
+          className={buttonClasses({ variant: 'primary', className: 'self-start' })}
+        >
+          {secret.link.label}
+        </Link>
+      )}
       {children}
     </div>
   );

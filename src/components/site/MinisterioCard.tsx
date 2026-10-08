@@ -92,11 +92,24 @@ export function MinisterioCard({
 
 /**
  * Lugar de cada ministerio en la grilla (2 columnas en celular, 6 en escritorio): los dos
- * primeros grandes; si al final sobra uno solo, ocupa el ancho de la fila en celular y tablet.
+ * primeros grandes y el resto más chicos. La última fila siempre llena el ancho, tengan contenido
+ * 3, 4 o 7 ministerios (antes, con 4 quedaba un hueco a la derecha en escritorio).
  */
 export function ministerioSpan(index: number, total: number): string {
   if (index < 2) return 'col-span-2 md:col-span-1 lg:col-span-3';
-  const oddRest = (total - 2) % 2 === 1;
-  if (oddRest && index === total - 1) return 'col-span-2 lg:col-span-2';
-  return 'col-span-1 lg:col-span-2';
+  const rest = total - 2;
+  const pos = index - 2;
+  // Celular y tablet: de a dos; si quedan impares, el último ocupa la fila entera.
+  const small = rest % 2 === 1 && pos === rest - 1 ? 'col-span-2' : 'col-span-1';
+  // Escritorio: de a tres; la última fila se reparte el ancho entre los que quedan, sin huecos.
+  const lastRowCount = rest % 3 || 3;
+  const large =
+    pos < rest - lastRowCount
+      ? 'lg:col-span-2'
+      : lastRowCount === 1
+        ? 'lg:col-span-6'
+        : lastRowCount === 2
+          ? 'lg:col-span-3'
+          : 'lg:col-span-2';
+  return `${small} ${large}`;
 }

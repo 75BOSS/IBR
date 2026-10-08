@@ -90,8 +90,17 @@ export function getGrupoPublico(id: number): Promise<GrupoPublico | null> {
 }
 
 /** Valores existentes para los filtros públicos. */
-export async function grupoFacets(): Promise<{ zonas: string[]; tipos: string[] }> {
-  const [zonas, tipos] = await Promise.all([
+/**
+ * Opciones de los filtros del directorio: solo zonas, tipos, edades y días que tienen algún
+ * grupo público (un filtro que siempre da «sin resultados» no ayuda a nadie).
+ */
+export async function grupoFacets(): Promise<{
+  zonas: string[];
+  tipos: string[];
+  rangos: number[];
+  dias: number[];
+}> {
+  const [zonas, tipos, rangos, dias] = await Promise.all([
     query<{ v: string }>(
       `SELECT DISTINCT u.zona AS v FROM grupos g JOIN ubicaciones u ON u.id = g.ubicacion_id
         WHERE g.publico = 1 AND g.activo = 1 AND u.zona IS NOT NULL ORDER BY u.zona`,
@@ -99,8 +108,19 @@ export async function grupoFacets(): Promise<{ zonas: string[]; tipos: string[] 
     query<{ v: string }>(
       'SELECT DISTINCT tipo AS v FROM grupos WHERE publico = 1 AND activo = 1 AND tipo IS NOT NULL ORDER BY tipo',
     ),
+    query<{ v: number }>(
+      'SELECT DISTINCT rango_edad_id AS v FROM grupos WHERE publico = 1 AND activo = 1 AND rango_edad_id IS NOT NULL',
+    ),
+    query<{ v: number }>(
+      'SELECT DISTINCT dia_semana AS v FROM grupos WHERE publico = 1 AND activo = 1 AND dia_semana IS NOT NULL',
+    ),
   ]);
-  return { zonas: zonas.map((r) => r.v), tipos: tipos.map((r) => r.v) };
+  return {
+    zonas: zonas.map((r) => r.v),
+    tipos: tipos.map((r) => r.v),
+    rangos: rangos.map((r) => r.v),
+    dias: dias.map((r) => r.v),
+  };
 }
 
 export const FRECUENCIAS = [
