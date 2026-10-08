@@ -72,6 +72,14 @@ export function listPastEventos(limit: number): Promise<Evento[]> {
   );
 }
 
+/** Categorías con al menos una publicación (pestañas de /eventos y sitemap). */
+export async function listCategoriasPublicadas(): Promise<string[]> {
+  const rows = await query<{ categoria: string }>(
+    'SELECT DISTINCT categoria FROM eventos WHERE publicado = 1',
+  );
+  return rows.map((r) => r.categoria);
+}
+
 /** Publicados de una categoría, del más reciente al más antiguo (noticias, oración…). */
 export function listEventosByCategoria(categoria: string, limit: number): Promise<Evento[]> {
   return query<Evento>(

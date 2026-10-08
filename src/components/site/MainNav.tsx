@@ -6,20 +6,36 @@ import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { buttonClasses } from '@/components/button-styles';
 import { Icon } from '@/components/Icon';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
-import { MENU_LINKS, PUBLIC_MENU, isActivePath } from '@/lib/nav';
+import { type PublicNavGroup, type PublicNavItem, isActivePath } from '@/lib/nav';
 
 /**
  * Navegación principal. En escritorio: un desplegable por grupo (Conócenos, Conéctate,
  * Recursos) que se abre con clic, teclado o al pasar el mouse. En celular y tablet: menú a
  * pantalla completa con los mismos grupos. Recibe el logo para cerrar el menú también cuando se
- * toca (aunque se quede en la misma ruta).
+ * toca (aunque se quede en la misma ruta), y los enlaces ya filtrados por contenido
+ * (`visibleNav`): nada lleva a una página vacía.
  */
-export function MainNav({ whatsapp, logo }: { whatsapp: string | null; logo: ReactNode }) {
+export function MainNav({
+  whatsapp,
+  logo,
+  menu,
+  links,
+  showAccount,
+}: {
+  whatsapp: string | null;
+  logo: ReactNode;
+  menu: PublicNavGroup[];
+  links: PublicNavItem[];
+  /** «Mi cuenta» solo si se puede entrar (código por WhatsApp configurado). */
+  showAccount: boolean;
+}) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [seenPath, setSeenPath] = useState(pathname);
   const navRef = useRef<HTMLElement>(null);
+  // Con mouse, el desplegable ya se abrió al pasar por encima: el clic no debe cerrarlo.
+  const lastPointer = useRef<string | null>(null);
   // Ajuste de estado durante el render (patrón de React): cambiar de ruta cierra los menús, y
   // volver atrás a la ruta donde se abrieron no los reabre.
   if (seenPath !== pathname) {
@@ -60,10 +76,10 @@ export function MainNav({ whatsapp, logo }: { whatsapp: string | null; logo: Rea
 
       <nav ref={navRef} aria-label="Principal" className="hidden lg:block">
         <ul className="flex items-center gap-1">
-          {PUBLIC_MENU.map((group) => {
+          {menu.map((group, index) => {
             const open = openGroup === group.title;
             const active = group.items.some((item) => isActivePath(pathname, item.href));
-            const panelId = `menu-${group.title.toLowerCase()}`;
+            const panelId = `menu-grupo-${index}`;
             return (
               <li
                 key={group.title}
@@ -75,7 +91,15 @@ export function MainNav({ whatsapp, logo }: { whatsapp: string | null; logo: Rea
                   type="button"
                   aria-expanded={open}
                   aria-controls={panelId}
-                  onClick={() => setOpenGroup(open ? null : group.title)}
+                  onPointerDown={(e) => {
+                    lastPointer.current = e.pointerType;
+                  }}
+                  onClick={() => {
+                    // Mouse: solo abre (cerrar lo hace salir con el mouse). Teclado o táctil: alterna.
+                    const mouse = lastPointer.current === 'mouse';
+                    lastPointer.current = null;
+                    setOpenGroup(mouse || !open ? group.title : null);
+                  }}
                   className={`group inline-flex min-h-11 items-center gap-1 rounded-full px-4 font-semibold transition-colors hover:bg-sunken ${
                     active ? 'text-brand-strong' : 'text-ink'
                   }`}
@@ -128,7 +152,7 @@ export function MainNav({ whatsapp, logo }: { whatsapp: string | null; logo: Rea
               </li>
             );
           })}
-          {MENU_LINKS.map((item) => {
+          {links.map((item) => {
             const active = isActivePath(pathname, item.href);
             return (
               <li key={item.href}>
@@ -149,14 +173,16 @@ export function MainNav({ whatsapp, logo }: { whatsapp: string | null; logo: Rea
         </ul>
       </nav>
 
-      <Link
-        href="/mi-cuenta"
-        className="hidden size-11 place-items-center rounded-full text-ink-soft transition-colors hover:bg-sunken hover:text-brand-strong lg:grid"
-        aria-current={isActivePath(pathname, '/mi-cuenta') ? 'page' : undefined}
-      >
-        <Icon name="user" className="size-5" />
-        <span className="sr-only">Mi cuenta</span>
-      </Link>
+      {showAccount && (
+        <Link
+          href="/mi-cuenta"
+          className="hidden size-11 place-items-center rounded-full text-ink-soft transition-colors hover:bg-sunken hover:text-brand-strong lg:grid"
+          aria-current={isActivePath(pathname, '/mi-cuenta') ? 'page' : undefined}
+        >
+          <Icon name="user" className="size-5" />
+          <span className="sr-only">Mi cuenta</span>
+        </Link>
+      )}
 
       <Link
         href="/soy-nuevo"
@@ -191,7 +217,7 @@ export function MainNav({ whatsapp, logo }: { whatsapp: string | null; logo: Rea
         className="absolute inset-x-0 top-full h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain bg-canvas md:h-[calc(100dvh-4.5rem)] lg:hidden"
       >
         <nav aria-label="Principal (menú)" className="container-page flex flex-col gap-8 py-6">
-          {PUBLIC_MENU.map((group) => (
+          {menu.map((group) => (
             <div key={group.title} className="flex flex-col gap-2">
               <p className="eyebrow text-accent-strong">{group.title}</p>
               <ul className="grid gap-x-6 md:grid-cols-2">
@@ -223,8 +249,8 @@ export function MainNav({ whatsapp, logo }: { whatsapp: string | null; logo: Rea
               </ul>
             </div>
           ))}
-          <div className="grid gap-3 xs:grid-cols-2">
-            {MENU_LINKS.map((item) => (
+          <div className="grid gap-3 empty:hidden xs:grid-cols-2">
+            {links.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -234,18 +260,21 @@ export function MainNav({ whatsapp, logo }: { whatsapp: string | null; logo: Rea
                 {item.label}
               </Link>
             ))}
-            <Link
-              href="/mi-cuenta"
-              onClick={closeAll}
-              className={buttonClasses({ variant: 'secondary', size: 'lg' })}
-            >
-              <Icon name="user" className="size-5" /> Mi cuenta
-            </Link>
+            {showAccount && (
+              <Link
+                href="/mi-cuenta"
+                onClick={closeAll}
+                className={buttonClasses({ variant: 'secondary', size: 'lg' })}
+              >
+                <Icon name="user" className="size-5" /> Mi cuenta
+              </Link>
+            )}
           </div>
           <WhatsAppButton
             number={whatsapp}
             message="Hola, les escribo desde la página web."
             className="w-full"
+            fallback={false}
           />
         </nav>
       </div>

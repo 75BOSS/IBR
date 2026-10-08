@@ -2,11 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { buttonClasses } from '@/components/button-styles';
 import { PageHeader } from '@/components/PageHeader';
-import { PUBLIC_MENU } from '@/lib/nav';
+import { visibleNav } from '@/lib/nav';
+import { getSiteContent } from '@/lib/site-content';
 
 export const metadata: Metadata = { title: 'Página no encontrada' };
 
-export default function PublicNotFound() {
+export default async function PublicNotFound() {
+  // Solo se recomiendan páginas que tienen algo que ver.
+  const { menu } = visibleNav(await getSiteContent());
   return (
     <section className="container-page flex flex-col gap-[clamp(2rem,5vw,3.5rem)] py-[clamp(3rem,10vw,6rem)]">
       <PageHeader
@@ -25,7 +28,7 @@ export default function PublicNotFound() {
         }
       />
       <nav aria-label="Páginas del sitio" className="grid gap-8 md:grid-cols-3">
-        {PUBLIC_MENU.map((group) => (
+        {menu.map((group) => (
           <div key={group.title} className="flex flex-col gap-3">
             <h2 className="eyebrow text-accent-strong">{group.title}</h2>
             <ul className="flex flex-col divide-y divide-line/70 border-y border-line/70">

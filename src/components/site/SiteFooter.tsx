@@ -4,16 +4,27 @@ import { EmphasizeLast } from '@/components/Emphasis';
 import { Icon } from '@/components/Icon';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import type { SiteConfig } from '@/lib/config';
-import { LEGAL_NAV, MENU_LINKS, PUBLIC_MENU, socialLinks } from '@/lib/nav';
+import { directionsUrl } from '@/lib/maps';
+import { type visibleNav, socialLinks } from '@/lib/nav';
 import { formatPhoneEc } from '@/lib/whatsapp';
 
 function FooterHeading({ children }: { children: React.ReactNode }) {
   return <h2 className="eyebrow text-footer-muted">{children}</h2>;
 }
 
-/** Pie del sitio: nombre grande con la visión, los grupos del menú, visítanos y contacto. */
-export function SiteFooter({ config }: { config: SiteConfig }) {
+/**
+ * Pie del sitio: nombre grande con la visión, los grupos del menú (ya filtrados por contenido,
+ * `visibleNav`), visítanos y contacto.
+ */
+export function SiteFooter({
+  config,
+  nav,
+}: {
+  config: SiteConfig;
+  nav: ReturnType<typeof visibleNav>;
+}) {
   const socials = socialLinks(config);
+  const directions = directionsUrl(config.maps_url, config.direccion);
   const year = new Date().getFullYear();
 
   return (
@@ -41,7 +52,7 @@ export function SiteFooter({ config }: { config: SiteConfig }) {
             >
               Es mi primera vez
             </Link>
-            {MENU_LINKS.map((item) => (
+            {nav.links.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -73,7 +84,20 @@ export function SiteFooter({ config }: { config: SiteConfig }) {
                 </span>
               </address>
             ) : (
-              <p className="text-footer-muted">Pronto publicaremos la dirección del auditorio.</p>
+              !directions && (
+                <p className="text-footer-muted">Pronto publicaremos la dirección del auditorio.</p>
+              )
+            )}
+            {directions && (
+              <a
+                href={directions}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 self-start font-semibold underline decoration-peach decoration-2 underline-offset-4 hover:decoration-footer-ink"
+              >
+                <Icon name="mapPin" className="size-5" /> Cómo llegar
+                <span className="sr-only"> (abre Google Maps en una pestaña nueva)</span>
+              </a>
             )}
             <ul className="flex flex-col gap-2">
               {config.telefono && (
@@ -99,30 +123,34 @@ export function SiteFooter({ config }: { config: SiteConfig }) {
                 </li>
               )}
             </ul>
-            <div className="flex flex-wrap items-center gap-2">
-              {config.whatsapp && (
-                <WhatsAppButton
-                  number={config.whatsapp}
-                  label="WhatsApp"
-                  message="Hola, les escribo desde la página web."
-                />
+            {/* WhatsApp en su línea y las redes juntas debajo: así ningún ícono queda solo. */}
+            <div className="flex flex-col items-start gap-3 empty:hidden">
+              <WhatsAppButton
+                number={config.whatsapp}
+                label="WhatsApp"
+                message="Hola, les escribo desde la página web."
+                fallback={false}
+              />
+              {socials.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {socials.map((s) => (
+                    <a
+                      key={s.label}
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="grid size-11 place-items-center rounded-full ring-1 ring-footer-ink/25 transition-colors hover:bg-footer-ink/10"
+                    >
+                      <Icon name={s.icon} className="size-5" />
+                      <span className="sr-only">{s.label} (se abre en una pestaña nueva)</span>
+                    </a>
+                  ))}
+                </div>
               )}
-              {socials.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="grid size-11 place-items-center rounded-full ring-1 ring-footer-ink/25 transition-colors hover:bg-footer-ink/10"
-                >
-                  <Icon name={s.icon} className="size-5" />
-                  <span className="sr-only">{s.label} (se abre en una pestaña nueva)</span>
-                </a>
-              ))}
             </div>
           </div>
 
-          {PUBLIC_MENU.map((group) => (
+          {nav.menu.map((group) => (
             <nav key={group.title} aria-label={group.title} className="flex flex-col gap-4">
               <FooterHeading>{group.title}</FooterHeading>
               <ul className="flex flex-col gap-2.5">
@@ -148,7 +176,7 @@ export function SiteFooter({ config }: { config: SiteConfig }) {
             © {year} {config.nombre_corto ?? 'IBR'} · Sitio por Grupo Pixelia
           </p>
           <ul className="flex flex-wrap gap-x-5 gap-y-1">
-            {LEGAL_NAV.map((item) => (
+            {nav.legal.map((item) => (
               <li key={item.href}>
                 <Link href={item.href} className="hover:text-footer-ink hover:underline">
                   {item.label}

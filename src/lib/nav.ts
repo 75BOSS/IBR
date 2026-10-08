@@ -1,6 +1,23 @@
 import type { IconName } from '@/components/Icon';
 import type { SiteConfig } from '@/lib/config';
 
+/** Qué contenido existe en el sitio (lo calcula `getSiteContent` en el servidor). */
+export type SiteContent = {
+  reuniones: boolean;
+  horarios: boolean;
+  grupos: boolean;
+  eventos: boolean;
+  servir: boolean;
+  predicas: boolean;
+  ministerios: boolean;
+  equipo: boolean;
+  pastores: boolean;
+  creencias: boolean;
+  dar: boolean;
+  agenda: boolean;
+  cuenta: boolean;
+};
+
 export type PublicNavItem = {
   href: string;
   label: string;
@@ -8,58 +25,111 @@ export type PublicNavItem = {
   description?: string;
   /** Página personal: no va al sitemap (no se indexa). */
   private?: boolean;
+  /** Solo se enlaza si existe este contenido: ningún enlace lleva a una página vacía. */
+  needs?: keyof SiteContent;
 };
+
+export type PublicNavGroup = { title: string; items: PublicNavItem[] };
 
 /**
  * Navegación pública agrupada como la recorre un visitante: conocer la iglesia, dar el
  * siguiente paso y los recursos de cada semana. Un solo lugar para el menú, el menú del celular,
- * el pie de página y el sitemap.
+ * el pie de página, la 404 y el sitemap (siempre filtrada con `visibleNav`).
  */
-export const PUBLIC_MENU: { title: string; items: PublicNavItem[] }[] = [
+export const PUBLIC_MENU: PublicNavGroup[] = [
   {
     title: 'Conócenos',
     items: [
-      { href: '/nosotros', label: 'Nosotros', description: 'Historia, visión y en qué creemos' },
-      { href: '/ministerios', label: 'Ministerios', description: 'Un lugar para cada edad' },
-      { href: '/reuniones', label: 'Reuniones', description: 'Horarios y cómo llegar' },
-      { href: '/contacto', label: 'Contacto', description: 'Escríbenos o llámanos' },
+      { href: '/nosotros', label: 'Nosotros', description: 'Quiénes somos y nuestra historia' },
+      {
+        href: '/ministerios',
+        label: 'Ministerios',
+        description: 'Un lugar para cada edad',
+        needs: 'ministerios',
+      },
+      {
+        href: '/reuniones',
+        label: 'Reuniones',
+        description: 'Horarios y cómo llegar',
+        needs: 'reuniones',
+      },
+      { href: '/contacto', label: 'Contacto', description: 'Escríbenos un mensaje' },
     ],
   },
   {
     title: 'Conéctate',
     items: [
       { href: '/soy-nuevo', label: 'Soy nuevo', description: 'Qué esperar en tu primera visita' },
-      { href: '/grupos', label: 'Grupos', description: 'Grupos en casas por toda la ciudad' },
-      { href: '/eventos', label: 'Eventos', description: 'Lo que viene en la iglesia' },
-      { href: '/servir', label: 'Servir', description: 'Sirve con tus dones en un equipo' },
+      {
+        href: '/grupos',
+        label: 'Grupos',
+        description: 'Grupos en casas por toda la ciudad',
+        needs: 'grupos',
+      },
+      {
+        href: '/eventos',
+        label: 'Eventos',
+        description: 'Lo que viene en la iglesia',
+        needs: 'eventos',
+      },
+      {
+        href: '/servir',
+        label: 'Servir',
+        description: 'Sirve con tus dones en un equipo',
+        needs: 'servir',
+      },
     ],
   },
   {
     title: 'Recursos',
     items: [
-      { href: '/predicas', label: 'Prédicas', description: 'Los mensajes de cada domingo' },
-      { href: '/agenda', label: 'Agenda semanal', description: 'Lo que viene, en tu correo' },
+      {
+        href: '/predicas',
+        label: 'Prédicas',
+        description: 'Los mensajes de cada domingo',
+        needs: 'predicas',
+      },
+      {
+        href: '/agenda',
+        label: 'Agenda semanal',
+        description: 'Lo que viene, en tu correo',
+        needs: 'agenda',
+      },
       { href: '/oracion', label: 'Pedir oración', description: 'Los pastores oran por ti' },
     ],
   },
 ];
 
 /** Enlaces sueltos del menú (sin desplegable). */
-export const MENU_LINKS: PublicNavItem[] = [{ href: '/dar', label: 'Dar' }];
+export const MENU_LINKS: PublicNavItem[] = [{ href: '/dar', label: 'Dar', needs: 'dar' }];
 
 /** Enlaces del pie que no van en el menú principal. */
 export const LEGAL_NAV: PublicNavItem[] = [
-  { href: '/mi-cuenta', label: 'Mi cuenta', private: true },
+  { href: '/mi-cuenta', label: 'Mi cuenta', private: true, needs: 'cuenta' },
   { href: '/privacidad', label: 'Privacidad' },
 ];
 
-/** Todas las páginas públicas fijas (sitemap, página 404). */
-export const PUBLIC_PAGES: PublicNavItem[] = [
-  { href: '/', label: 'Inicio' },
-  ...PUBLIC_MENU.flatMap((group) => group.items),
-  ...MENU_LINKS,
-  ...LEGAL_NAV,
-];
+const shown = (content: SiteContent) => (item: PublicNavItem) => !item.needs || content[item.needs];
+
+/**
+ * La navegación que corresponde al contenido actual: sin enlaces a páginas vacías y sin grupos
+ * del menú que se queden sin páginas.
+ */
+export function visibleNav(content: SiteContent) {
+  const keep = shown(content);
+  const menu = PUBLIC_MENU.map((group) => ({ ...group, items: group.items.filter(keep) })).filter(
+    (group) => group.items.length > 0,
+  );
+  const links = MENU_LINKS.filter(keep);
+  const legal = LEGAL_NAV.filter(keep);
+  const pages: PublicNavItem[] = [
+    { href: '/', label: 'Inicio' },
+    ...menu.flatMap((group) => group.items),
+    ...links,
+    ...legal,
+  ];
+  return { menu, links, legal, pages };
+}
 
 export type AdminNavItem = {
   href: string;
