@@ -91,6 +91,9 @@ export function FormDialog({
 
   return (
     <>
+      {/* Destino real del enlace `#id`: sin JavaScript (o antes de que cargue) el enlace igual
+          baja hasta aquí, junto al botón; con JavaScript además abre la ventana. */}
+      <span id={id} aria-hidden="true" className="block scroll-mt-28" />
       {showTrigger && (
         <Button
           variant={triggerVariant}
