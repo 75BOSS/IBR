@@ -1,0 +1,89 @@
+/*
+ * Propuesta B · Vibrante (IBRWEB/Propuesta 4 · 5 · 6): rojo coral, casi negro y crema; titulares
+ * en sans muy gruesa y apretada (Figtree 900) con una palabra en itálica caligráfica.
+ *
+ * Redefine los tokens del tema solo para el subárbol `.diseno-vibrante`: las clases del tema
+ * (bg-canvas, text-ink, bg-accent, eyebrow…) toman estos colores sin tocar globals.css. Los hex
+ * de la propuesta viven solo aquí.
+ *
+ * Contraste medido (AA):
+ * - crema #fdf5e6 sobre rojo #d42c1b: 4.6:1 (y el rojo como texto sobre crema, igual). El rojo
+ *   de la imagen (#fb3826) da 3.4:1 con crema: no alcanza para texto chico, por eso el bloque de
+ *   portada y los botones usan el rojo un poco más hondo.
+ * - rojo vivo #fb3826 sobre negro #181717: 4.9:1 (íconos y palabras sobre las franjas negras).
+ * - crema sobre negro: 16.5:1 · crema tenue #cfc6b8 sobre negro: 10.6:1 · tinta suave sobre
+ *   crema: 8.7:1.
+ */
+.diseno-vibrante {
+  /* Colores propios de la propuesta (se usan con clases bg-(--d-…) / text-(--d-…)). */
+  --d-rojo-vivo: #fb3826;
+  --d-negro: #181717;
+  --d-negro-hondo: #0b0b0c;
+  --d-crema-tenue: #cfc6b8;
+
+  /* Tokens del tema para este diseño. */
+  --color-canvas: #fdf5e6;
+  --color-surface: #fffaf2;
+  --color-sunken: #f4ead9;
+  --color-line: #e2d5c1;
+  --color-field-border: #8a8073;
+  --color-ink: #181918;
+  --color-ink-soft: #4a4540;
+  --color-brand: #181717;
+  --color-brand-strong: #0b0b0c;
+  --color-brand-soft: #f4ead9;
+  --color-accent: #d42c1b;
+  --color-accent-strong: #b32316;
+  --color-accent-soft: #fde0d9;
+  /* `on-dark` pinta el énfasis y los subrayados con --color-peach: aquí, crema (la palabra en
+     itálica va en crema sobre el rojo y el negro, como en la propuesta). */
+  --color-peach: #fdf5e6;
+  --color-cream: #fdf5e6;
+
+  --font-display: var(--font-vibrante-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-vibrante-manuscrita), Georgia, 'Times New Roman', serif;
+  --font-sans: var(--font-vibrante-sans), ui-sans-serif, system-ui, sans-serif;
+
+  /* Énfasis de los títulos en rojo sobre crema; sobre rojo o negro lo cambia `on-dark`. */
+  --title-em: var(--color-accent);
+
+  font-family: var(--font-sans);
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+/*
+ * Énfasis de los títulos («Aquí somos <em>familia.</em>»): en esta propuesta es una itálica
+ * caligráfica de alto contraste (Playfair Display), no la manuscrita de la marca. Su cuerpo es
+ * casi del tamaño del titular, así que se agranda menos que la manuscrita; cada titular puede
+ * pedir otra escala con la variable --em-escala (clase `[--em-escala:1.3em]`).
+ */
+.diseno-vibrante :is(h1, h2, h3, .font-headline) em {
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--em-escala, 1.12em);
+  line-height: 0.85;
+  letter-spacing: -0.01em;
+  padding-inline: 0.02em 0.08em;
+}
+
+/* El rebote del scroll muestra el fondo de <html>: el crema de la propuesta, no el del sitio. */
+html:has(.diseno-vibrante) {
+  background-color: #fdf5e6;
+}
+
+/* En el celular la barra fija «Cómo llegar» ocupa el borde de abajo: el selector de diseños
+   (fuera de este subárbol) sube por encima de ella con su variable --selector-alto. */
+@media (width < 48rem) {
+  html:has(.diseno-vibrante [data-barra-llegar]) {
+    --selector-alto: 4.5rem;
+  }
+}
+
+/* Con el menú del celular abierto, la página de atrás no se desplaza (solo CSS: funciona también
+   antes de que cargue el JavaScript). */
+@media (width < 64rem) {
+  html:has(.diseno-vibrante [data-menu-movil][open]) {
+    overflow: hidden;
+  }
+}
