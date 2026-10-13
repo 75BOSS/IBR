@@ -15,6 +15,8 @@
  * - Sin teléfonos ni WhatsApp inventados (serían de alguien real) y sin cuentas bancarias que
  *   parezcan reales.
  * - Las fechas de los eventos se calculan desde hoy, para que siempre haya «próximos».
+ * - Fotos provisionales (public/fotos-ejemplo/, recortes de las propuestas de diseño): solo donde
+ *   no hay foto. Las reales se suben desde el panel y las reemplazan.
  */
 import { parseArgs } from 'node:util';
 import type { Connection, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
@@ -22,6 +24,9 @@ import { describeTarget, fail, openScriptConnection } from './lib/script-db';
 
 const MARK = '-ejemplo';
 const EMAIL_DOMAIN = '@ejemplo.com';
+
+/** Foto provisional servida desde public/fotos-ejemplo/. */
+const foto = (nombre: string) => `/fotos-ejemplo/${nombre}.webp`;
 
 // ---------------------------------------------------------------------------------------------
 // Contenido
@@ -41,6 +46,8 @@ const CONFIG: Record<string, string> = {
     'La salvación\nEs un regalo de Dios por gracia, por medio de la fe en Jesucristo, no por nuestras obras.',
     'La iglesia\nEs la familia de quienes siguen a Jesús: nos reunimos para adorar, aprender, orar y servir juntos.',
   ].join('\n\n'),
+  home_hero_imagen: foto('portada'),
+  nosotros_imagen: foto('nosotros'),
   dar_cuentas: JSON.stringify([
     {
       banco: 'Banco de ejemplo',
@@ -62,6 +69,51 @@ const MINISTERIOS: Record<string, string> = {
   adultos: 'Grupos en casas, estudios bíblicos y acompañamiento para matrimonios y familias.',
   'adultos-mayores':
     'Encuentros de oración, café y compañerismo para quienes tienen 65 años o más.',
+};
+
+/** Foto de cada ministerio (por slug); se pone solo si el ministerio no tiene foto. */
+const FOTOS_MINISTERIOS: Record<string, string> = {
+  kids: foto('ministerio-kids'),
+  adolescentes: foto('ministerio-adolescentes'),
+  jovenes: foto('ministerio-jovenes'),
+  adultos: foto('ministerio-adultos'),
+  'adultos-mayores': foto('ministerio-adultos-mayores'),
+};
+
+/** Fotos de los grupos, el equipo, las áreas y los eventos de ejemplo (por nombre o slug). */
+const FOTOS_GRUPOS: Record<string, string> = {
+  'Familias La Politécnica': foto('grupo-familias'),
+  'Jóvenes Centro': foto('grupo-jovenes'),
+  'Adolescentes Bellavista': foto('grupo-adolescentes'),
+  'Matrimonios La Primavera': foto('grupo-matrimonios'),
+  'Estudio bíblico en línea': foto('grupo-estudio'),
+  'Mujeres de la Palabra': foto('grupo-mujeres'),
+  'Oración y café Licán': foto('grupo-oracion-cafe'),
+};
+const FOTOS_EQUIPO: Record<string, string> = {
+  'Pastor Juan Carlos Mena': foto('equipo-juan-carlos'),
+  'Pastora Lucía Mena': foto('equipo-lucia'),
+  'Mateo Guamán': foto('equipo-mateo'),
+  'Gabriela Yépez': foto('equipo-gabriela'),
+  'David Cáceres': foto('equipo-david'),
+  'Rosa Chávez': foto('equipo-rosa'),
+};
+const FOTOS_AREAS: Record<string, string> = {
+  [`alabanza${MARK}`]: foto('area-alabanza'),
+  [`ninos${MARK}`]: foto('area-ninos'),
+  [`bienvenida${MARK}`]: foto('area-bienvenida'),
+  [`medios${MARK}`]: foto('area-medios'),
+  [`intercesion${MARK}`]: foto('area-intercesion'),
+  [`logistica${MARK}`]: foto('area-logistica'),
+};
+const FOTOS_EVENTOS: Record<string, string> = {
+  [`domingo-en-familia${MARK}`]: foto('evento-domingo'),
+  [`vigilia-de-oracion${MARK}`]: foto('evento-vigilia'),
+  [`noche-de-alabanza${MARK}`]: foto('evento-alabanza'),
+  [`retiro-de-jovenes${MARK}`]: foto('evento-retiro'),
+  [`taller-para-matrimonios${MARK}`]: foto('evento-matrimonios'),
+  [`jornada-de-servicio${MARK}`]: foto('evento-servicio'),
+  [`bautismos${MARK}`]: foto('evento-bautismos'),
 };
 
 const CASAS: { nombre: string; zona: string }[] = [
@@ -619,6 +671,8 @@ async function cargar(c: Connection) {
     count(r);
   }
 
+  added += await ponerFotos(c);
+
   for (const reg of REGISTROS) {
     if (await idOf(c, 'SELECT id FROM registros WHERE email = ?', [reg.email])) continue;
     const [r] = await c.execute<ResultSetHeader>(
@@ -658,6 +712,54 @@ async function cargar(c: Connection) {
   }
 
   return added;
+}
+
+/**
+ * Fotos provisionales donde todavía no hay foto. Va aparte de los INSERT para que también las
+ * reciban los datos de ejemplo cargados antes de que existieran las fotos.
+ */
+async function ponerFotos(c: Connection): Promise<number> {
+  let puestas = 0;
+  const run = async (sql: string, params: string[]) => {
+    const [r] = await c.execute<ResultSetHeader>(sql, params);
+    puestas += r.affectedRows;
+  };
+  for (const [slug, url] of Object.entries(FOTOS_MINISTERIOS)) {
+    await run(
+      "UPDATE rangos_edad SET imagen_url = ? WHERE slug = ? AND COALESCE(imagen_url, '') = ''",
+      [url, slug],
+    );
+  }
+  for (const g of GRUPOS) {
+    const url = FOTOS_GRUPOS[g.nombre];
+    if (!url) continue;
+    await run(
+      'UPDATE grupos SET imagen_url = ? WHERE nombre = ? AND descripcion = ? AND imagen_url IS NULL',
+      [url, g.nombre, g.descripcion],
+    );
+  }
+  for (const p of EQUIPO) {
+    const url = FOTOS_EQUIPO[p.nombre];
+    if (!url) continue;
+    await run('UPDATE equipo SET foto_url = ? WHERE nombre = ? AND rol = ? AND foto_url IS NULL', [
+      url,
+      p.nombre,
+      p.rol,
+    ]);
+  }
+  for (const [slug, url] of Object.entries(FOTOS_AREAS)) {
+    await run('UPDATE areas_servicio SET imagen_url = ? WHERE slug = ? AND imagen_url IS NULL', [
+      url,
+      slug,
+    ]);
+  }
+  for (const [slug, url] of Object.entries(FOTOS_EVENTOS)) {
+    await run('UPDATE eventos SET imagen_url = ? WHERE slug = ? AND imagen_url IS NULL', [
+      url,
+      slug,
+    ]);
+  }
+  return puestas;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -705,6 +807,13 @@ async function quitar(c: Connection) {
   for (const [clave, valor] of Object.entries(CONFIG)) {
     const empty = clave === 'dar_cuentas' ? '[]' : null;
     await run('UPDATE config SET valor = ? WHERE clave = ? AND valor = ?', [empty, clave, valor]);
+  }
+  // Los grupos, el equipo, las áreas y los eventos de ejemplo ya se borraron con su foto.
+  for (const [slug, url] of Object.entries(FOTOS_MINISTERIOS)) {
+    await run('UPDATE rangos_edad SET imagen_url = NULL WHERE slug = ? AND imagen_url = ?', [
+      slug,
+      url,
+    ]);
   }
   for (const [slug, descripcion] of Object.entries(MINISTERIOS)) {
     await run('UPDATE rangos_edad SET descripcion = NULL WHERE slug = ? AND descripcion = ?', [

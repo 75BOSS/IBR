@@ -84,7 +84,6 @@ export function SelectorDiseno() {
         onClick={() => setAbierto((a) => !a)}
         className="flex min-h-11 items-center gap-2 rounded-full bg-night px-4 text-sm font-semibold text-cream shadow-pop ring-1 ring-cream/20 on-dark"
       >
-        <Icon name="sparkle" className="size-4" />
         <span>
           Diseño: {diseno.nombre}
           {pagina && pagina !== 'inicio' ? ` · ${NOMBRE_PAGINA[pagina]}` : ''}
