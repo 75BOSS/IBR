@@ -1,0 +1,93 @@
+/*
+ * Propuesta E · Póster (imágenes 13 · 14 · 15 de IBRWEB/Propuesta).
+ * Crema papel, azul marino y rojo; titulares negros y condensados en mayúsculas y líneas finas
+ * azul marino que separan los bloques como en un periódico. Redefine los tokens del tema solo
+ * para su subárbol: las clases de siempre (bg-canvas, text-ink, bg-accent…) toman estos colores.
+ * Los valores de color de la propuesta viven SOLO aquí.
+ *
+ * Contraste medido (AA):
+ *   azul #0c233b sobre crema 14.7:1 · crema sobre rojo #d1351f 4.6:1 · rojo sobre crema 4.6:1
+ *   rojo fuerte #b02a18 sobre durazno 4.7:1 · azul sobre durazno 11.4:1 · azul sobre arena 13.7:1
+ *   rojo claro #f26a52 sobre azul 5.3:1 · durazno (anillo de foco) sobre rojo 3.6:1
+ */
+.diseno-poster {
+  --color-canvas: #fdf5e8; /* papel */
+  --color-surface: #fefaf2;
+  --color-sunken: #f6ead8;
+  --color-line: #c9bfae;
+  --color-field-border: #6f6658;
+
+  --color-ink: #0c233b; /* azul marino de los titulares */
+  --color-ink-soft: #3d4b5c;
+
+  --color-brand: #0c233b;
+  --color-brand-strong: #081a2e;
+  --color-brand-soft: #e3e7ee;
+  --color-accent: #d1351f; /* rojo del póster, el más vivo que pasa AA con crema */
+  --color-accent-strong: #b02a18;
+  --color-accent-soft: #fdd1ba; /* durazno */
+  --color-peach: #fdd1ba;
+  --color-night: #0a1b38;
+  --color-cream: #fdf5e8;
+
+  /* Colores propios de la propuesta */
+  --d-noche: #0a1b38; /* tarjeta de Prédicas */
+  --d-durazno: #fdd1ba; /* banda «¿No sabes por dónde empezar?» */
+  --d-arena: #fcecd5; /* «¿Es tu primera vez?» en el celular */
+  --d-rojo-claro: #f26a52; /* rojo sobre azul marino (pie) */
+  --d-velo: rgb(12 35 59 / 0.55); /* fondo detrás del menú abierto */
+  --d-sombra-foto: rgb(10 27 56 / 0.85); /* velo de las fotos con texto encima */
+
+  /* Alto de la barra de pestañas del celular (fija abajo) y margen lateral de la página en
+     celular y tablet (16 px en 360, como el marco de la imagen 15). */
+  --d-barra: 4.5rem;
+  --d-margen: clamp(1rem, 4vw, 1.5rem);
+
+  /* Tipografía: Archivo (variable, con ancho) para titulares negros, condensados y
+     espaciados; Figtree para leer; Poppins solo para «Somos Familia» junto al sello. */
+  --font-display: var(--font-poster-titulo), 'Arial Narrow', ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-poster-titulo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+  --d-letra-logo: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+
+  /* Enlaces y foco (en html se calculan con los colores del sitio base) */
+  --link-ink: var(--color-ink);
+  --link-line: var(--color-accent);
+
+  font-family: var(--font-sans);
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+/* El énfasis de un título no es la manuscrita naranja del sitio base: es la misma letra del
+   titular, en rojo («TU lugar»). */
+.diseno-poster :is(h1, h2, h3, .font-headline) em {
+  font-family: inherit;
+  font-style: normal;
+  font-weight: inherit;
+  font-size: 1em;
+  line-height: inherit;
+  letter-spacing: inherit;
+  padding-inline: 0;
+  color: var(--color-accent);
+}
+
+/* Rebote del scroll en papel, no en el crema del sitio base. Sin encabezado fijo arriba, las
+   anclas no necesitan el margen de 6rem del sitio base. */
+html:has(.diseno-poster) {
+  background-color: #fdf5e8;
+  scroll-padding-top: 1.5rem;
+}
+
+/* Con el menú abierto, la página de atrás no se desplaza. */
+html:has(.diseno-poster dialog[open]) {
+  overflow: hidden;
+}
+
+/* En celular y tablet la barra de pestañas fija tapa el botón flotante del selector de diseños:
+   el selector sube su alto (usa --selector-alto). */
+@media (width < 64rem) {
+  html:has(.diseno-poster) {
+    --selector-alto: 4.5rem;
+  }
+}
