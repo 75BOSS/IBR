@@ -3,6 +3,8 @@ import { SiteHeader } from '@/components/site/SiteHeader';
 import { getSiteConfig } from '@/lib/config';
 import { visibleNav } from '@/lib/nav';
 import { getSiteContent } from '@/lib/site-content';
+import { SelectorDiseno } from '@/disenos/SelectorDiseno';
+import { isIndexable } from '@/lib/site';
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const [config, content] = await Promise.all([getSiteConfig(), getSiteContent()]);
@@ -21,6 +23,8 @@ export default async function PublicLayout({ children }: { children: React.React
         {children}
       </main>
       <SiteFooter config={config} nav={nav} />
+      {/* Comparar con las propuestas de diseño: solo en las copias de prueba. */}
+      {!isIndexable() && <SelectorDiseno />}
     </div>
   );
 }
