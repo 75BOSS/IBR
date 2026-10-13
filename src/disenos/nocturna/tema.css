@@ -1,0 +1,86 @@
+/*
+ * Propuesta C · Nocturna (imágenes 7, 8 y 9 de IBRWEB/Propuesta). Redefine los tokens del tema
+ * solo dentro de `.diseno-nocturna`: las clases de siempre (bg-canvas, text-ink, bg-accent…)
+ * toman aquí los colores de la propuesta. Los valores hex viven solo en este archivo.
+ *
+ * Va en la capa `base` (la misma que abre globals.css): así una clase de Tailwind siempre puede
+ * ganarle a estas reglas, y estas les ganan a las de globals por especificidad.
+ *
+ * Contraste verificado (AA): texto de párrafo #4a4f57 sobre crema 8:1; crema sobre el naranja
+ * tostado 5:1; azul marino sobre durazno 11:1; durazno y crema sobre el azul de noche ≥ 12:1.
+ */
+@layer base {
+  .diseno-nocturna {
+    /* Superficies claras: crema cálida (nunca blanco puro). */
+    --color-canvas: #f8f4ee;
+    --color-surface: #fcf9f4;
+    --color-sunken: #efe7dc;
+    --color-line: #dccfbf;
+
+    /* Texto: azul de noche y gris cálido para leer. */
+    --color-ink: #071a33;
+    --color-ink-soft: #4a4f57;
+
+    /* Marca: azul marino del encabezado y de la noche de la portada. */
+    --color-brand: #0b223c;
+    --color-brand-strong: #071629;
+    --color-brand-soft: #dfe5ee;
+
+    /* Acción: naranja tostado («Soy nuevo», «Cómo llegar») y su versión para letras. */
+    --color-accent: #ad481a;
+    --color-accent-strong: #93380f;
+    --color-accent-soft: #f8d9b8;
+
+    /* Durazno de la manuscrita y del logo sobre fondos oscuros; crema del texto en la noche. */
+    --color-peach: #f6d4a6;
+    --color-cream: #fbf3e6;
+    --color-night: #071629;
+
+    /* Colores propios de la propuesta (se usan con bg-(--d-…) / text-(--d-…)). */
+    --d-noche: #071629; /* portada y secciones oscuras */
+    --d-marino: #0d2440; /* barra flotante, franja «Hay un lugar para ti» */
+    --d-tinta: #04101e; /* tarjeta de la prédica, pie */
+    --d-durazno: #f2c08e; /* botones durazno */
+    --d-durazno-fuerte: #eaae74;
+    --d-arena: #f0dfb8; /* etiquetas en versalitas sobre azul */
+
+    /* Alto de la barra que monta sobre el borde de la portada (escritorio). */
+    --d-barra: clamp(4.75rem, 2.5rem + 3.4vw, 5.75rem);
+    /* Alto del encabezado: el menú del celular empieza justo debajo. */
+    --d-cabecera: clamp(3.5rem, 3rem + 1.5vw, 4.375rem);
+
+    /* Tipografía: Poppins (títulos, la letra del logo), Playfair Display itálica (la palabra en
+       durazno: «familia.», «se comparte.») y Figtree para leer. */
+    --font-display: var(--font-nocturna-titulo), ui-sans-serif, system-ui, sans-serif;
+    --font-script: var(--font-nocturna-manuscrita), Georgia, 'Times New Roman', serif;
+    --font-sans: var(--font-nocturna-texto), ui-sans-serif, system-ui, sans-serif;
+
+    font-family: var(--font-sans);
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+  }
+
+  /* La palabra destacada de los títulos: itálica con serifa (no la manuscrita del sitio base),
+     casi del mismo cuerpo que el titular. Naranja tostado sobre crema; on-dark la pasa a durazno. */
+  .diseno-nocturna :is(h1, h2, h3, .font-headline) em {
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.12em;
+    line-height: 0.88;
+    letter-spacing: -0.01em;
+    padding-inline: 0 0.04em;
+  }
+
+  /* Fondo oscuro de toda la página detrás del rebote del scroll (arriba el encabezado azul,
+     abajo el pie): sin esto asoma la crema del sitio base. */
+  html:has(.diseno-nocturna) {
+    background-color: #071629;
+  }
+
+  /* Con la barra fija «Cómo llegar» del celular, el selector de diseños sube por encima de ella. */
+  @media (width < 48rem) {
+    html:has([data-barra-llegar]) {
+      --selector-alto: 4.5rem;
+    }
+  }
+}
