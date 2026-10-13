@@ -1,6 +1,6 @@
 # ESTADO.md — Web IBR
 
-Última actualización: 2026-10-08 (sesión de Claude Code). Claude Code: actualizar este archivo al cierre de cada sesión.
+Última actualización: 2026-10-13 (sesión local de Claude Code en el Windows de Cristian). Claude Code: actualizar este archivo al cierre de cada sesión.
 
 ## Fase actual
 
@@ -235,7 +235,7 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 
 ## Descubrimientos / notas de sesión
 
-- **Pendiente de investigar** (2026-10-08): en las capturas con datos apareció 2 veces (de unas 400 cargas) el error #418 de React (hidratación) al abrir una página de grupos; no se pudo reproducir en ~40 intentos dirigidos. React lo recupera dibujando en el navegador, la página queda bien. Próximo paso: reproducir con `next dev` (muestra la diferencia exacta).
+- **Error #418 de React (hidratación), no reproducible** (2026-10-08, investigado el 2026-10-13): apareció 2 veces en unas 400 cargas con datos al abrir una página de grupos. El 2026-10-13 se intentó reproducir con Chrome + Playwright y datos de ejemplo, en `/grupos` (con y sin filtro), `/grupos/1…7`, la portada y Eventos, a 360/768/1280 px, con y sin «reducir movimiento»: 252 cargas con `next dev` (que muestra la diferencia exacta), 192 con `next build` + `next start` y 36 con `locale: 'es-EC'` y zona `America/Guayaquil` (como `npm run revisar`). Cero errores. Los componentes de cliente de esas páginas (menú, `FormDialog`, `PublicForm`, `JoinGroupForm`, `LiveBanner`) no leen la hora, el idioma ni `window` al dibujar. No se cambió código: corregir sin poder reproducir sería un parche a ciegas. Si vuelve a salir, anotar ruta, ancho, hora y si el servidor se había recompilado mientras corría (un `next build` sobre un `next start` encendido mezcla HTML y JS de dos versiones).
 - Con datos se vio y se corrigió: la tarjeta grande de Eventos y la de Servir se estiraban al alto de la columna vecina (hueco vacío); «Cuenta cuenta de ahorros» en Dar (`accountTypeLabel`).
 - **Vistas y «MySQL remoto»** (2026-10-08): una vista guarda como `DEFINER` la cuenta que la creó, con su host. En Hostinger, quien corre `db:migrate` desde su computadora queda como `usuario@SU_IP`; la web app entra como `usuario@127.0.0.1`. Cuando se quita el acceso remoto, toda vista creada así falla («Access denied» al leerla). Por eso el código no usa vistas (ni triggers ni procedimientos, que tienen el mismo problema).
 - `backdrop-filter` (el desenfoque del encabezado) convierte al elemento en el contenedor de sus hijos `position: fixed`: el menú del celular, que era `fixed`, quedaba encerrado en los 64 px del header y no se podía tocar. Ahora es `absolute top-full` con alto `100dvh` menos el header.
@@ -253,6 +253,10 @@ Cuando haya deploy en `dev.ibriglesia.com`: entrar a `/admin/diagnostico` → «
 - En el contenedor de Claude el MySQL local a veces se reinicia (recuperación «XA crash recovery»): `service mysql start` y listo.
 - Para escribir texto con tildes desde la terminal: `mysql --default-character-set=utf8mb4`. Sin eso, el cliente guarda «jÃ³venes». phpMyAdmin no tiene ese problema.
 
+## Cómo probar en local (Windows de Cristian)
+
+Clon en `Clientes\IBR-web`. El MySQL de Laragon de ese equipo escucha en el **3309** con `root` sin contraseña (el 3306 es otra instancia, con clave); base `ibr_local`, `DATABASE_URL=mysql://root@127.0.0.1:3309/ibr_local` en `.env.local`. Migraciones 000–013 aplicadas, admin creado con `--generar` y datos de ejemplo cargados (2026-10-13). En PowerShell 5.1, `npm run x -- --y` puede perder el `--`: llamar el script directo (`.\node_modules\.bin\tsx.cmd scripts/seed-admin.ts --email=… --nombre=… --generar`). `npm run revisar` usa `chromium.launch()` sin ruta y en Windows no encuentra navegador (Playwright no lo descarga): pendiente que acepte la ruta de Chrome.
+
 ## Cómo probar en local (contenedor de Claude)
 
 MySQL 8 local con la BD `ibr_dev`, el usuario `ibr` y `.env.local` apuntando a `127.0.0.1`. En cada sesión nueva hay que reinstalarlo (`apt-get install mysql-server-8.0`), crear la BD y el usuario, y correr `npm run db:migrate` y `npm run db:seed-admin -- --email=admin@ibr.test --nombre="Admin Pruebas" --generar`. Conviene poner el servidor en `SET GLOBAL time_zone='-05:00'` para detectar errores de zona horaria.
@@ -262,8 +266,8 @@ Para probar en MariaDB sin chocar con MySQL: `apt-get download mariadb-server-co
 ## Qué hacer en la próxima sesión
 
 1. Ejecutar PASO 0 de `CLAUDE.md`.
-1. En la copia en línea, después de subir esta versión: `npm run db:migrate` (aplica la 012 con los datos de la iglesia y la 013, que quita las vistas que rompían el resumen del panel). Falta que la iglesia cargue dirección escrita, WhatsApp y teléfono.
-1. Copia de prueba **en línea** desde el 2026-10-07: https://ibr.pixeliacomsoluciones.es (versión `6456295`, BD con las migraciones 000–011, robots y `noindex` verificados, 59 páginas generadas). La publica la sesión local de Cristian (`DESPLIEGUE.md`). Falta: (a) el primer administrador (`db:seed-admin --generar`, lo corre Cristian), (b) el despliegue automático (GitHub de hPanel no ve `75BOSS/IBR`, ver `DESPLIEGUE.md` §D; mientras, se sube como zip), (c) `/admin/diagnostico` → «Probar SSE» (F0.9).
+1. Copia de prueba **en línea**: https://ibr.pixeliacomsoluciones.es, versión `5d98b5d` (2026-10-13), BD con las migraciones 000–013 y el administrador de Cristian creado. La publica la sesión local de Cristian (`DESPLIEGUE.md`). Falta: (a) el despliegue automático (GitHub de hPanel no ve `75BOSS/IBR`, ver `DESPLIEGUE.md` §D; mientras, se sube como zip), (b) `/admin/diagnostico` → «Probar SSE» (F0.9), (c) que la iglesia cargue dirección escrita, WhatsApp, teléfono y fotos.
+1. Hostinger: el build no llega a `127.0.0.1` (`connect EPERM`), así que `DATABASE_URL` usa `srv1282.hstgr.io` y la BD tiene acceso remoto para la IP del propio servidor (IPv4 195.35.61.9 e IPv6 2a02:4780:1:1234::9). La regla IPv4 desapareció sola dos veces: **antes de cada publicación**, revisar las reglas de MySQL remoto y recrear la que falte.
 2. Si ya hay credenciales de Hostinger: F0.8 (web app → `dev`), `npm run db:migrate` contra la BD nueva (aplica `000` a `010`), crear el primer admin y correr `/admin/diagnostico` (F0.9). Cargar `NEXT_PUBLIC_SITE_URL` con `https://` (sitemap, OG, correos y QR la usan).
 3. Si ya está el dump del PHP: reconciliar `ESQUEMA.sql` §«Tablas heredadas» (MIGRACION-PHP.md §1) **antes** de aplicarlo en Hostinger, y escribir `scripts/importar-php.ts`.
 4. Al cerrar F0: borrar `/api/ping-sse` y `/admin/diagnostico`.
