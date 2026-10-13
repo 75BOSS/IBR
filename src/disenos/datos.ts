@@ -1,7 +1,8 @@
 import 'server-only';
 import { CONFIG_DEFAULTS, getSiteConfig } from '@/lib/config';
+import { parseCreencias } from '@/lib/config-fields';
 import { DAY_NAMES, formatDateOnly, formatDateTime, formatTime } from '@/lib/dates';
-import { listPastores } from '@/lib/equipo';
+import { listEquipoVisible, listPastores } from '@/lib/equipo';
 import { listUpcomingEventos } from '@/lib/eventos';
 import { listGruposPublicos } from '@/lib/grupos';
 import { directionsUrl } from '@/lib/maps';
@@ -11,6 +12,7 @@ import { listPredicas } from '@/lib/predicas';
 import { listReuniones } from '@/lib/reuniones';
 import { listAreas } from '@/lib/servir';
 import { getSiteContent } from '@/lib/site-content';
+import { getChurchStats } from '@/lib/stats';
 import { latestChannelVideos } from '@/lib/youtube-api';
 
 /**
@@ -104,4 +106,61 @@ export async function datosPrimeraVisita() {
     listMinisterios({ soloActivos: true, conContenido: true }),
   ]);
   return { ...marco, reuniones, horarios: horariosUnicos(reuniones), ministerios };
+}
+
+/** Conócenos: historia, misión, visión, creencias y equipo (de la config) y cifras reales. */
+export async function datosConocenos() {
+  const [marco, equipo, cifras] = await Promise.all([
+    datosMarco(),
+    listEquipoVisible(),
+    getChurchStats(),
+  ]);
+  const { config } = marco;
+  return {
+    ...marco,
+    historia: config.nosotros_historia,
+    mision: config.nosotros_mision,
+    vision: config.vision,
+    creencias: parseCreencias(config.nosotros_creencias),
+    imagen: config.nosotros_imagen,
+    anioFundacion: config.anio_fundacion,
+    equipo,
+    cifras,
+  };
+}
+
+/** Ministerios: los de la BD (con sus reuniones y grupos) para mostrarlos junto a los de ejemplo. */
+export async function datosMinisterios() {
+  const [marco, ministerios, reuniones, grupos] = await Promise.all([
+    datosMarco(),
+    listMinisterios({ soloActivos: true, conContenido: true }),
+    listReuniones({ soloActivas: true }),
+    listGruposPublicos({}),
+  ]);
+  return { ...marco, ministerios, reuniones, grupos };
+}
+
+/** Crecer: horarios y áreas de servicio reales para la ruta de crecimiento. */
+export async function datosCrecer() {
+  const [marco, reuniones, areas, grupos] = await Promise.all([
+    datosMarco(),
+    listReuniones({ soloActivas: true }),
+    listAreas({ soloActivas: true }),
+    listGruposPublicos({}),
+  ]);
+  return { ...marco, horarios: horariosUnicos(reuniones), areas, grupos };
+}
+
+/** Recursos: prédicas del panel o, si no hay, los últimos videos del canal de YouTube. */
+export async function datosRecursos() {
+  const [marco, predicas] = await Promise.all([
+    datosMarco(),
+    listPredicas({ soloPublicadas: true, limit: 6 }),
+  ]);
+  const { config } = marco;
+  const videos =
+    predicas.length > 0 || !config.youtube_channel_id
+      ? []
+      : (await latestChannelVideos(config.youtube_channel_id)).slice(0, 6);
+  return { ...marco, predicas, videos };
 }

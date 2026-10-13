@@ -6,7 +6,8 @@
  */
 
 /** Páginas que una propuesta puede tener; el selector salta a la misma página del otro diseño. */
-export type PaginaDiseno = 'inicio' | 'comunidad' | 'primera-visita';
+export type PaginaDiseno =
+  'inicio' | 'comunidad' | 'primera-visita' | 'conocenos' | 'crecer' | 'ministerios' | 'recursos';
 
 export type Diseno = {
   slug: string;
@@ -21,14 +22,41 @@ export const NOMBRE_PAGINA: Record<PaginaDiseno, string> = {
   inicio: 'Inicio',
   comunidad: 'Comunidad',
   'primera-visita': 'Primera visita',
+  conocenos: 'Conócenos',
+  crecer: 'Crecer',
+  ministerios: 'Ministerios',
+  recursos: 'Recursos',
 };
+
+/** Las mismas páginas para cada propuesta: /disenos/<slug> y /disenos/<slug>/<página>. */
+function paginasDe(slug: string): Diseno['paginas'] {
+  const base = `/disenos/${slug}`;
+  return {
+    inicio: base,
+    comunidad: `${base}/comunidad`,
+    'primera-visita': `${base}/primera-visita`,
+    conocenos: `${base}/conocenos`,
+    crecer: `${base}/crecer`,
+    ministerios: `${base}/ministerios`,
+    recursos: `${base}/recursos`,
+  };
+}
 
 const ORIGINAL: Diseno = {
   slug: 'original',
   nombre: 'Original',
   resumen: 'El sitio actual.',
   referencia: '—',
-  paginas: { inicio: '/', comunidad: '/grupos', 'primera-visita': '/soy-nuevo' },
+  // El original no tiene «Crecer»: lo más cercano es «Servir».
+  paginas: {
+    inicio: '/',
+    comunidad: '/grupos',
+    'primera-visita': '/soy-nuevo',
+    conocenos: '/nosotros',
+    crecer: '/servir',
+    ministerios: '/ministerios',
+    recursos: '/predicas',
+  },
 };
 
 export const DISENOS: Diseno[] = [
@@ -38,38 +66,35 @@ export const DISENOS: Diseno[] = [
     nombre: 'A · Cálida',
     resumen: 'Crema, azul marino y naranja tostado; títulos con serifa y palabra manuscrita.',
     referencia: '1 · 2 · 3',
-    paginas: { inicio: '/disenos/calida', comunidad: '/disenos/calida/comunidad' },
+    paginas: paginasDe('calida'),
   },
   {
     slug: 'vibrante',
     nombre: 'B · Vibrante',
     resumen: 'Rojo coral, negro y crema; letra muy gruesa y mosaico de fotos.',
     referencia: '4 · 5 · 6',
-    paginas: { inicio: '/disenos/vibrante', comunidad: '/disenos/vibrante/comunidad' },
+    paginas: paginasDe('vibrante'),
   },
   {
     slug: 'nocturna',
     nombre: 'C · Nocturna',
     resumen: 'Azul marino de fondo y durazno; foto a pantalla completa.',
     referencia: '7 · 8 · 9',
-    paginas: { inicio: '/disenos/nocturna', comunidad: '/disenos/nocturna/comunidad' },
+    paginas: paginasDe('nocturna'),
   },
   {
     slug: 'escenario',
     nombre: 'D · Escenario',
     resumen: 'Logo al centro, el auditorio a todo lo ancho y la primera visita paso a paso.',
     referencia: '10 · 11 · 12',
-    paginas: {
-      inicio: '/disenos/escenario',
-      'primera-visita': '/disenos/escenario/primera-visita',
-    },
+    paginas: paginasDe('escenario'),
   },
   {
     slug: 'poster',
     nombre: 'E · Póster',
     resumen: 'Menú lateral, titulares enormes en mayúsculas y grilla tipo periódico.',
     referencia: '13 · 14 · 15',
-    paginas: { inicio: '/disenos/poster', comunidad: '/disenos/poster/comunidad' },
+    paginas: paginasDe('poster'),
   },
 ];
 
