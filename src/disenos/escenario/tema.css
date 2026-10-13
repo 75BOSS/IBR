@@ -1,0 +1,95 @@
+/*
+ * Propuesta D · Escenario (imágenes 10 · 11 · 12 de IBRWEB/Propuesta).
+ * Redefine los tokens del tema solo dentro de `.diseno-escenario`: las clases del sitio
+ * (bg-canvas, text-ink, bg-accent, font-display…) toman los colores y letras de esta propuesta.
+ * Los valores hex viven solo aquí. Va en la capa `base` para que las utilidades de Tailwind
+ * (capa `utilities`) sigan pudiendo ajustar cada caso.
+ *
+ * Contraste medido (AA):
+ * - Texto azul marino #0f2742 sobre crema #fef8ef: 14.3:1; texto suave #4a5566: 7.2:1.
+ * - --color-accent #cc3b1e: enlaces sobre crema 4.7:1 y texto crema sobre botón rojo 4.5:1.
+ * - --d-rojo #e5492d (el rojo vivo de la propuesta): 3.7:1 sobre crema y sobre azul marino; solo
+ *   para texto grande (≥ 24 px, o ≥ 18.66 px en negrita), números grandes y adornos.
+ */
+@layer base {
+  .diseno-escenario {
+    /* Superficies: crema cálida, nunca blanco puro */
+    --color-canvas: #fef8ef;
+    --color-surface: #fffaf3;
+    --color-sunken: #fbf1e3;
+    --color-line: #ead9c5;
+    --color-field-border: #8a7d6d;
+
+    /* Texto: azul marino */
+    --color-ink: #0f2742;
+    --color-ink-soft: #4a5566;
+
+    /* Marca: azul marino + rojo anaranjado */
+    --color-brand: #112a46;
+    --color-brand-strong: #0b2238;
+    --color-brand-soft: #e1e7ef;
+    --color-accent: #cc3b1e;
+    --color-accent-strong: #ad3219;
+    --color-accent-soft: #fde1d6;
+    --color-cream: #fdf3e6;
+    --color-night: #0a1f35;
+    --color-peach: #f8a58a;
+
+    /* Propios de la propuesta */
+    --d-marino: #112a46;
+    --d-marino-hondo: #0a1f35;
+    --d-rojo: #e5492d;
+
+    /* Velos sobre las fotos (aseguran el contraste del texto crema) */
+    --d-velo-portada:
+      radial-gradient(ellipse 46% 60% at 50% 52%, rgb(9 22 40 / 0.62), rgb(9 22 40 / 0.1) 100%),
+      linear-gradient(rgb(9 22 40 / 0.14), rgb(9 22 40 / 0.14));
+    --d-velo-portada-celular: linear-gradient(
+      to bottom,
+      rgb(9 22 40 / 0.55) 0%,
+      rgb(9 22 40 / 0) 20%,
+      rgb(9 22 40 / 0) 34%,
+      rgb(9 22 40 / 0.72) 62%,
+      rgb(9 22 40 / 0.86) 100%
+    );
+    --d-velo-banda: linear-gradient(rgb(13 34 58 / 0.62), rgb(13 34 58 / 0.62));
+    --d-velo-encabezado: linear-gradient(to bottom, rgb(9 22 40 / 0.45), rgb(9 22 40 / 0));
+
+    /* Letras: titulares en sans muy gruesa, palabra destacada en serifa negra o cursiva,
+       texto en Figtree (la del sitio, ya cargada en la raíz). */
+    --font-display: var(--font-escenario-titulo), ui-sans-serif, system-ui, sans-serif;
+    --font-serif: var(--font-escenario-serifa), Georgia, 'Times New Roman', serif;
+    --font-script: var(--font-serif);
+    --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+
+    --link-ink: var(--color-ink);
+    --link-line: var(--color-accent);
+
+    font-family: var(--font-sans);
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+  }
+
+  /* El énfasis de los títulos («empieza <em>aquí.</em>») no es la manuscrita del sitio base sino
+     la serifa negra en rojo vivo. Cada título ajusta peso y cursiva con utilidades. */
+  .diseno-escenario :is(h1, h2, h3, .font-headline) em {
+    font-family: var(--font-serif);
+    font-style: normal;
+    font-weight: 800;
+    font-size: 1em;
+    line-height: inherit;
+    letter-spacing: -0.01em;
+    padding-inline: 0;
+    color: var(--d-rojo);
+  }
+
+  /* Rebote del scroll en el mismo crema de la propuesta. */
+  html:has(.diseno-escenario) {
+    background-color: #fef8ef;
+  }
+
+  /* Con el menú del celular abierto (diálogo modal), la página de atrás no se desplaza. */
+  html:has(.diseno-escenario dialog[open]) {
+    overflow: hidden;
+  }
+}
