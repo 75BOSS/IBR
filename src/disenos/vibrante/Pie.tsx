@@ -3,7 +3,8 @@ import { BrandLogo } from '@/components/BrandMark';
 import { Icon, type IconName } from '@/components/Icon';
 import { botonClases } from '@/disenos/vibrante/boton';
 import { Contenedor } from '@/disenos/vibrante/Contenedor';
-import type { PublicNavGroup, PublicNavItem } from '@/lib/nav';
+import { type MenuVibrante, RUTAS } from '@/disenos/vibrante/menu';
+import type { PublicNavItem } from '@/lib/nav';
 
 function TituloColumna({ children }: { children: React.ReactNode }) {
   return <h2 className="eyebrow text-(--d-crema-tenue)">{children}</h2>;
@@ -11,8 +12,9 @@ function TituloColumna({ children }: { children: React.ReactNode }) {
 
 /**
  * Pie negro de la propuesta: logo crema, la visión en itálica, «Planifica tu visita», los grupos
- * del menú (ya filtrados por contenido), visítanos con redes y, abajo, los enlaces legales. Con
- * «Cómo llegar», deja aire abajo en el celular para la barra fija.
+ * del menú de la propuesta (sus siete páginas y las del sitio con contenido), visítanos con redes
+ * y, abajo, Oración, Dar, Contacto y los enlaces legales. Con «Cómo llegar», deja aire abajo en
+ * el celular para la barra fija.
  */
 export function Pie({
   nombre,
@@ -23,7 +25,6 @@ export function Pie({
   comoLlegar,
   redes,
   menu,
-  links,
   legal,
 }: {
   nombre: string;
@@ -33,8 +34,7 @@ export function Pie({
   email: string | null;
   comoLlegar: string | null;
   redes: { label: string; icon: IconName; href: string }[];
-  menu: PublicNavGroup[];
-  links: PublicNavItem[];
+  menu: MenuVibrante;
   legal: PublicNavItem[];
 }) {
   return (
@@ -58,15 +58,15 @@ export function Pie({
             )}
           </div>
           <Link
-            href="/soy-nuevo"
+            href={RUTAS.primeraVisita}
             className={botonClases({ tamano: 'lg', className: 'shrink-0 self-start md:self-auto' })}
           >
             Planifica tu visita <Icon name="arrowRight" className="size-5" />
           </Link>
         </div>
 
-        <div className="grid gap-x-[clamp(1.5rem,4vw,3rem)] gap-y-10 border-t border-canvas/15 pt-[clamp(2rem,5vw,3.5rem)] xs:grid-cols-2 md:grid-cols-[minmax(14rem,1.4fr)_repeat(auto-fit,minmax(8rem,1fr))]">
-          <div className="flex flex-col gap-4 xs:col-span-2 md:col-span-1">
+        <div className="grid gap-x-[clamp(1.5rem,3vw,3rem)] gap-y-10 border-t border-canvas/15 pt-[clamp(2rem,5vw,3.5rem)] xs:grid-cols-2 md:grid-cols-4 lg:grid-cols-[minmax(18rem,1.3fr)_repeat(4,minmax(0,1fr))]">
+          <div className="flex flex-col gap-4 xs:col-span-2 md:col-span-4 lg:col-span-1">
             <TituloColumna>Visítanos</TituloColumna>
             <address className="flex flex-col gap-3 not-italic">
               {direccion ? (
@@ -118,9 +118,9 @@ export function Pie({
             )}
           </div>
 
-          {menu.map((g) => (
-            <nav key={g.title} aria-label={g.title} className="flex flex-col gap-4">
-              <TituloColumna>{g.title}</TituloColumna>
+          {menu.grupos.map((g) => (
+            <nav key={g.titulo} aria-label={g.titulo} className="flex flex-col gap-4">
+              <TituloColumna>{g.titulo}</TituloColumna>
               <ul className="flex flex-col gap-2.5">
                 {g.items.map((item) => (
                   <li key={item.href}>
@@ -147,7 +147,7 @@ export function Pie({
             © {new Date().getFullYear()} {nombreCorto} · Sitio por Grupo Pixelia
           </p>
           <ul className="flex flex-wrap gap-x-5 gap-y-1">
-            {[...links, ...legal].map((item) => (
+            {[...menu.sueltos, { href: '/contacto', label: 'Contacto' }, ...legal].map((item) => (
               <li key={item.href}>
                 <Link href={item.href} className="hover:text-canvas hover:underline">
                   {item.label}

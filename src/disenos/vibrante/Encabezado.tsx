@@ -1,29 +1,24 @@
 import Link from 'next/link';
 import { BrandLogo } from '@/components/BrandMark';
 import { Contenedor } from '@/disenos/vibrante/Contenedor';
-import { RUTA_INICIO } from '@/disenos/vibrante/menu';
+import { type MenuVibrante, RUTAS } from '@/disenos/vibrante/menu';
 import { Navegacion } from '@/disenos/vibrante/Navegacion';
-import type { PublicNavGroup, PublicNavItem } from '@/lib/nav';
 
-/** Encabezado crema de la propuesta: logo en tinta, menú y el botón rojo «Planifica tu visita». */
-export function Encabezado({
-  nombre,
-  menu,
-  links,
-}: {
-  nombre: string;
-  menu: PublicNavGroup[];
-  links: PublicNavItem[];
-}) {
+/**
+ * Encabezado crema de la propuesta: logo en tinta, menú desplegable y el botón rojo «Planifica
+ * tu visita». Es `sticky` (posicionado): el panel del menú se ubica a todo su ancho, debajo.
+ */
+export function Encabezado({ nombre, menu }: { nombre: string; menu: MenuVibrante }) {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-canvas">
       <Contenedor ancho="recogido" className="flex h-16 items-center gap-2 md:h-19 md:gap-3">
         <Navegacion
-          menu={menu}
-          links={links}
+          grupos={menu.grupos}
+          sueltos={menu.sueltos}
+          visita={RUTAS.primeraVisita}
           logo={
             <Link
-              href={RUTA_INICIO}
+              href={RUTAS.inicio}
               className="flex min-w-0 items-center rounded-[0.3rem] text-ink"
             >
               <BrandLogo className="h-10 md:h-12" />

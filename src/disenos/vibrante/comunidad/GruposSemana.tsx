@@ -26,9 +26,16 @@ export function GruposSemana({ grupos }: { grupos: GrupoPublico[] }) {
       <Contenedor className="grid gap-[clamp(1.5rem,4vw,4rem)] py-[clamp(3rem,8vw,6rem)] lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
         <div className="@container flex flex-col gap-4 self-start">
           <p className="eyebrow text-accent">Grupos en casa</p>
-          <Titular id="grupos-titulo" tamano="columna">
-            Encuentra tu <em>grupo.</em>
-          </Titular>
+          <Titular
+            id="grupos-titulo"
+            tamano="columna"
+            lineas={[
+              'Encuentra',
+              <span key="grupo">
+                tu <em>grupo.</em>
+              </span>,
+            ]}
+          />
           <p className="max-w-[38ch] text-[clamp(1rem,0.95rem+0.2vw,1.125rem)] leading-snug">
             Grupos en casas por toda la ciudad: elige el día y el lugar que mejor te queden.
           </p>

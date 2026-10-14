@@ -1,6 +1,8 @@
 /**
  * Fotos provisionales de la propuesta B · Vibrante: recortadas de sus imágenes (IBRWEB/Propuesta
- * 4, 5 y 6) hasta que la iglesia entregue fotos propias. Cada una en public/disenos/vibrante/.
+ * 4, 5 y 6; el auditorio y la adoración, de la 7 y la 10) hasta que la iglesia entregue fotos
+ * propias, en public/disenos/vibrante/. Las de `ejemplo()` son las fotos de ejemplo compartidas
+ * del sitio (public/fotos-ejemplo/).
  */
 export type FotoVibrante = {
   src: string;
@@ -10,6 +12,7 @@ export type FotoVibrante = {
 };
 
 const ruta = (nombre: string) => `/disenos/vibrante/${nombre}.webp`;
+const ejemplo = (nombre: string) => `/fotos-ejemplo/${nombre}.webp`;
 
 export const FOTOS = {
   adoracion: {
@@ -62,5 +65,52 @@ export const FOTOS = {
     src: ruta('siguiente-paso'),
     alt: 'Una joven sonríe conversando con amigos',
     encuadre: 'object-[60%_40%]',
+  },
+  auditorio: {
+    src: ruta('auditorio-balcon'),
+    alt: 'El auditorio lleno durante el culto del domingo',
+  },
+  escenario: {
+    src: ruta('auditorio-escenario'),
+    alt: 'La congregación adora frente al escenario con las manos en alto',
+  },
+  adoracionJuntos: {
+    src: ruta('adoracion-juntos'),
+    alt: 'Jóvenes adoran con los ojos cerrados y las manos abiertas',
+    encuadre: 'object-[60%_40%]',
+  },
+  nosotros: { src: ejemplo('nosotros'), alt: 'La iglesia canta reunida en el auditorio' },
+  bautismo: {
+    src: ejemplo('evento-bautismos'),
+    alt: 'Dos hermanas se abrazan después de un bautismo',
+    encuadre: 'object-[50%_35%]',
+  },
+  estudio: { src: ejemplo('grupo-estudio'), alt: 'Un joven explica la Biblia a su grupo' },
+  oracionCafe: {
+    src: ejemplo('grupo-oracion-cafe'),
+    alt: 'Dos amigos conversan con la Biblia abierta y un café',
+  },
+  familias: { src: ejemplo('grupo-familias'), alt: 'Un grupo de familias conversa en una sala' },
+  mujeres: { src: ejemplo('grupo-mujeres'), alt: 'Dos mujeres conversan y ríen' },
+  matrimonios: {
+    src: ejemplo('grupo-matrimonios'),
+    alt: 'Parejas comparten alrededor de una mesa',
+  },
+  hombres: {
+    src: ejemplo('evento-retiro'),
+    alt: 'Hombres ríen juntos en un retiro',
+    encuadre: 'object-[40%_40%]',
+  },
+  domingo: { src: ejemplo('evento-domingo'), alt: 'Amigos conversan antes del culto' },
+  bienvenida: {
+    src: ejemplo('area-bienvenida'),
+    alt: 'Una voluntaria de bienvenida recibe a una visita en la entrada',
+    encuadre: 'object-[70%_40%]',
+  },
+  kids: { src: ejemplo('ministerio-kids'), alt: 'Niños sonríen en su clase bíblica' },
+  vigilia: {
+    src: ejemplo('evento-vigilia'),
+    alt: 'Una joven adora con la mano levantada',
+    encuadre: 'object-[50%_25%]',
   },
 } satisfies Record<string, FotoVibrante>;

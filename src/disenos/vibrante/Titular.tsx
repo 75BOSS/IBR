@@ -18,25 +18,45 @@ const TAMANOS = {
   libre: '',
 };
 
+/**
+ * Con `lineas`, el titular se escribe línea por línea y cada una entra al aparecer
+ * (`.vibrante-lineas` en tema.css): por defecto cuando el titular entra en pantalla al bajar;
+ * con `entrada="carga"`, al abrir la página (portadas). Sin JavaScript, sin soporte o con
+ * «reducir movimiento», las líneas se ven quietas desde el principio. Cada línea puede partirse
+ * si no cabe: nunca se sale de su caja.
+ */
 export function Titular({
   as: Tag = 'h2',
   id,
   tamano = 'seccion',
+  lineas,
+  entrada = 'scroll',
   className = '',
   children,
 }: {
   as?: 'h1' | 'h2' | 'h3';
   id?: string;
   tamano?: keyof typeof TAMANOS;
+  lineas?: ReactNode[];
+  entrada?: 'scroll' | 'carga';
   className?: string;
-  children: ReactNode;
+  children?: ReactNode;
 }) {
   return (
     <Tag
       id={id}
-      className={`font-display font-black tracking-[-0.04em] text-balance ${TAMANOS[tamano]} ${className}`}
+      data-entrada={lineas ? entrada : undefined}
+      className={`font-display font-black tracking-[-0.04em] text-balance ${
+        lineas ? 'vibrante-lineas' : ''
+      } ${TAMANOS[tamano]} ${className}`}
     >
-      {children}
+      {lineas
+        ? lineas.map((linea, i) => (
+            <span key={i} className="vibrante-linea">
+              {linea}{' '}
+            </span>
+          ))
+        : children}
     </Tag>
   );
 }

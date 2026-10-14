@@ -87,3 +87,302 @@ html:has(.diseno-vibrante) {
     overflow: hidden;
   }
 }
+
+/* =============================================================================================
+ * Movimiento de la propuesta (enérgica). Solo CSS y variables que ponen componentes cliente
+ * pequeños (animacion/*): sin librerías. Reglas:
+ * - Todo lo que se mueve va dentro de `prefers-reduced-motion: no-preference`.
+ * - Lo que sigue al cursor, además, dentro de `(hover: hover) and (pointer: fine)`: en el celular
+ *   no hay cursor y nada depende de él.
+ * - Nada queda oculto sin JavaScript: las entradas al hacer scroll son animaciones CSS ligadas al
+ *   scroll (animation-timeline); sin soporte o con «reducir movimiento», todo se ve quieto.
+ * ============================================================================================= */
+
+/* --- Cursor propio: círculo rojo que sigue al puntero con retraso; crece con «Ver» sobre fotos y
+       tarjetas ([data-cursor]) y se vuelve un punto sobre enlaces. El cursor del sistema no se
+       oculta nunca. Lo mueve animacion/Cursor.tsx con --cx / --cy. --- */
+.vibrante-cursor {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .vibrante-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 60;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 2px solid var(--d-rojo-vivo);
+    border-radius: 9999px;
+    color: var(--color-canvas);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    pointer-events: none;
+    opacity: 0;
+    translate: calc(var(--cx, -10rem) - 50%) calc(var(--cy, -10rem) - 50%);
+    transition:
+      width 0.35s var(--ease-out-soft),
+      height 0.35s var(--ease-out-soft),
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      opacity 0.25s ease;
+  }
+  .vibrante-cursor[data-visible] {
+    opacity: 1;
+  }
+  .vibrante-cursor[data-claro]:not([data-estado='ver']) {
+    border-color: var(--color-canvas);
+  }
+  .vibrante-cursor[data-estado='enlace'] {
+    width: 0.875rem;
+    height: 0.875rem;
+    background-color: var(--d-rojo-vivo);
+  }
+  .vibrante-cursor[data-estado='enlace'][data-claro] {
+    background-color: var(--color-canvas);
+  }
+  .vibrante-cursor[data-estado='ver'] {
+    width: 5.25rem;
+    height: 5.25rem;
+    border-color: var(--color-accent);
+    background-color: var(--color-accent);
+  }
+  .vibrante-cursor > span {
+    opacity: 0;
+    scale: 0.4;
+    transition:
+      opacity 0.2s ease,
+      scale 0.35s var(--ease-out-soft);
+  }
+  .vibrante-cursor[data-estado='ver'] > span {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* --- Tarjetas que se inclinan en 3D siguiendo el cursor (animacion/Inclinable.tsx pone --rx,
+       --ry y la posición del brillo --gx / --gy). --- */
+.vibrante-tilt {
+  position: relative;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .vibrante-tilt {
+    transform: perspective(60rem) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 0.6s var(--ease-out-soft);
+  }
+  .vibrante-tilt[data-activo] {
+    transition-duration: 0.15s;
+  }
+  .vibrante-tilt::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    background: radial-gradient(
+      circle at var(--gx, 50%) var(--gy, 50%),
+      color-mix(in srgb, var(--color-canvas) 22%, transparent),
+      transparent 55%
+    );
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .vibrante-tilt[data-activo]::after {
+    opacity: 1;
+  }
+}
+
+/* --- Fotos del mosaico que se desplazan un poco con el cursor (animacion/Paralaje.tsx pone
+       --px / --py entre -1 y 1 en el contenedor; cada foto se mueve según su profundidad). --- */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .vibrante-paralaje {
+    /* En % de la propia foto: con la escala de 1.1 sobra un 5 % por lado y el desplazamiento
+       máximo (profundidad 2.6 × 1.5 %) nunca deja ver el borde. */
+    transform: translate3d(
+        calc(var(--px, 0) * var(--prof, 1) * -1.5%),
+        calc(var(--py, 0) * var(--prof, 1) * -1.5%),
+        0
+      )
+      scale(1.1);
+    transition: transform 0.9s var(--ease-out-soft);
+  }
+  .vibrante-prof-2 {
+    --prof: 1.8;
+  }
+  .vibrante-prof-3 {
+    --prof: 2.6;
+  }
+}
+
+/* --- Titulares que entran por líneas (Titular con `lineas`). En la portada, al cargar; en el
+       resto, cuando el titular entra en pantalla (ligado al scroll). --- */
+.vibrante-linea {
+  display: block;
+}
+
+@keyframes vibrante-linea {
+  from {
+    opacity: 0;
+    translate: 0 0.5em;
+    clip-path: inset(-1em -1em 100% -1em);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    clip-path: inset(-1em);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .vibrante-lineas[data-entrada='carga'] .vibrante-linea {
+    animation: vibrante-linea 0.95s var(--ease-out-soft) both;
+  }
+  .vibrante-lineas[data-entrada='carga'] .vibrante-linea:nth-child(2) {
+    animation-delay: 0.12s;
+  }
+  .vibrante-lineas[data-entrada='carga'] .vibrante-linea:nth-child(3) {
+    animation-delay: 0.24s;
+  }
+  .vibrante-lineas[data-entrada='carga'] .vibrante-linea:nth-child(4) {
+    animation-delay: 0.36s;
+  }
+
+  @supports (animation-timeline: view()) {
+    .vibrante-lineas[data-entrada='scroll'] {
+      view-timeline-name: --vibrante-titular;
+    }
+    .vibrante-lineas[data-entrada='scroll'] .vibrante-linea {
+      animation: vibrante-linea linear both;
+      animation-timeline: --vibrante-titular;
+      animation-range: entry 10% entry 75%;
+    }
+    .vibrante-lineas[data-entrada='scroll'] .vibrante-linea:nth-child(2) {
+      animation-range: entry 22% entry 87%;
+    }
+    .vibrante-lineas[data-entrada='scroll'] .vibrante-linea:nth-child(3) {
+      animation-range: entry 34% entry 99%;
+    }
+    .vibrante-lineas[data-entrada='scroll'] .vibrante-linea:nth-child(4) {
+      animation-range: entry 46% exit 0%;
+    }
+  }
+}
+
+/* --- Marquesina de palabras grandes (Marquesina.tsx): se mueve sola; el visitante la pausa con
+       su interruptor (solo CSS: :has del checkbox). --- */
+.vibrante-marquesina-pista {
+  display: flex;
+  width: max-content;
+}
+
+.vibrante-contorno {
+  color: transparent;
+  -webkit-text-stroke: 0.03em var(--color-canvas);
+}
+
+@keyframes vibrante-marquesina {
+  to {
+    translate: -50% 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .vibrante-marquesina-pista {
+    animation: vibrante-marquesina 42s linear infinite;
+  }
+  .vibrante-marquesina-pista[data-sentido='inverso'] {
+    animation-direction: reverse;
+  }
+  .vibrante-marquesina:has(.vibrante-marquesina-pausa:checked) .vibrante-marquesina-pista {
+    animation-play-state: paused;
+  }
+}
+
+/* --- Raya roja que se dibuja al bajar (la ruta de «Tu siguiente paso»). Sin soporte, entera. --- */
+@keyframes vibrante-trazo {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
+@keyframes vibrante-trazo-vertical {
+  from {
+    scale: 1 0;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .vibrante-trazo {
+      animation: vibrante-trazo-vertical linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 55%;
+    }
+  }
+}
+
+@media (width >= 64rem) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .vibrante-trazo {
+      animation-name: vibrante-trazo;
+    }
+  }
+}
+
+/* --- Panel del menú desplegable: baja desde el encabezado y sus enlaces entran escalonados. --- */
+@keyframes vibrante-panel {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 -2rem 0);
+  }
+}
+
+@keyframes vibrante-sube {
+  from {
+    opacity: 0;
+    translate: 0 0.75rem;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .vibrante-panel {
+    animation: vibrante-panel 0.45s var(--ease-out-soft) both;
+  }
+  .vibrante-panel-item {
+    animation: vibrante-sube 0.5s var(--ease-out-soft) both;
+  }
+  .vibrante-panel-item:nth-child(2) {
+    animation-delay: 0.05s;
+  }
+  .vibrante-panel-item:nth-child(3) {
+    animation-delay: 0.1s;
+  }
+  .vibrante-panel-item:nth-child(4) {
+    animation-delay: 0.15s;
+  }
+  .vibrante-panel-item:nth-child(5) {
+    animation-delay: 0.2s;
+  }
+  .vibrante-panel-item:nth-child(6) {
+    animation-delay: 0.25s;
+  }
+}

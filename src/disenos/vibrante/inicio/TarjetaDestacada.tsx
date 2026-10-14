@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Icon } from '@/components/Icon';
+import { Inclinable } from '@/disenos/vibrante/animacion/Inclinable';
 import { Foto } from '@/disenos/vibrante/Foto';
 import { FOTOS } from '@/disenos/vibrante/fotos';
 
@@ -22,16 +23,21 @@ function tamanoTitulo(titulo: string): string {
 /**
  * Tarjeta negra junto al collage (imagen 4): la última prédica con su título enorme y la serie en
  * itálica. Si aún no hay prédica, la página le pasa otro destacado real (Prédicas del canal o el
- * próximo evento); el diseño es el mismo.
+ * próximo evento); el diseño es el mismo. Se inclina un poco con el cursor.
  */
 export function TarjetaDestacada({ destacado }: { destacado: Destacado }) {
   const { etiqueta, titulo, enfasis, meta, accion } = destacado;
   return (
-    <article className="@container relative isolate flex h-full min-h-[clamp(20rem,22vw,23rem)] overflow-hidden rounded-[0.5rem] bg-(--d-negro-hondo) text-canvas on-dark">
+    <Inclinable
+      as="article"
+      grados={4}
+      className="@container isolate flex h-full min-h-[clamp(20rem,22vw,23rem)] overflow-hidden rounded-[0.5rem] bg-(--d-negro-hondo) text-canvas on-dark"
+    >
       <Foto
         foto={FOTOS.predicador}
         decorativa
         absoluta
+        cursor={null}
         sizes="(min-width: 80rem) 20vw, 50vw"
         className="inset-y-0 right-0 -z-10 w-[52%]"
       />
@@ -61,6 +67,6 @@ export function TarjetaDestacada({ destacado }: { destacado: Destacado }) {
           </Link>
         )}
       </div>
-    </article>
+    </Inclinable>
   );
 }

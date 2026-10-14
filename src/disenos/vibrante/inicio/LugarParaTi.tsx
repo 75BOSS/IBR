@@ -3,14 +3,15 @@ import { Icon } from '@/components/Icon';
 import { Contenedor } from '@/disenos/vibrante/Contenedor';
 import { Foto } from '@/disenos/vibrante/Foto';
 import { FOTOS } from '@/disenos/vibrante/fotos';
+import { RUTAS } from '@/disenos/vibrante/menu';
 import { Titular } from '@/disenos/vibrante/Titular';
 import { toneVar } from '@/lib/css-vars';
 import { type Ministerio, edadText, ministerioName } from '@/lib/ministerios';
 
 /**
  * «Un lugar para ti.» (imagen 6): titular y frase junto a una foto redondeada; debajo, los
- * ministerios por edad (cada uno con su color de la BD y su página). Sin ministerios con
- * contenido, queda la invitación con la foto.
+ * ministerios por edad (cada uno con su color de la BD, lleva a su sección en Ministerios). Sin
+ * ministerios con contenido, queda la invitación con la foto.
  */
 export function LugarParaTi({ ministerios }: { ministerios: Ministerio[] }) {
   return (
@@ -21,9 +22,13 @@ export function LugarParaTi({ ministerios }: { ministerios: Ministerio[] }) {
             id="lugar-titulo"
             tamano="libre"
             className="text-[clamp(2.125rem,22cqi,4.75rem)] leading-[0.95] [--em-escala:1.18em]"
-          >
-            Un lugar para <em>ti.</em>
-          </Titular>
+            lineas={[
+              'Un lugar',
+              <span key="ti">
+                para <em>ti.</em>
+              </span>,
+            ]}
+          />
           <p className="max-w-[32ch] text-[clamp(1rem,0.92rem+0.35vw,1.25rem)] leading-snug">
             No importa en qué etapa estés, aquí siempre hay un lugar para ti.
           </p>
@@ -38,7 +43,7 @@ export function LugarParaTi({ ministerios }: { ministerios: Ministerio[] }) {
             {ministerios.map((m) => (
               <li key={m.id} style={toneVar(m.color, 'var(--color-accent)')}>
                 <Link
-                  href={`/ministerios/${m.slug}`}
+                  href={`${RUTAS.ministerios}#${m.slug}`}
                   className="group flex min-h-14 items-center gap-4 border-t border-line py-3"
                 >
                   <span aria-hidden="true" className="size-3 shrink-0 rounded-full bg-(--tone)" />

@@ -1,13 +1,15 @@
 import type { Metadata } from 'next';
 import { datosComunidad } from '@/disenos/datos';
+import { Marquesina } from '@/disenos/vibrante/animacion/Marquesina';
+import { BandaCierre } from '@/disenos/vibrante/BandaCierre';
 import { GruposSemana } from '@/disenos/vibrante/comunidad/GruposSemana';
-import { PortadaComunidad } from '@/disenos/vibrante/comunidad/PortadaComunidad';
-import { SiguientePaso } from '@/disenos/vibrante/comunidad/SiguientePaso';
 import {
   type TarjetaComunidad,
   TarjetasComunidad,
 } from '@/disenos/vibrante/comunidad/TarjetasComunidad';
 import { FOTOS } from '@/disenos/vibrante/fotos';
+import { RUTAS } from '@/disenos/vibrante/menu';
+import { PortadaPagina } from '@/disenos/vibrante/PortadaPagina';
 import { edadText, ministerioName } from '@/lib/ministerios';
 
 export const revalidate = 300;
@@ -58,7 +60,7 @@ export default async function VibranteComunidad() {
               }),
               3,
             ),
-            href: '/ministerios',
+            href: RUTAS.ministerios,
           },
         ]
       : []),
@@ -82,10 +84,28 @@ export default async function VibranteComunidad() {
 
   return (
     <>
-      <PortadaComunidad />
+      <PortadaPagina
+        id="comunidad-titulo"
+        lineas={['La vida se']}
+        enfasis="comparte."
+        texto="En IBR creemos que la fe se vive mejor en comunidad. Aquí encuentras personas reales, para caminar juntos, crecer y hacer la diferencia."
+        fotos={[FOTOS.vidaAbrazo, FOTOS.vidaAlabanza, FOTOS.vidaAmigas]}
+      />
       <TarjetasComunidad tarjetas={tarjetas} />
       <GruposSemana grupos={grupos} />
-      <SiguientePaso />
+      <Marquesina
+        tono="rojo"
+        etiqueta="Nadie camina solo"
+        palabras={['Nadie camina solo', 'Grupos en casa', 'Riobamba', 'Servir juntos']}
+      />
+      <BandaCierre
+        id="siguiente-titulo"
+        linea="Siempre hay un"
+        destacada="lugar para ti."
+        texto="Conoce más sobre nuestra iglesia, resuelve tus dudas y da tu primer paso. Queremos conocerte."
+        accion={{ href: RUTAS.primeraVisita, texto: 'Planifica tu visita' }}
+        foto={FOTOS.siguientePaso}
+      />
     </>
   );
 }

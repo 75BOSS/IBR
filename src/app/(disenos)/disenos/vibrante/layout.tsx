@@ -1,9 +1,11 @@
 import { Figtree, Playfair_Display } from 'next/font/google';
+import { Cursor } from '@/disenos/vibrante/animacion/Cursor';
 import { BarraComoLlegar } from '@/disenos/vibrante/BarraComoLlegar';
 import { Encabezado } from '@/disenos/vibrante/Encabezado';
 import { menuVibrante } from '@/disenos/vibrante/menu';
 import { Pie } from '@/disenos/vibrante/Pie';
-import { datosMarco } from '@/disenos/datos';
+import { datosPrimeraVisita } from '@/disenos/datos';
+import { ministerioName } from '@/lib/ministerios';
 import '@/disenos/vibrante/tema.css';
 
 // Propuesta B · Vibrante: Figtree para todo (titulares en su peso 900, muy grueso y apretado
@@ -25,8 +27,14 @@ const manuscrita = Playfair_Display({
 });
 
 export default async function VibranteLayout({ children }: { children: React.ReactNode }) {
-  const { config, nav, redes, nombre, comoLlegar } = await datosMarco();
-  const menu = menuVibrante(nav.menu);
+  // El marco y los ministerios (Kids y Jóvenes del menú solo si existen): `datosPrimeraVisita`
+  // es el cargador compartido que trae los dos sin consultas de más.
+  const { config, content, nav, redes, nombre, comoLlegar, ministerios } =
+    await datosPrimeraVisita();
+  const menu = menuVibrante({
+    content,
+    ministerios: ministerios.map((m) => ({ slug: m.slug, nombre: ministerioName(m) })),
+  });
   return (
     <div
       className={`diseno-vibrante ${sans.variable} ${manuscrita.variable} flex min-h-dvh flex-col`}
@@ -37,7 +45,7 @@ export default async function VibranteLayout({ children }: { children: React.Rea
       >
         Saltar al contenido
       </a>
-      <Encabezado nombre={nombre} menu={menu} links={nav.links} />
+      <Encabezado nombre={nombre} menu={menu} />
       <main id="contenido" tabIndex={-1} className="flex-1 focus:outline-none">
         {children}
       </main>
@@ -50,10 +58,10 @@ export default async function VibranteLayout({ children }: { children: React.Rea
         comoLlegar={comoLlegar}
         redes={redes}
         menu={menu}
-        links={nav.links}
         legal={nav.legal}
       />
       {comoLlegar && <BarraComoLlegar href={comoLlegar} />}
+      <Cursor />
     </div>
   );
 }

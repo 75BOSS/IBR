@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Inclinable } from '@/disenos/vibrante/animacion/Inclinable';
 import { Contenedor } from '@/disenos/vibrante/Contenedor';
 import { FlechaEnlace } from '@/disenos/vibrante/FlechaEnlace';
 import { Titular } from '@/disenos/vibrante/Titular';
@@ -37,9 +38,14 @@ export function ProximosEventos({
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="@container flex min-w-[min(100%,20rem)] flex-1 flex-col gap-3">
             <p className="eyebrow text-accent">Agenda</p>
-            <Titular id="eventos-titulo">
-              Lo que <em>viene.</em>
-            </Titular>
+            <Titular
+              id="eventos-titulo"
+              lineas={[
+                <span key="lo">
+                  Lo que <em>viene.</em>
+                </span>,
+              ]}
+            />
           </div>
           {verTodos && <FlechaEnlace href="/eventos">Ver todos los eventos</FlechaEnlace>}
         </div>
@@ -74,39 +80,42 @@ function TarjetaEvento({
   ancho: string;
 }) {
   return (
-    <li
-      className={`group @container relative flex min-h-[clamp(12rem,18vw,15rem)] reveal flex-col justify-between gap-6 rounded-[0.5rem] p-[clamp(1.25rem,6cqi,2rem)] ${ancho} ${
-        destacado
-          ? 'bg-(--d-negro-hondo) text-canvas on-dark'
-          : 'bg-surface text-ink ring-1 ring-line'
-      }`}
-    >
-      <p className="flex items-baseline gap-3">
-        <span className="font-display text-[clamp(3rem,16cqi,4.5rem)] leading-none font-black tracking-[-0.04em]">
-          {formatDateTime(evento.fecha_inicio, { day: 'numeric' })}
-        </span>
-        <span
-          className={`caps text-[clamp(0.8125rem,4cqi,0.9375rem)] ${
-            destacado ? 'text-(--d-rojo-vivo)' : 'text-accent'
-          }`}
-        >
-          {formatDateTime(evento.fecha_inicio, { month: 'long' })}
-        </span>
-      </p>
-      <div className="flex flex-col gap-1">
-        <h3 className="font-display text-[clamp(1.375rem,7cqi,2rem)] leading-tight font-black tracking-[-0.03em]">
-          <Link
-            href={`/eventos/${evento.slug}`}
-            className="group-hover:underline after:absolute after:inset-0"
+    <li className={`flex reveal ${ancho}`}>
+      <Inclinable
+        as="article"
+        className={`group @container flex min-h-[clamp(12rem,18vw,15rem)] flex-1 flex-col justify-between gap-6 rounded-[0.5rem] p-[clamp(1.25rem,6cqi,2rem)] ${
+          destacado
+            ? 'bg-(--d-negro-hondo) text-canvas on-dark'
+            : 'bg-surface text-ink ring-1 ring-line'
+        }`}
+      >
+        <p className="flex items-baseline gap-3">
+          <span className="font-display text-[clamp(3rem,16cqi,4.5rem)] leading-none font-black tracking-[-0.04em]">
+            {formatDateTime(evento.fecha_inicio, { day: 'numeric' })}
+          </span>
+          <span
+            className={`caps text-[clamp(0.8125rem,4cqi,0.9375rem)] ${
+              destacado ? 'text-(--d-rojo-vivo)' : 'text-accent'
+            }`}
           >
-            {evento.titulo}
-          </Link>
-        </h3>
-        <p className={destacado ? 'text-(--d-crema-tenue)' : 'text-ink-soft'}>
-          {cuando(evento)}
-          {evento.ubicacion ? ` · ${evento.ubicacion}` : ''}
+            {formatDateTime(evento.fecha_inicio, { month: 'long' })}
+          </span>
         </p>
-      </div>
+        <div className="flex flex-col gap-1">
+          <h3 className="font-display text-[clamp(1.375rem,7cqi,2rem)] leading-tight font-black tracking-[-0.03em]">
+            <Link
+              href={`/eventos/${evento.slug}`}
+              className="group-hover:underline after:absolute after:inset-0"
+            >
+              {evento.titulo}
+            </Link>
+          </h3>
+          <p className={destacado ? 'text-(--d-crema-tenue)' : 'text-ink-soft'}>
+            {cuando(evento)}
+            {evento.ubicacion ? ` · ${evento.ubicacion}` : ''}
+          </p>
+        </div>
+      </Inclinable>
     </li>
   );
 }
