@@ -54,6 +54,20 @@
     );
     --d-velo-banda: linear-gradient(rgb(13 34 58 / 0.62), rgb(13 34 58 / 0.62));
     --d-velo-encabezado: linear-gradient(to bottom, rgb(9 22 40 / 0.45), rgb(9 22 40 / 0));
+    /* Salvación (Crecer): la foto de adoración detrás del texto, más oscura a la izquierda. */
+    --d-velo-salvacion: linear-gradient(
+      100deg,
+      rgb(9 22 40 / 0.94) 20%,
+      rgb(9 22 40 / 0.8) 60%,
+      rgb(9 22 40 / 0.62)
+    );
+    /* Tarjetas con foto y texto crema abajo (destacado del menú, ministerios, prédicas). */
+    --d-velo-tarjeta: linear-gradient(
+      to top,
+      rgb(9 22 40 / 0.9) 8%,
+      rgb(9 22 40 / 0.35) 55%,
+      rgb(9 22 40 / 0.05)
+    );
 
     /* Letras: titulares en sans muy gruesa, palabra destacada en serifa negra o cursiva,
        texto en Figtree (la del sitio, ya cargada en la raíz). */
@@ -91,5 +105,286 @@
   /* Con el menú del celular abierto (diálogo modal), la página de atrás no se desplaza. */
   html:has(.diseno-escenario dialog[open]) {
     overflow: hidden;
+  }
+}
+
+/*
+ * Movimiento de la propuesta: personalidad teatral (2026-10-13).
+ * - Fuera de capa a propósito: así le gana a las utilidades de Tailwind del mismo elemento
+ *   (ej. la sombra de una tarjeta al levantarse). Todas las clases empiezan con `d-`.
+ * - Todo lo que se mueve va dentro de `prefers-reduced-motion: no-preference`; lo que aparece
+ *   al hacer scroll usa `animation-timeline: view()` (solo CSS): sin JavaScript, sin soporte o
+ *   con «reducir movimiento» se ve quieto y completo desde el principio.
+ * - Lo que responde al cursor va además dentro de `(hover: hover) and (pointer: fine)`: en el
+ *   celular nada depende de él (las flechas de las tarjetas se ven siempre).
+ */
+.diseno-escenario {
+  /* Luces del escenario y el reflector que sigue al cursor (se suman con `screen`). */
+  --d-luz-calida: rgb(255 196 140 / 0.62);
+  --d-luz-roja: rgb(229 73 45 / 0.62);
+  --d-luz-fria: rgb(150 190 255 / 0.32);
+  --d-luz-reflector: rgb(255 214 170 / 0.3);
+  --d-brillo-rojo: rgb(229 73 45 / 0.55);
+}
+
+@keyframes d-letra {
+  from {
+    opacity: 0;
+    transform: translateY(0.55em) rotate(10deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes d-trazo-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes d-trazo-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Los círculos numerados «se encienden»: de contorno rojo a rojo lleno. */
+@keyframes d-encender {
+  from {
+    background-color: var(--color-canvas);
+    color: var(--d-rojo);
+  }
+  to {
+    background-color: var(--d-rojo);
+    color: var(--color-cream);
+  }
+}
+
+/* Telón: la foto se abre desde el centro (el margen negativo deja ver la sombra). */
+@keyframes d-telon {
+  from {
+    clip-path: inset(-3rem 50% -3rem 50%);
+  }
+  to {
+    clip-path: inset(-3rem -3rem -3rem -3rem);
+  }
+}
+
+@keyframes d-acercar {
+  from {
+    transform: scale(1.2);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* El panel del menú baja como un telón. */
+@keyframes d-baja {
+  from {
+    clip-path: inset(0 -3rem 100% -3rem);
+  }
+  to {
+    clip-path: inset(0 -3rem -3rem -3rem);
+  }
+}
+
+@keyframes d-barrido {
+  from {
+    rotate: -16deg;
+  }
+  to {
+    rotate: 9deg;
+  }
+}
+
+@keyframes d-barrido-inverso {
+  from {
+    rotate: 15deg;
+  }
+  to {
+    rotate: -8deg;
+  }
+}
+
+@keyframes d-pulso {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Luces del escenario en la portada: dos haces que barren muy despacio y un brillo arriba. */
+.d-luces {
+  pointer-events: none;
+  filter: blur(1.25rem);
+  mix-blend-mode: screen;
+  background: radial-gradient(ellipse 55% 38% at 50% -6%, var(--d-luz-fria), transparent 72%);
+}
+.d-luces::before,
+.d-luces::after {
+  content: '';
+  position: absolute;
+  top: -12%;
+  width: 34%;
+  height: 125%;
+  transform-origin: 50% 0;
+  clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+}
+.d-luces::before {
+  left: 6%;
+  rotate: -12deg;
+  background: linear-gradient(to bottom, var(--d-luz-calida), transparent 78%);
+}
+.d-luces::after {
+  right: 6%;
+  rotate: 12deg;
+  background: linear-gradient(to bottom, var(--d-luz-roja), transparent 74%);
+}
+
+/* El reflector que sigue al cursor (lo mueve Reflector.tsx con --mx/--my). */
+.d-reflector {
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    circle clamp(10rem, 22vw, 20rem) at var(--mx, 50%) var(--my, 50%),
+    var(--d-luz-reflector),
+    transparent 72%
+  );
+  transition: opacity 0.6s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .d-luces {
+    animation: d-pulso 7s ease-in-out infinite alternate;
+  }
+  .d-luces::before {
+    animation: d-barrido 19s ease-in-out infinite alternate;
+  }
+  .d-luces::after {
+    animation: d-barrido-inverso 23s ease-in-out infinite alternate;
+  }
+
+  /* La palabra en serifa roja del titular entra letra a letra (--i = posición de la letra). */
+  .d-letra {
+    animation: d-letra 0.75s var(--ease-out-soft) both;
+    animation-delay: calc(var(--i, 0) * 0.055s + 0.2s);
+  }
+
+  /* El panel del menú y los acordeones. */
+  .d-panel {
+    animation: d-baja 0.42s var(--ease-out-soft) both;
+  }
+
+  @supports (animation-timeline: view()) {
+    /* La línea de tiempo se dibuja al hacer scroll. */
+    .d-trazo-y {
+      transform-origin: top;
+      animation: d-trazo-y linear both;
+      animation-timeline: view();
+      animation-range: cover 18% cover 55%;
+    }
+    .d-trazo-x {
+      transform-origin: left;
+      animation: d-trazo-x linear both;
+      animation-timeline: view();
+      animation-range: entry 40% cover 48%;
+    }
+    /* Cada círculo se enciende al cruzar la mitad de la pantalla. */
+    .d-circulo {
+      animation: d-encender linear both;
+      animation-timeline: view();
+      animation-range: cover 30% cover 44%;
+    }
+    /* Fotos que se revelan con un telón al aparecer (completas cuando entran enteras). */
+    .d-telon {
+      animation: d-telon linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+    .d-telon .d-acercar {
+      animation: d-acercar linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 60%;
+    }
+    /* Bloques que suben al aparecer. */
+    .d-sube {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+  }
+}
+
+/* ---------- Interacciones con el cursor (solo con mouse o trackpad) ---------- */
+@media (hover: hover) and (pointer: fine) {
+  .d-reflector[data-activo] {
+    opacity: 1;
+  }
+
+  /* Retratos del equipo: en gris hasta que pasa el cursor (en el celular, siempre a color). */
+  .d-retrato img {
+    filter: grayscale(1) contrast(1.05);
+    transition: filter 0.6s ease;
+  }
+  .d-retrato:is(:hover, :focus-within) img {
+    filter: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  /* Tarjetas que se levantan y muestran una flecha que se desliza. */
+  .d-tarjeta {
+    transition:
+      translate 0.45s var(--ease-out-soft),
+      box-shadow 0.45s var(--ease-out-soft);
+  }
+  .d-tarjeta:is(:hover, :focus-within) {
+    translate: 0 -0.5rem;
+    box-shadow: var(--shadow-lift);
+  }
+  .d-tarjeta .d-flecha {
+    opacity: 0;
+    translate: -0.85rem 0;
+    transition:
+      opacity 0.3s ease,
+      translate 0.45s var(--ease-out-soft);
+  }
+  .d-tarjeta:is(:hover, :focus-within) .d-flecha {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .d-tarjeta .d-zoom {
+    transition: transform 0.8s var(--ease-out-soft);
+  }
+  .d-tarjeta:is(:hover, :focus-within) .d-zoom {
+    transform: scale(1.06);
+  }
+
+  /* Pasos de la línea de tiempo y del camino: el círculo brilla bajo el cursor. */
+  .d-paso .d-circulo {
+    transition:
+      scale 0.35s var(--ease-out-soft),
+      filter 0.35s ease;
+  }
+  .d-paso:is(:hover, :focus-within) .d-circulo {
+    scale: 1.12;
+    filter: drop-shadow(0 0 0.75rem var(--d-brillo-rojo));
+  }
+
+  /* La marquesina se detiene bajo el cursor para leerla. */
+  .d-marquesina:hover {
+    animation-play-state: paused;
   }
 }

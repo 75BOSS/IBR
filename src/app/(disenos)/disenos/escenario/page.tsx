@@ -1,57 +1,46 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Icon } from '@/components/Icon';
+import { ADN, TESTIMONIOS } from '@/disenos/contenido';
 import { datosPortada } from '@/disenos/datos';
 import { BandaFoto } from '@/disenos/escenario/BandaFoto';
+import { Cabecera } from '@/disenos/escenario/Cabecera';
+import { Camino } from '@/disenos/escenario/Camino';
 import { FLECHA, claseBoton } from '@/disenos/escenario/estilos';
 import { Eventos } from '@/disenos/escenario/Eventos';
+import { FlechaEnlace } from '@/disenos/escenario/FlechaEnlace';
 import { FranjaDomingos } from '@/disenos/escenario/FranjaDomingos';
+import { Marquesina } from '@/disenos/escenario/Marquesina';
+import { rutaCrecer } from '@/disenos/escenario/menu';
 import { type Paso, Pasos } from '@/disenos/escenario/Pasos';
 import { Portada } from '@/disenos/escenario/Portada';
 import { Predica } from '@/disenos/escenario/Predica';
 import { Puntuacion } from '@/disenos/escenario/Puntuacion';
-import { PRIMERA_VISITA } from '@/disenos/escenario/rutas';
-import type { SiteContent } from '@/lib/nav';
+import { COMUNIDAD, CONOCENOS, CRECER, PRIMERA_VISITA, RECURSOS } from '@/disenos/escenario/rutas';
+import { Testimonios } from '@/disenos/escenario/Testimonios';
 
 export const revalidate = 300;
 
 export const metadata: Metadata = { title: 'D · Escenario · Inicio' };
 
-/**
- * Los tres pasos de «Ven. Conoce. Comparte.». Cada uno lleva a una página con contenido: la
- * comunidad a Grupos o, si aún no hay grupos, a Ministerios (sin ninguno, el paso no aparece); el
- * siguiente paso a Servir o, si no hay áreas, a Soy nuevo.
- */
-function pasosPortada(content: SiteContent): Paso[] {
-  const comunidad = content.grupos ? '/grupos' : content.ministerios ? '/ministerios' : null;
-  return [
-    {
-      href: PRIMERA_VISITA,
-      titulo: 'Tu primera visita',
-      texto: 'Todo lo que necesitas saber para sentirte en casa.',
-    },
-    ...(comunidad
-      ? [
-          {
-            href: comunidad,
-            titulo: 'Nuestra comunidad',
-            texto: 'Personas reales, en todas las etapas de la vida.',
-          },
-        ]
-      : []),
-    content.servir
-      ? {
-          href: '/servir',
-          titulo: 'Un siguiente paso',
-          texto: 'Descubre cómo servir, crecer y hacer la diferencia.',
-        }
-      : {
-          href: '/soy-nuevo',
-          titulo: 'Un siguiente paso',
-          texto: 'Cuéntanos de ti y te ayudamos a dar el primer paso.',
-        },
-  ];
-}
+/** Los tres pasos de «Ven. Conoce. Comparte.»: llevan a las páginas de la propuesta. */
+const PASOS_PORTADA: Paso[] = [
+  {
+    href: PRIMERA_VISITA,
+    titulo: 'Tu primera visita',
+    texto: 'Todo lo que necesitas saber para sentirte en casa.',
+  },
+  {
+    href: COMUNIDAD,
+    titulo: 'Nuestra comunidad',
+    texto: 'Personas reales, en todas las etapas de la vida.',
+  },
+  {
+    href: CRECER,
+    titulo: 'Un siguiente paso',
+    texto: 'Descubre cómo servir, crecer y hacer la diferencia.',
+  },
+];
 
 /** Inicio de la propuesta D · Escenario (imágenes 10 y 12). */
 export default async function InicioEscenario() {
@@ -85,11 +74,74 @@ export default async function InicioEscenario() {
             <Puntuacion className="lg:-ml-[0.09em]" />
           </span>
         </h2>
-        <Pasos pasos={pasosPortada(content)} />
+        <Pasos pasos={PASOS_PORTADA} />
+      </section>
+
+      <section aria-labelledby="adn-inicio" className="bg-(--d-marino) text-cream on-dark">
+        <div className="container-page flex flex-col gap-2 pt-[clamp(2.5rem,6vw,4rem)] md:flex-row md:items-end md:justify-between md:gap-8">
+          <Cabecera
+            id="adn-inicio"
+            etiqueta="Nuestro ADN"
+            tono="oscuro"
+            titulo={
+              <>
+                Lo que nos <em className="font-semibold italic">define.</em>
+              </>
+            }
+          />
+          <Link
+            href={`${CONOCENOS}#adn`}
+            className="group inline-flex min-h-11 items-center gap-2 font-semibold text-peach underline decoration-1 underline-offset-[0.3em] hover:decoration-2"
+          >
+            Conoce nuestra historia
+            <Icon name="arrowRight" className={FLECHA} />
+          </Link>
+        </div>
+        <div className="pb-[clamp(2rem,5vw,3.5rem)]">
+          <Marquesina valores={ADN} />
+        </div>
+      </section>
+
+      <section
+        aria-labelledby="siguiente-paso-titulo"
+        className="container-page flex flex-col gap-[clamp(1.75rem,4vw,2.75rem)] py-[clamp(3rem,7vw,5rem)]"
+      >
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+          <Cabecera
+            id="siguiente-paso-titulo"
+            etiqueta="Crecer"
+            titulo={
+              <>
+                Tu siguiente <em className="font-semibold italic">paso.</em>
+              </>
+            }
+            texto="Cinco pasos para crecer en la fe, en comunidad y sirviendo a otros."
+          />
+          <FlechaEnlace href={CRECER}>Ver la ruta completa</FlechaEnlace>
+        </div>
+        <Camino pasos={rutaCrecer(content, false)} resumido />
       </section>
 
       <Predica predica={ultimaPredica} hayPredicas={content.predicas} />
       <Eventos eventos={eventos} verTodos={content.eventos} />
+
+      <section aria-labelledby="testimonios-inicio" className="bg-sunken py-[clamp(3rem,7vw,5rem)]">
+        <div className="container-page flex flex-col gap-[clamp(1.5rem,4vw,2.5rem)]">
+          <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <Cabecera
+              id="testimonios-inicio"
+              etiqueta="Testimonios"
+              titulo={
+                <>
+                  Vidas <em className="font-semibold italic">cambiadas.</em>
+                </>
+              }
+            />
+            <FlechaEnlace href={`${RECURSOS}#testimonios`}>Más historias</FlechaEnlace>
+          </div>
+          <Testimonios testimonios={TESTIMONIOS} />
+        </div>
+      </section>
 
       <BandaFoto
         id="somos-familia"

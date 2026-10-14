@@ -1,32 +1,30 @@
 import Link from 'next/link';
 import type { IconName } from '@/components/Icon';
-import type { PublicNavGroup, PublicNavItem } from '@/lib/nav';
+import type { PublicNavItem } from '@/lib/nav';
 import { Logo } from './Logo';
+import type { MenuEscenario } from './menu';
 import { Redes } from './Redes';
-import { INICIO, PRIMERA_VISITA } from './rutas';
+import { INICIO } from './rutas';
 
 /**
  * Pie de la propuesta (no aparece en las imágenes): azul marino hondo como las bandas, el logo al
- * centro como en el encabezado, el menú completo por grupos, redes y los enlaces legales
- * (Privacidad siempre). Todo sale de `visibleNav`: ningún enlace lleva a una página vacía.
+ * centro como en el encabezado, los mismos grupos del menú desplegable (con las páginas de la
+ * propuesta), redes, los enlaces sueltos, Contacto y los legales (Privacidad siempre). Ningún
+ * enlace lleva a una página vacía (`menuEscenario` y `visibleNav`).
  */
 export function Pie({
   menu,
-  links,
   legal,
   redes,
   nombre,
 }: {
-  menu: PublicNavGroup[];
-  links: PublicNavItem[];
+  menu: MenuEscenario;
   legal: PublicNavItem[];
   redes: { label: string; icon: IconName; href: string }[];
   nombre: string;
 }) {
-  const grupos = [
-    ...menu,
-    { title: 'Visítanos', items: [{ href: PRIMERA_VISITA, label: 'Tu primera visita' }] },
-  ];
+  const grupos = [...menu.izquierda, ...menu.derecha];
+  const sueltos = [...menu.sueltos, { href: '/contacto', label: 'Contacto' }, ...legal];
   return (
     <footer className="bg-(--d-marino-hondo) text-cream on-dark">
       <div className="container-page flex flex-col items-center gap-[clamp(2rem,5vw,3rem)] py-[clamp(2.5rem,6vw,4rem)]">
@@ -37,11 +35,11 @@ export function Pie({
 
         <nav
           aria-label="Pie de página"
-          className="grid w-full max-w-[56rem] grid-cols-2 gap-x-6 gap-y-8 text-center md:grid-cols-4"
+          className="grid w-full max-w-[60rem] grid-cols-2 gap-x-6 gap-y-8 text-center md:grid-cols-4"
         >
           {grupos.map((grupo) => (
-            <div key={grupo.title} className="flex flex-col items-center gap-3">
-              <p className="caps text-cream/65">{grupo.title}</p>
+            <div key={grupo.titulo} className="flex flex-col items-center gap-3">
+              <p className="caps text-cream/65">{grupo.titulo}</p>
               <ul className="flex flex-col items-center gap-1 text-cream/90">
                 {grupo.items.map((item) => (
                   <li key={item.href}>
@@ -58,11 +56,11 @@ export function Pie({
         <Redes redes={redes} />
 
         <div className="flex w-full flex-col items-center gap-3 border-t border-cream/15 pt-6 text-sm text-cream/70 md:flex-row md:justify-between">
-          <p>
+          <p className="text-center">
             © {new Date().getFullYear()} {nombre} · Somos Familia
           </p>
           <ul className="flex flex-wrap justify-center gap-x-5 gap-y-1">
-            {[...links, ...legal].map((item) => (
+            {sueltos.map((item) => (
               <li key={item.href}>
                 <Link href={item.href} className="inline-flex min-h-9 items-center link-quiet">
                   {item.label}

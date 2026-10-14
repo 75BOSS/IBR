@@ -26,3 +26,14 @@ export function diaPrincipal(reuniones: ReunionHora[]): { dia: string; horas: st
   ];
   return { dia: diaEnPlural(DAY_NAMES[primera.dia_semana] ?? ''), horas: lista.format(horas) };
 }
+
+const diaSemana = new Intl.DateTimeFormat('es-EC', {
+  weekday: 'long',
+  timeZone: 'America/Guayaquil',
+});
+
+/** El día de la semana en Ecuador con mayúscula («Lunes»), para marcar el devocional de hoy. */
+export function diaDeHoy(fecha: Date = new Date()): string {
+  const dia = diaSemana.format(fecha);
+  return dia.charAt(0).toUpperCase() + dia.slice(1);
+}

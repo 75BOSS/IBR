@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { toneVar } from '@/lib/css-vars';
+import { Foto } from './Foto';
 
 export type Etiqueta = {
   texto: string;
@@ -13,6 +13,8 @@ export type Etiqueta = {
 export type PasoVisita = {
   titulo: string;
   texto: string;
+  /** Año de un hito (línea de la historia): va sobre el título y, en ancho, grande al otro lado. */
+  anio?: string;
   foto?: { src: string; alt: string };
   etiquetas?: Etiqueta[];
   enlace?: React.ReactNode;
@@ -57,15 +59,25 @@ const AIRE = 'pt-[clamp(1.75rem,6cqi,2.75rem)]';
  * Línea de tiempo de «Tu primera visita» (imagen 11): círculos rojos numerados sobre una línea
  * vertical, con el texto y la foto a los lados, alternando. Mide su contenedor: angosto, la línea
  * va a la izquierda y la foto debajo del texto; ancho, la línea al centro. Un paso sin foto se
- * centra bajo su círculo (como «Ven en familia»), y la línea termina en el último círculo.
+ * centra bajo su círculo (como «Ven en familia»), y la línea termina en el último círculo. Un
+ * hito con año (la historia de Conócenos) alterna igual, con el año grande en el lado libre.
+ * Teatral: la línea se dibuja al hacer scroll, cada círculo se enciende en rojo al pasar y brilla
+ * bajo el cursor, y las fotos se abren con un telón (tema.css). `nivel` del título de cada paso:
+ * h2 si la línea es la página (Primera visita), h3 si va dentro de una sección.
  */
-export function LineaTiempo({ pasos }: { pasos: PasoVisita[] }) {
+export function LineaTiempo({
+  pasos,
+  nivel: Titulo = 'h2',
+}: {
+  pasos: PasoVisita[];
+  nivel?: 'h2' | 'h3';
+}) {
   return (
     <div className="@container">
       <ol className="mx-auto max-w-[57rem]">
         {pasos.map((paso, i) => {
           const ultimo = i === pasos.length - 1;
-          const centrado = !paso.foto;
+          const centrado = !paso.foto && !paso.anio;
           // Ancho: el texto a la izquierda en los pasos impares (01, 03…) y a la derecha en los pares.
           const textoIzquierda = i % 2 === 0;
           const columnas = centrado
@@ -79,13 +91,17 @@ export function LineaTiempo({ pasos }: { pasos: PasoVisita[] }) {
           return (
             <li
               key={paso.titulo}
-              className={`relative grid grid-cols-[3rem_minmax(0,1fr)] gap-x-[clamp(1rem,4cqi,1.5rem)] ${AIRE} ${columnas} before:absolute before:top-0 before:left-6 before:w-0.5 before:-translate-x-1/2 before:bg-(--d-rojo)/75 @2xl:before:left-1/2 ${
-                ultimo ? 'before:h-[calc(clamp(1.75rem,6cqi,2.75rem)+1.5rem)]' : 'before:bottom-0'
-              }`}
+              className={`d-paso relative grid grid-cols-[3rem_minmax(0,1fr)] gap-x-[clamp(1rem,4cqi,1.5rem)] ${AIRE} ${columnas}`}
             >
               <span
                 aria-hidden="true"
-                className={`relative z-10 col-start-1 row-start-1 grid size-12 place-items-center self-start rounded-full bg-(--d-rojo) font-display text-[1.25rem] font-bold text-cream ring-[6px] ring-canvas ${
+                className={`d-trazo-y absolute top-0 left-6 w-0.5 -translate-x-1/2 bg-(--d-rojo)/75 @2xl:left-1/2 ${
+                  ultimo ? 'h-[calc(clamp(1.75rem,6cqi,2.75rem)+1.5rem)]' : 'bottom-0'
+                }`}
+              />
+              <span
+                aria-hidden="true"
+                className={`d-circulo relative z-10 col-start-1 row-start-1 grid size-12 place-items-center self-start rounded-full border-2 border-(--d-rojo) bg-(--d-rojo) font-display text-[1.25rem] font-bold text-cream ring-[6px] ring-canvas ${
                   centrado ? '@2xl:col-start-1' : '@2xl:col-start-2 @2xl:mt-3'
                 }`}
               >
@@ -97,9 +113,10 @@ export function LineaTiempo({ pasos }: { pasos: PasoVisita[] }) {
                   centrado ? '' : '@2xl:pt-4'
                 }`}
               >
-                <h2 className="font-headline text-[clamp(1.5rem,1.15rem+1.4vw,2rem)] leading-tight font-extrabold tracking-[-0.035em] text-ink">
+                {paso.anio && <p className="caps text-accent">{paso.anio}</p>}
+                <Titulo className="font-headline text-[clamp(1.5rem,1.15rem+1.4vw,2rem)] leading-tight font-extrabold tracking-[-0.035em] text-ink">
                   {paso.titulo}
-                </h2>
+                </Titulo>
                 <p
                   className={`max-w-[24rem] text-[clamp(1rem,0.96rem+0.2vw,1.125rem)] text-ink-soft ${
                     centrado ? '@2xl:max-w-[29rem]' : ''
@@ -127,18 +144,27 @@ export function LineaTiempo({ pasos }: { pasos: PasoVisita[] }) {
 
               {paso.foto && (
                 <div
-                  className={`relative col-start-2 row-start-2 mt-4 aspect-[12/5] w-full max-w-[28rem] self-start overflow-hidden rounded-xl shadow-card @2xl:row-start-1 @2xl:mt-0 @2xl:max-w-none ${
+                  className={`col-start-2 row-start-2 mt-4 w-full max-w-[28rem] self-start @2xl:row-start-1 @2xl:mt-0 @2xl:max-w-none ${
                     textoIzquierda ? '@2xl:col-start-3' : '@2xl:col-start-1'
                   }`}
                 >
-                  <Image
+                  <Foto
                     src={paso.foto.src}
                     alt={paso.foto.alt}
-                    fill
                     sizes="(min-width: 64rem) 25rem, 85vw"
-                    className="object-cover"
+                    marco="aspect-[12/5] rounded-xl shadow-card"
                   />
                 </div>
+              )}
+              {!paso.foto && paso.anio && (
+                <p
+                  aria-hidden="true"
+                  className={`row-start-1 hidden self-start pt-1 font-serif text-[clamp(3rem,9cqi,5.25rem)] leading-none font-black tracking-[-0.03em] text-(--d-rojo)/90 italic @2xl:block ${
+                    textoIzquierda ? '@2xl:col-start-3' : '@2xl:col-start-1 @2xl:text-right'
+                  }`}
+                >
+                  {paso.anio}
+                </p>
               )}
             </li>
           );

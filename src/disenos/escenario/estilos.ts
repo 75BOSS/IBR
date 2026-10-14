@@ -24,9 +24,12 @@ export function claseBoton(tono: keyof typeof ESTILOS): string {
 /** Flecha que acompaña a un botón o enlace: avanza un poco al pasar el mouse. */
 export const FLECHA = 'size-5 shrink-0 transition-transform motion-safe:group-hover:translate-x-1';
 
-/** Enlace o botón del menú de escritorio (Conócenos, Conéctate… y «Visítanos» en la portada). */
+/** Flecha de una tarjeta `d-tarjeta`: con cursor aparece deslizándose al pasar; sin él, siempre. */
+export const FLECHA_TARJETA = 'd-flecha size-5 shrink-0 text-accent';
+
+/** Enlace o botón del menú de escritorio (Conócenos, Siguiente paso… Oración, Dar). */
 export function claseEnlaceMenu(tono: 'oscuro' | 'claro'): string {
-  return `inline-flex min-h-11 items-center gap-1.5 rounded-lg font-display text-[1.0625rem] font-semibold transition-colors ${
+  return `inline-flex min-h-11 items-center gap-1.5 rounded-lg font-display text-[clamp(0.9375rem,0.7rem+0.4vw,1.0625rem)] font-semibold whitespace-nowrap transition-colors ${
     tono === 'oscuro' ? 'text-cream hover:text-cream/75' : 'text-ink hover:text-accent'
   }`;
 }

@@ -1,8 +1,10 @@
 import { FotoArte } from './FotoArte';
+import { Reflector } from './Reflector';
 
 /**
  * Banda azul marino con una foto teñida detrás (imagen 11 «¿Tienes alguna pregunta?» e imagen 12
- * «Somos Familia para toda la vida.»): título, una frase y una acción, todo centrado.
+ * «Somos Familia para toda la vida.»): título, una frase y una acción, todo centrado. Con mouse,
+ * un reflector de teatro sigue al cursor sobre la banda.
  */
 export function BandaFoto({
   id,
@@ -26,10 +28,11 @@ export function BandaFoto({
         className="absolute inset-0 -z-20 size-full object-cover"
       />
       <div aria-hidden="true" className="absolute inset-0 -z-10 bg-(image:--d-velo-banda)" />
+      <Reflector />
       <div className="container-page flex max-w-[48rem] flex-col items-center gap-[clamp(0.75rem,1.8vw,1.125rem)] py-[clamp(2.25rem,5vw,2.75rem)] text-center">
         <h2
           id={id}
-          className="font-headline text-[clamp(2rem,1.45rem+2.3vw,2.875rem)] leading-[1.02] font-extrabold tracking-[-0.04em]"
+          className="font-headline text-[clamp(2rem,1.45rem+2.3vw,2.875rem)] leading-[1.02] font-extrabold tracking-[-0.04em] text-balance"
         >
           {titulo}
         </h2>

@@ -1,6 +1,7 @@
 import { Playfair_Display, Plus_Jakarta_Sans } from 'next/font/google';
-import { datosMarco } from '@/disenos/datos';
+import { datosMinisterios } from '@/disenos/datos';
 import { Encabezado } from '@/disenos/escenario/Encabezado';
+import { menuEscenario } from '@/disenos/escenario/menu';
 import { Pie } from '@/disenos/escenario/Pie';
 import '@/disenos/escenario/tema.css';
 
@@ -21,7 +22,12 @@ const serifa = Playfair_Display({
 });
 
 export default async function EscenarioLayout({ children }: { children: React.ReactNode }) {
-  const { nav, redes, nombre } = await datosMarco();
+  // Los ministerios dicen si el menú puede llevar a Kids y Jóvenes (anclas de Ministerios).
+  const { nav, redes, nombre, content, ministerios } = await datosMinisterios();
+  const menu = menuEscenario(
+    content,
+    ministerios.map((m) => m.slug),
+  );
   return (
     <div
       className={`diseno-escenario ${titulo.variable} ${serifa.variable} relative flex min-h-dvh flex-col`}
@@ -32,11 +38,11 @@ export default async function EscenarioLayout({ children }: { children: React.Re
       >
         Saltar al contenido
       </a>
-      <Encabezado menu={nav.menu} links={nav.links} redes={redes} nombre={nombre} />
+      <Encabezado menu={menu} redes={redes} nombre={nombre} />
       <main id="contenido" tabIndex={-1} className="flex-1 focus:outline-none">
         {children}
       </main>
-      <Pie menu={nav.menu} links={nav.links} legal={nav.legal} redes={redes} nombre={nombre} />
+      <Pie menu={menu} legal={nav.legal} redes={redes} nombre={nombre} />
     </div>
   );
 }

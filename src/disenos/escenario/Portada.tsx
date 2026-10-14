@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { Icon } from '@/components/Icon';
 import { FLECHA, claseBoton } from './estilos';
 import { FotoArte } from './FotoArte';
+import { Letras } from './Letras';
+import { Reflector } from './Reflector';
 import { PRIMERA_VISITA } from './rutas';
 
 /**
@@ -9,6 +11,8 @@ import { PRIMERA_VISITA } from './rutas';
  * celular y tablet, la foto de cerca con el texto abajo sobre el velo (imagen 12). En escritorio
  * «empieza aquí.» va entero en la serifa negra roja; en celular solo «aquí.», en cursiva. En
  * celular y tablet el encabezado va encima de esta foto (de ahí el aire superior).
+ * Teatral: dos haces de luz barren el escenario muy despacio, un reflector sigue al cursor y
+ * «empieza aquí.» entra letra a letra (tema.css; quieto con «reducir movimiento»).
  */
 export function Portada() {
   return (
@@ -26,6 +30,8 @@ export function Portada() {
         aria-hidden="true"
         className="absolute inset-0 -z-10 bg-(image:--d-velo-portada-celular) lg:bg-(image:--d-velo-portada)"
       />
+      <div aria-hidden="true" className="d-luces absolute inset-0 -z-10" />
+      <Reflector />
       <div className="container-page flex flex-col items-center gap-[clamp(1rem,2.2vw,1.75rem)] pt-28 pb-[clamp(2.25rem,7vw,3.5rem)] text-center lg:py-16">
         <h1
           id="portada-titulo"
@@ -33,7 +39,10 @@ export function Portada() {
         >
           Tu domingo{' '}
           <span className="lg:block lg:font-serif lg:text-[0.93em] lg:leading-[0.9] lg:font-black lg:tracking-[-0.015em] lg:text-(--d-rojo)">
-            empieza <em className="font-semibold italic lg:font-black lg:not-italic">aquí.</em>
+            <Letras texto="empieza" />{' '}
+            <em className="font-semibold italic lg:font-black lg:not-italic">
+              <Letras texto="aquí." desde={7} />
+            </em>
           </span>
         </h1>
         <p className="max-w-[34rem] text-[clamp(1.0625rem,0.92rem+0.55vw,1.375rem)] text-balance text-cream/95">

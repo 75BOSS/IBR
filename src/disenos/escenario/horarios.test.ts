@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { diaEnPlural, diaPrincipal } from './horarios';
-import { repartirMenu } from './menu';
+import { diaDeHoy, diaEnPlural, diaPrincipal } from './horarios';
 
 test('diaPrincipal toma el primer día y une sus horas sin repetir', () => {
   assert.equal(diaPrincipal([]), null);
@@ -25,19 +24,8 @@ test('diaEnPlural no duplica la s de lunes a viernes', () => {
   assert.equal(diaEnPlural('Jueves'), 'Jueves');
 });
 
-test('repartirMenu deja dos grupos a la izquierda y los sueltos en el último de la derecha', () => {
-  const g = (title: string) => ({ title, items: [{ href: `/${title}`, label: title }] });
-  const dar = { href: '/dar', label: 'Dar' };
-  const { izquierda, derecha } = repartirMenu([g('a'), g('b'), g('c')], [dar]);
-  assert.deepEqual(
-    izquierda.map((x) => x.title),
-    ['a', 'b'],
-  );
-  assert.deepEqual(
-    derecha.map((x) => x.items.map((i) => i.href)),
-    [['/c', '/dar']],
-  );
-  // Sin grupos a la derecha, los sueltos forman uno propio.
-  assert.deepEqual(repartirMenu([g('a')], [dar]).derecha, [{ title: 'Más', items: [dar] }]);
-  assert.deepEqual(repartirMenu([g('a'), g('b')], []).derecha, []);
+test('diaDeHoy usa la hora de Ecuador y pone mayúscula', () => {
+  // 13 de octubre de 2026, 03:00 UTC = lunes 12 a las 22:00 en Guayaquil.
+  assert.equal(diaDeHoy(new Date('2026-10-13T03:00:00Z')), 'Lunes');
+  assert.equal(diaDeHoy(new Date('2026-10-14T15:00:00Z')), 'Miércoles');
 });

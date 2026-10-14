@@ -3,31 +3,31 @@
 import Link from 'next/link';
 import { type MouseEvent, useRef, useState } from 'react';
 import { Icon, type IconName } from '@/components/Icon';
-import type { PublicNavGroup, PublicNavItem } from '@/lib/nav';
 import { FLECHA, claseBoton } from './estilos';
 import { Logo } from './Logo';
+import type { MenuEscenario } from './menu';
 import { Redes } from './Redes';
 import { PRIMERA_VISITA } from './rutas';
 
 /**
  * Menú del celular y la tablet (botón de tres rayas a la izquierda, imagen 12). Es un diálogo
  * modal nativo: el foco entra al menú y no se escapa a la página de atrás, Escape lo cierra y el
- * foco vuelve al botón que lo abrió. Tocar cualquier enlace también lo cierra.
+ * foco vuelve al botón que lo abrió. Cada grupo es un acordeón nativo (<details>, uno abierto a
+ * la vez, el primero abierto al entrar); tocar cualquier enlace cierra el menú.
  */
 export function MenuCelular({
   menu,
-  links,
   redes,
   tono,
 }: {
-  menu: PublicNavGroup[];
-  links: PublicNavItem[];
+  menu: MenuEscenario;
   redes: { label: string; icon: IconName; href: string }[];
   /** Color del botón: crema sobre la foto de la portada, azul marino en el encabezado claro. */
   tono: 'oscuro' | 'claro';
 }) {
   const dialogo = useRef<HTMLDialogElement>(null);
   const [abierto, setAbierto] = useState(false);
+  const grupos = [...menu.izquierda, ...menu.derecha];
 
   const abrir = () => {
     dialogo.current?.showModal();
@@ -75,39 +75,51 @@ export function MenuCelular({
         </div>
 
         {/* Un div y no otro <nav>: el diálogo ya está dentro de la navegación del encabezado. */}
-        <div onClick={alTocarEnlace} className="container-page flex flex-col gap-8 pt-4 pb-10">
-          {menu.map((grupo) => (
-            <div key={grupo.title} className="flex flex-col gap-1">
-              <p className="caps text-cream/70">{grupo.title}</p>
-              <ul className="grid gap-x-8 md:grid-cols-2">
-                {grupo.items.map((item) => (
-                  <li key={item.href} className="border-b border-cream/15">
-                    <Link
-                      href={item.href}
-                      className="flex min-h-14 items-center justify-between gap-3 py-2.5"
+        <div onClick={alTocarEnlace} className="container-page flex flex-col gap-8 pt-2 pb-10">
+          <ul className="border-t border-cream/15">
+            {grupos.map((grupo, i) => (
+              <li key={grupo.titulo} className="border-b border-cream/15">
+                <details name="menu-escenario-grupos" open={i === 0} className="group">
+                  <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-3 py-3 font-display text-[clamp(1.5rem,1.2rem+1.4vw,2rem)] leading-tight font-extrabold tracking-[-0.03em] [&::-webkit-details-marker]:hidden">
+                    {grupo.titulo}
+                    <span
+                      aria-hidden="true"
+                      className="grid size-10 shrink-0 place-items-center rounded-full ring-1 ring-cream/30 transition duration-300 group-open:rotate-45 group-open:bg-(--d-rojo) group-open:ring-(--d-rojo)"
                     >
-                      <span className="flex flex-col">
-                        <span className="font-display text-[clamp(1.375rem,1.15rem+1vw,1.75rem)] leading-tight font-bold">
-                          {item.label}
-                        </span>
-                        {item.description && (
-                          <span className="text-sm text-cream/75">{item.description}</span>
-                        )}
-                      </span>
-                      <Icon name="arrowRight" className="size-5 shrink-0 text-cream/70" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+                      <Icon name="plus" className="size-5" />
+                    </span>
+                  </summary>
+                  <ul className="grid gap-x-8 pb-4 md:grid-cols-2">
+                    {grupo.items.map((item) => (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          className="flex min-h-14 items-center justify-between gap-3 border-l-2 border-cream/20 py-2 pl-4 transition-colors hover:border-(--d-rojo)"
+                        >
+                          <span className="flex min-w-0 flex-col">
+                            <span className="font-display text-[clamp(1.125rem,1.02rem+0.5vw,1.3125rem)] leading-tight font-bold">
+                              {item.label}
+                            </span>
+                            {item.description && (
+                              <span className="text-sm text-cream/75">{item.description}</span>
+                            )}
+                          </span>
+                          <Icon name="arrowRight" className="size-5 shrink-0 text-cream/70" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              </li>
+            ))}
+          </ul>
 
           <div className="flex flex-wrap gap-3">
             <Link href={PRIMERA_VISITA} className={claseBoton('rojo')}>
               Planifica tu visita
               <Icon name="arrowRight" className={FLECHA} />
             </Link>
-            {links.map((item) => (
+            {menu.sueltos.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
