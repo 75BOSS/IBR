@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { DISENOS, destinoDiseno, ubicarDiseno } from './registro';
+import { DISENOS, EN_CONSTRUCCION, destinoDiseno, ubicarDiseno } from './registro';
 
 const porSlug = (slug: string) => {
   const d = DISENOS.find((x) => x.slug === slug);
@@ -27,7 +27,7 @@ test('ubicarDiseno reconoce la página de cada propuesta y el sitio original', (
 });
 
 test('destinoDiseno lleva a la misma página o, si no la tiene, al inicio', () => {
-  assert.equal(destinoDiseno(porSlug('calida'), 'comunidad'), '/disenos/calida/comunidad');
+  assert.equal(destinoDiseno(porSlug('vibrante'), 'comunidad'), '/disenos/vibrante/comunidad');
   assert.equal(destinoDiseno(porSlug('escenario'), 'comunidad'), '/disenos/escenario/comunidad');
   assert.equal(destinoDiseno(porSlug('original'), 'crecer'), '/servir');
   assert.equal(destinoDiseno(porSlug('original'), 'primera-visita'), '/soy-nuevo');
@@ -45,5 +45,6 @@ test('cada propuesta tiene su inicio bajo /disenos/<slug> y slugs únicos', () =
 
 test('todas las propuestas tienen las mismas páginas que el original', () => {
   const paginas = Object.keys(porSlug('original').paginas).sort();
-  for (const d of DISENOS) assert.deepEqual(Object.keys(d.paginas).sort(), paginas, d.slug);
+  for (const d of DISENOS.filter((x) => !EN_CONSTRUCCION.includes(x.slug)))
+    assert.deepEqual(Object.keys(d.paginas).sort(), paginas, d.slug);
 });

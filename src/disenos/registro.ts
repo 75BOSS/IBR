@@ -28,9 +28,16 @@ export const NOMBRE_PAGINA: Record<PaginaDiseno, string> = {
   recursos: 'Recursos',
 };
 
+/**
+ * TEMPORAL (2026-10-13): propuestas cuyas páginas nuevas aún se están construyendo. Solo muestran
+ * inicio y comunidad, para que el selector no lleve a una página que todavía no existe.
+ */
+export const EN_CONSTRUCCION: readonly string[] = ['calida', 'nocturna'];
+
 /** Las mismas páginas para cada propuesta: /disenos/<slug> y /disenos/<slug>/<página>. */
 function paginasDe(slug: string): Diseno['paginas'] {
   const base = `/disenos/${slug}`;
+  if (EN_CONSTRUCCION.includes(slug)) return { inicio: base, comunidad: `${base}/comunidad` };
   return {
     inicio: base,
     comunidad: `${base}/comunidad`,
