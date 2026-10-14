@@ -42,6 +42,8 @@
      celular y tablet (16 px en 360, como el marco de la imagen 15). */
   --d-barra: 4.5rem;
   --d-margen: clamp(1rem, 4vw, 1.5rem);
+  /* Margen de las páginas interiores en escritorio (junto al menú lateral). */
+  --d-margen-lg: clamp(1rem, 1.6vw, 1.5rem);
 
   /* Tipografía: Archivo (variable, con ancho) para titulares negros, condensados y
      espaciados; Figtree para leer; Poppins solo para «Somos Familia» junto al sello. */
@@ -89,5 +91,244 @@ html:has(.diseno-poster dialog[open]) {
 @media (width < 64rem) {
   html:has(.diseno-poster) {
     --selector-alto: 4.5rem;
+  }
+}
+
+/* ===================================================================================
+ * Movimiento e interacción de la propuesta (personalidad «editorial y gráfica»).
+ * Reglas: todo movimiento solo con «prefers-reduced-motion: no-preference»; lo que depende del
+ * cursor, solo con «(hover: hover) and (pointer: fine)» (en el celular no hay cursor y nada
+ * depende de esto); nada queda oculto sin JavaScript. Van en la capa «components» para que las
+ * utilidades de Tailwind (que van en «utilities») puedan ajustarlas en cada uso.
+ * =================================================================================== */
+@layer components {
+  /* Bloque de la grilla que se invierte al pasar el cursor: azul marino con texto crema (o rojo
+     con `.d-invierte-rojo`). Los hijos toman los colores del bloque con text-(--inv-tinta),
+     text-(--inv-acento), text-(--inv-suave), border-(--inv-borde) y bg-(--inv-fondo); el fondo de
+     reposo se cambia con [--inv-reposo:…]. */
+  .d-invierte {
+    --inv-reposo: transparent;
+    --inv-fondo: var(--inv-reposo);
+    --inv-tinta: var(--color-ink);
+    --inv-acento: var(--color-accent);
+    --inv-suave: var(--color-ink-soft);
+    --inv-borde: var(--color-ink);
+    background-color: var(--inv-fondo);
+    color: var(--inv-tinta);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .d-invierte:hover {
+      --inv-fondo: var(--color-ink);
+      --inv-tinta: var(--color-canvas);
+      --inv-acento: var(--d-rojo-claro);
+      --inv-suave: rgb(253 245 232 / 0.85);
+      --inv-borde: var(--color-canvas);
+    }
+
+    .d-invierte.d-invierte-rojo:hover {
+      --inv-fondo: var(--color-accent);
+      --inv-acento: var(--color-canvas);
+      --inv-suave: var(--color-canvas);
+    }
+  }
+
+  /* Foto en escala de grises que pasa a color (y se acerca un poco) al pasar el cursor por su
+     tarjeta (`group`). En el celular siempre está a color. */
+  @media (hover: hover) and (pointer: fine) {
+    .d-foto {
+      filter: grayscale(1) contrast(1.06);
+    }
+
+    .group:hover .d-foto,
+    .group:focus-visible .d-foto,
+    .group:focus-within .d-foto {
+      filter: none;
+    }
+  }
+
+  /* Fila de una lista con flecha: al pasar, la flecha avanza y una raya roja se dibuja debajo. */
+  .d-fila {
+    background-image: linear-gradient(var(--color-accent), var(--color-accent));
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    background-size: 0% 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .d-fila:hover {
+      background-size: 100% 2px;
+    }
+
+    .d-fila:hover .d-flecha,
+    .group:hover .d-flecha {
+      transform: translateX(0.4em);
+    }
+  }
+
+  /* Marquesina de palabras condensadas: la pista lleva el texto dos veces (la copia con
+     aria-hidden) y corre la mitad de su ancho. Con «reducir movimiento» queda quieta. */
+  .d-marquesina-pista {
+    display: flex;
+    width: max-content;
+  }
+
+  /* Insignia redonda «Ver» que sigue al cursor sobre una foto (--mx/--my los pone el
+     componente SigueCursor). Solo con cursor fino y sin «reducir movimiento». */
+  .d-insignia {
+    display: none;
+  }
+
+  /* Titular con «mal registro» de imprenta: una copia durazno detrás que se corre hacia el
+     cursor (--dx/--dy entre -1 y 1, los pone el componente Desregistro). Sin cursor queda con un
+     corrimiento leve fijo, como un póster impreso. */
+  .d-copia {
+    color: var(--d-durazno);
+    transform: translate(
+      calc(0.035em + var(--dx, 0) * 0.07em),
+      calc(0.03em + var(--dy, 0) * 0.06em)
+    );
+  }
+
+  .d-copia em {
+    font-style: normal;
+    color: inherit;
+  }
+
+  /* Indicador que se desliza entre las pestañas (--pestana = índice, --pestanas = cuántas). */
+  .d-indicador {
+    width: calc(100% / var(--pestanas, 1));
+    transform: translateX(calc(var(--pestana, 0) * 100%));
+  }
+
+  /* Guía que sigue al cursor por los enlaces de un grupo del menú lateral. */
+  .d-guia {
+    height: var(--guia-alto, 0);
+    transform: translateY(var(--guia-y, 0));
+    opacity: var(--guia-ver, 0);
+  }
+
+  /* Acordeón (<details>): el + gira y se vuelve ×. */
+  .d-acordeon > summary {
+    list-style: none;
+  }
+
+  .d-acordeon > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .d-acordeon[open] .d-mas {
+    transform: rotate(45deg);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .d-invierte,
+    .d-invierte :where(*) {
+      transition-property: color, background-color, border-color, fill, stroke;
+      transition-duration: 0.28s;
+      transition-timing-function: ease;
+    }
+
+    .d-foto {
+      transition:
+        filter 0.6s ease,
+        transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .group:hover .d-foto {
+        transform: scale(1.045);
+      }
+
+      .d-insignia {
+        display: grid;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        pointer-events: none;
+        opacity: 0;
+        transform: translate(var(--mx, 50%), var(--my, 50%)) translate(-50%, -50%) scale(0.4);
+        transition:
+          opacity 0.25s ease,
+          transform 0.18s ease-out;
+      }
+
+      .d-sigue:hover .d-insignia {
+        opacity: 1;
+        transform: translate(var(--mx, 50%), var(--my, 50%)) translate(-50%, -50%) scale(1);
+      }
+
+      [data-marquesina]:hover .d-marquesina-pista {
+        animation-play-state: paused;
+      }
+    }
+
+    .d-fila {
+      transition: background-size 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .d-flecha {
+      transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .d-marquesina-pista {
+      animation: d-marquesina var(--d-velocidad, 45s) linear infinite;
+    }
+
+    .d-marquesina-pista.d-al-reves {
+      animation-direction: reverse;
+    }
+
+    .d-copia {
+      transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .d-indicador {
+      transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    .d-guia {
+      transition:
+        transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+        height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+        opacity 0.2s ease;
+    }
+
+    .d-mas {
+      transition: transform 0.3s ease;
+    }
+
+    .d-panel {
+      transition: grid-template-rows 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    /* Titular gigante que se desplaza en horizontal con el scroll (solo CSS). */
+    @supports (animation-timeline: view()) {
+      .d-desliza {
+        animation: d-desliza linear both;
+        animation-timeline: view();
+        animation-range: cover;
+      }
+
+      .d-desliza.d-al-reves {
+        animation-direction: reverse;
+      }
+    }
+  }
+}
+
+@keyframes d-marquesina {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes d-desliza {
+  from {
+    transform: translateX(4%);
+  }
+  to {
+    transform: translateX(-34%);
   }
 }

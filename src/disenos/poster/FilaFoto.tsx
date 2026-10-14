@@ -8,7 +8,8 @@ import { Titulo } from './piezas';
  * Fila con foto, titular condensado, una línea de texto y su acción. Se ajusta a su contenedor:
  * angosta (celular, «Conecta» de la imagen 15) es foto + texto + flecha; ancha (Comunidad,
  * imagen 14) suma la línea vertical y la acción escrita en rojo («Explorar →»). Toda la fila es
- * clic (la acción se estira encima); los enlaces de `detalle` quedan por encima de ella.
+ * clic (la acción se estira encima); los enlaces de `detalle` quedan por encima de ella. Al pasar
+ * el cursor la foto pasa de gris a color, el titular se pone rojo y la flecha avanza.
  */
 export function FilaFoto({
   foto,
@@ -54,7 +55,7 @@ export function FilaFoto({
             alt={alt}
             fill
             sizes="(min-width: 64rem) 28vw, 45vw"
-            className="object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:group-hover:scale-105"
+            className="d-foto object-cover"
           />
         </div>
         <div
@@ -79,7 +80,7 @@ export function FilaFoto({
           <span className="sr-only"> {titulo.toLowerCase()}</span>
           <Icon
             name="arrowRight"
-            className="size-[clamp(1.375rem,6cqi,1.75rem)] text-ink motion-safe:transition-transform motion-safe:group-hover:translate-x-1 @3xl:size-[1.1em] @3xl:text-accent"
+            className="d-flecha size-[clamp(1.375rem,6cqi,1.75rem)] text-ink @3xl:size-[1.1em] @3xl:text-accent"
           />
         </Link>
         {detalle && (

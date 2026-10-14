@@ -4,28 +4,18 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useId, useRef, useState } from 'react';
 import { Icon } from '@/components/Icon';
-import type { PublicNavGroup, PublicNavItem } from '@/lib/nav';
-import { RUTA_COMUNIDAD, RUTA_INICIO, esActual } from './enlaces';
+import { botonPoster } from './botones';
 import { LogoPoster } from './LogoPoster';
+import type { MenuPoster } from './menu';
+import { MenuGrupos } from './MenuGrupos';
 
 /**
- * Menú con todo el sitio (grupos Conócenos · Conéctate · Recursos y los enlaces sueltos), en un
- * `<dialog>` modal: el navegador encierra el foco, Escape lo cierra y la página de atrás queda
- * inerte. Al cerrar, el foco vuelve al botón que lo abrió. Se abre con la hamburguesa del
- * celular o con «Todo el sitio» del menú lateral. Sin JavaScript, el pie lleva los mismos
- * enlaces.
+ * Menú del celular y la tablet (hamburguesa): Inicio, los grupos del menú en acordeón, Oración,
+ * Dar y «Planifica tu visita», en un `<dialog>` modal: el navegador encierra el foco, Escape lo
+ * cierra y la página de atrás queda inerte. Al cerrar, el foco vuelve al botón que lo abrió.
+ * Sin JavaScript, el pie lleva los mismos enlaces.
  */
-export function MenuSitio({
-  nombre,
-  menu,
-  links,
-  variante,
-}: {
-  nombre: string;
-  menu: PublicNavGroup[];
-  links: PublicNavItem[];
-  variante: 'hamburguesa' | 'lateral';
-}) {
+export function MenuSitio({ nombre, menu }: { nombre: string; menu: MenuPoster }) {
   const pathname = usePathname();
   const dialogo = useRef<HTMLDialogElement>(null);
   const boton = useRef<HTMLButtonElement>(null);
@@ -52,11 +42,6 @@ export function MenuSitio({
     if (!abierto && d.open) d.close();
   }, [abierto]);
 
-  const principales = [
-    { href: RUTA_INICIO, label: 'Inicio' },
-    { href: RUTA_COMUNIDAD, label: 'Comunidad' },
-  ];
-
   return (
     <>
       <button
@@ -66,18 +51,10 @@ export function MenuSitio({
         aria-expanded={abierto}
         aria-controls={id}
         onClick={() => setAbierto(true)}
-        className={
-          variante === 'hamburguesa'
-            ? 'grid size-12 place-items-center rounded-md text-ink'
-            : 'flex min-h-11 items-center gap-[clamp(0.875rem,1.5vw,1.5rem)] pr-3 pl-[clamp(1.25rem,1.9vw,1.875rem)] text-[clamp(0.9375rem,0.82rem+0.2vw,1.0625rem)] text-ink-soft transition-colors hover:text-accent'
-        }
+        className="grid size-12 place-items-center rounded-md text-ink"
       >
-        <Icon
-          name="menu"
-          strokeWidth={variante === 'hamburguesa' ? 2.75 : 2}
-          className={variante === 'hamburguesa' ? 'size-9' : 'size-[1.4rem]'}
-        />
-        {variante === 'hamburguesa' ? <span className="sr-only">Abrir menú</span> : 'Todo el sitio'}
+        <Icon name="menu" strokeWidth={2.75} className="size-9" />
+        <span className="sr-only">Abrir menú</span>
       </button>
 
       <dialog
@@ -109,74 +86,14 @@ export function MenuSitio({
             Menú del sitio
           </h2>
           <nav aria-labelledby={tituloId} className="flex flex-col gap-[clamp(1.5rem,4vw,2.25rem)]">
-            <ul className="flex flex-col">
-              {principales.map((p) => (
-                <li key={p.href} className="border-b border-ink/25">
-                  <EnlaceMenu item={p} actual={esActual(pathname, p.href)} grande />
-                </li>
-              ))}
-            </ul>
-            {menu.map((grupo) => (
-              <div key={grupo.title} className="flex flex-col gap-1">
-                <p className="font-display text-[0.8125rem] font-bold tracking-[0.36em] text-accent uppercase">
-                  {grupo.title}
-                </p>
-                <ul className="flex flex-col">
-                  {grupo.items.map((item) => (
-                    <li key={item.href} className="border-b border-ink/25">
-                      <EnlaceMenu item={item} actual={esActual(pathname, item.href)} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-            {links.length > 0 && (
-              <ul className="flex flex-col">
-                {links.map((item) => (
-                  <li key={item.href} className="border-b border-ink/25">
-                    <EnlaceMenu item={item} actual={esActual(pathname, item.href)} />
-                  </li>
-                ))}
-              </ul>
-            )}
+            <MenuGrupos menu={menu} variante="dialogo" />
+            <Link href={menu.visita.href} className={botonPoster('rojo', 'w-full justify-between')}>
+              {menu.visita.etiqueta}
+              <Icon name="arrowRight" className="d-flecha size-[1.1em]" />
+            </Link>
           </nav>
         </div>
       </dialog>
     </>
-  );
-}
-
-function EnlaceMenu({
-  item,
-  actual,
-  grande = false,
-}: {
-  item: PublicNavItem;
-  actual: boolean;
-  grande?: boolean;
-}) {
-  return (
-    <Link
-      href={item.href}
-      aria-current={actual ? 'page' : undefined}
-      className="group flex min-h-14 items-center justify-between gap-4 py-2"
-    >
-      <span className="flex flex-col">
-        <span
-          className={`font-display leading-none font-extrabold tracking-[-0.01em] uppercase group-hover:text-accent ${
-            grande
-              ? 'text-[clamp(2rem,1.5rem+2.5vw,2.75rem)] font-black'
-              : 'text-[clamp(1.375rem,1.15rem+1vw,1.75rem)] font-stretch-[80%]'
-          } ${actual ? 'text-accent' : 'text-ink'}`}
-        >
-          {item.label}
-        </span>
-        {item.description && <span className="text-sm text-ink-soft">{item.description}</span>}
-      </span>
-      <Icon
-        name="arrowRight"
-        className="size-5 shrink-0 text-ink transition-transform group-hover:text-accent motion-safe:group-hover:translate-x-1"
-      />
-    </Link>
   );
 }

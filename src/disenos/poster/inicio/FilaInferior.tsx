@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Icon } from '@/components/Icon';
 import type { SiteContent } from '@/lib/nav';
+import { RUTA_COMUNIDAD, RUTA_MINISTERIOS, RUTA_RECURSOS } from '../enlaces';
 import { IconoPoster, type IconoPosterNombre } from '../IconoPoster';
 import { Lema, Raya, Titulo } from '../piezas';
 
@@ -11,10 +12,10 @@ type UltimaPredica = { titulo: string } | null;
 export function accesosConecta(content: SiteContent) {
   const accesos: { href: string; etiqueta: string; icono: IconoPosterNombre }[] = [
     ...(content.grupos
-      ? [{ href: '/grupos', etiqueta: 'Grupos en casa', icono: 'users' as const }]
+      ? [{ href: RUTA_COMUNIDAD, etiqueta: 'Grupos en casa', icono: 'users' as const }]
       : []),
     ...(content.ministerios
-      ? [{ href: '/ministerios', etiqueta: 'Niños y familias', icono: 'familia' as const }]
+      ? [{ href: RUTA_MINISTERIOS, etiqueta: 'Niños y familias', icono: 'familia' as const }]
       : []),
   ];
   return accesos.length > 0
@@ -69,7 +70,7 @@ function TarjetaPredicas({
 }) {
   return (
     <Link
-      href="/predicas"
+      href={RUTA_RECURSOS}
       className={`group @container flex min-w-0 border-2 border-ink p-1 ${className}`}
     >
       <div className="relative isolate flex flex-1 flex-col justify-between gap-[5cqi] overflow-hidden bg-(--d-noche) p-[6.4cqi] text-canvas on-dark">
@@ -84,7 +85,7 @@ function TarjetaPredicas({
           <span className="absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-(--d-noche) to-transparent" />
         </div>
         <div className="flex max-w-[50%] flex-col gap-[3.6cqi]">
-          <Titulo estilo="grueso" className="text-[clamp(1.75rem,10.6cqi,3.5rem)]">
+          <Titulo estilo="grueso" className="text-[clamp(1.75rem,10cqi,3.5rem)]">
             Prédicas
           </Titulo>
           <Lema tamano="text-[clamp(0.625rem,2.75cqi,0.875rem)]">Mensajes para la vida diaria</Lema>
@@ -128,14 +129,11 @@ function ListaConecta({ content, className }: { content: SiteContent; className:
             <li key={a.href} className="border-b border-ink">
               <Link
                 href={a.href}
-                className="group flex min-h-[clamp(2.75rem,21cqi,4.25rem)] items-center gap-[clamp(0.75rem,5cqi,1.25rem)] text-[clamp(0.9375rem,5.9cqi,1.1875rem)] hover:text-accent"
+                className="group d-fila flex min-h-[clamp(2.75rem,21cqi,4.25rem)] items-center gap-[clamp(0.75rem,5cqi,1.25rem)] text-[clamp(0.9375rem,5.9cqi,1.1875rem)] hover:text-accent"
               >
                 <IconoPoster nombre={a.icono} className="size-[1.35em]" />
                 <span className="flex-1">{a.etiqueta}</span>
-                <Icon
-                  name="arrowRight"
-                  className="size-[1.25em] motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
-                />
+                <Icon name="arrowRight" className="d-flecha size-[1.25em]" />
               </Link>
             </li>
           ))}

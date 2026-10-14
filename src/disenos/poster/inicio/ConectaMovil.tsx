@@ -1,4 +1,5 @@
 import type { SiteContent } from '@/lib/nav';
+import { RUTA_COMUNIDAD, RUTA_MINISTERIOS, RUTA_RECURSOS } from '../enlaces';
 import { FilaFoto } from '../FilaFoto';
 import { Lema, Titulo } from '../piezas';
 
@@ -19,21 +20,21 @@ export function ConectaMovil({
       foto: '/disenos/poster/grupos.webp',
       titulo: 'Grupos en casa',
       texto: 'Comparte, crece y haz amigos.',
-      href: '/grupos',
+      href: RUTA_COMUNIDAD,
       accion: 'Explorar',
     },
     content.predicas && {
       foto: '/disenos/poster/predicas.webp',
       titulo: 'Prédicas',
       texto: 'Mensajes que inspiran.',
-      href: '/predicas',
+      href: RUTA_RECURSOS,
       accion: 'Ver',
     },
     content.ministerios && {
       foto: '/disenos/poster/ninos.webp',
       titulo: 'Niños y familias',
       texto: 'Un espacio para crecer juntos.',
-      href: '/ministerios',
+      href: RUTA_MINISTERIOS,
       accion: 'Conocer',
     },
     content.servir && {

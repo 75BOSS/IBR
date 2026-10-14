@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { Icon } from '@/components/Icon';
 
 /*
  * Piezas tipográficas de la propuesta Póster: un solo lugar para cada estilo de letra, así las
@@ -74,4 +76,102 @@ export function Raya({ className = '' }: { className?: string }) {
 /** Aviso para lectores de pantalla en un enlace que abre otra pestaña. */
 export function PestanaNueva({ que = 'se abre en una pestaña nueva' }: { que?: string }) {
   return <span className="sr-only"> ({que})</span>;
+}
+
+/**
+ * Titular con «mal registro» de imprenta: el texto real y, detrás, una copia durazno corrida
+ * (`.d-copia`, decorativa) que se mueve hacia el cursor si un `Desregistro` la envuelve. Las dos
+ * capas ocupan la misma celda de la grilla, así cortan los renglones igual.
+ */
+export function TituloImpreso({
+  as = 'h1',
+  estilo,
+  id,
+  className = '',
+  children,
+}: {
+  as?: 'h1' | 'h2' | 'p';
+  estilo: EstiloTitulo;
+  id?: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="relative isolate grid">
+      <span
+        aria-hidden="true"
+        className={`d-copia -z-10 select-none [grid-area:1/1] ${ESTILOS_TITULO[estilo]} ${className}`}
+      >
+        {children}
+      </span>
+      <Titulo as={as} id={id} estilo={estilo} className={`[grid-area:1/1] ${className}`}>
+        {children}
+      </Titulo>
+    </div>
+  );
+}
+
+/**
+ * Cabecera de una sección como en un periódico: lema rojo, titular negro en mayúsculas y, a la
+ * derecha, su enlace «ver más» con flecha; una raya azul marino gruesa la cierra por abajo.
+ */
+export function CabeceraSeccion({
+  id,
+  lema,
+  titulo,
+  accion,
+  tono = 'claro',
+  className = '',
+}: {
+  id: string;
+  lema: string;
+  titulo: ReactNode;
+  accion?: { href: string; texto: string; externo?: boolean } | null;
+  tono?: 'claro' | 'oscuro';
+  className?: string;
+}) {
+  const oscuro = tono === 'oscuro';
+  return (
+    <div
+      className={`flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-b-2 pb-[clamp(0.5rem,1.5vw,0.875rem)] ${
+        oscuro ? 'border-canvas' : 'border-ink'
+      } ${className}`}
+    >
+      <div className="flex min-w-0 flex-col gap-1">
+        <Lema className={oscuro ? 'text-(--d-rojo-claro)' : 'text-accent'}>{lema}</Lema>
+        <Titulo
+          id={id}
+          estilo="negro"
+          className="pt-[0.1em] text-[clamp(2.25rem,1.4rem+4vw,5rem)] text-balance [overflow-wrap:anywhere] font-stretch-[85%]"
+        >
+          {titulo}
+        </Titulo>
+      </div>
+      {accion && (
+        <Link
+          href={accion.href}
+          {...(accion.externo ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          className={`group inline-flex min-h-11 items-center gap-2 font-display text-[clamp(1.0625rem,1rem+0.4vw,1.375rem)] font-bold font-stretch-[92%] ${
+            oscuro ? 'text-(--d-rojo-claro)' : 'text-accent'
+          }`}
+        >
+          {accion.texto}
+          <Icon name="arrowRight" className="d-flecha size-[1.1em]" />
+          {accion.externo && <PestanaNueva />}
+        </Link>
+      )}
+    </div>
+  );
+}
+
+/** Número de orden grande y hueco («01») de los pasos, cursos y valores. */
+export function Numero({ children, className = '' }: { children: ReactNode; className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`font-display leading-[0.8] font-black tracking-[-0.04em] font-stretch-[75%] ${className}`}
+    >
+      {children}
+    </span>
+  );
 }

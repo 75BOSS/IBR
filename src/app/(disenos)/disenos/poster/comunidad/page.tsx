@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import { datosComunidad } from '@/disenos/datos';
-import { BandaOrientacion } from '@/disenos/poster/comunidad/BandaOrientacion';
+import { BandaCierre } from '@/disenos/poster/BandaCierre';
+import { RUTA_MINISTERIOS } from '@/disenos/poster/enlaces';
 import { Etiquetas } from '@/disenos/poster/comunidad/Etiquetas';
-import {
-  type CategoriaComunidad,
-  FiltroComunidad,
-} from '@/disenos/poster/comunidad/FiltroComunidad';
+import { GruposBarrio } from '@/disenos/poster/comunidad/GruposBarrio';
 import { FilaFoto } from '@/disenos/poster/FilaFoto';
-import { Raya, Titulo } from '@/disenos/poster/piezas';
+import { type Pestana, Pestanas } from '@/disenos/poster/movimiento/Pestanas';
+import { A_LOS_BORDES, PaginaPoster, PortadaPagina } from '@/disenos/poster/PortadaPagina';
+import { SiguientePaso } from '@/disenos/poster/SiguientePaso';
 import { DAY_NAMES, formatTime } from '@/lib/dates';
 import { edadText, ministerioName } from '@/lib/ministerios';
 
@@ -16,28 +16,29 @@ export const revalidate = 300;
 export const metadata: Metadata = { title: 'E · Póster · Comunidad' };
 
 /**
- * Comunidad de la propuesta Póster (imagen 14): «ENCUENTRA TU LUGAR», pestañas que filtran y una
- * fila por cada forma de conectarse (grupos en casa, ministerios por edad, servir), cada una con
- * sus grupos, ministerios o áreas reales. Solo aparecen las filas que tienen contenido; la banda
- * para pedir orientación está siempre.
+ * Comunidad de la propuesta Póster (imagen 14): «ENCUENTRA TU LUGAR», pestañas que filtran (con
+ * el bloque rojo que se desliza) y una fila por cada forma de conectarse (grupos en casa,
+ * ministerios por edad, servir), cada una con sus grupos, ministerios o áreas reales. Debajo,
+ * todos los grupos por barrio, «Tu siguiente paso» y la banda para pedir orientación (siempre).
+ * Solo aparecen las filas y secciones que tienen contenido.
  */
 export default async function ComunidadPoster() {
-  const { grupos, ministerios, areas } = await datosComunidad();
+  const { grupos, ministerios, areas, content } = await datosComunidad();
 
-  const categorias: CategoriaComunidad[] = [
+  const categorias: Pestana[] = [
     ...(grupos.length > 0
       ? [
           {
             clave: 'grupos',
             etiqueta: 'Grupos',
-            fila: (
+            contenido: (
               <FilaFoto
                 nivel="h2"
                 foto="/disenos/poster/grupos.webp"
                 alt="Un grupo en casa conversa con la Biblia abierta"
                 titulo="Grupos en casa"
                 texto="Comparte la vida durante la semana."
-                href="/grupos"
+                href="#barrios"
                 accion="Explorar"
                 detalle={
                   <Etiquetas
@@ -63,23 +64,23 @@ export default async function ComunidadPoster() {
           {
             clave: 'familias',
             etiqueta: 'Familias',
-            fila: (
+            contenido: (
               <FilaFoto
                 nivel="h2"
                 foto="/disenos/poster/ninos.webp"
                 alt="Niños y una maestra ríen mientras hacen una manualidad"
                 titulo="Niños y familias"
                 texto="Un espacio para crecer juntos."
-                href="/ministerios"
+                href={RUTA_MINISTERIOS}
                 accion="Conocer"
                 detalle={
                   <Etiquetas
                     items={ministerios.map((m) => ({
-                      href: `/ministerios/${m.slug}`,
+                      href: `${RUTA_MINISTERIOS}#${m.slug}`,
                       nombre: ministerioName(m),
                       nota: edadText(m),
                     }))}
-                    verTodos={{ href: '/ministerios', texto: 'ministerios más' }}
+                    verTodos={{ href: RUTA_MINISTERIOS, texto: 'ministerios más' }}
                   />
                 }
               />
@@ -92,7 +93,7 @@ export default async function ComunidadPoster() {
           {
             clave: 'servicio',
             etiqueta: 'Servicio',
-            fila: (
+            contenido: (
               <FilaFoto
                 nivel="h2"
                 foto="/disenos/poster/servir.webp"
@@ -119,32 +120,28 @@ export default async function ComunidadPoster() {
   ];
 
   return (
-    <div className="@container/pagina flex flex-col gap-[clamp(1rem,3vw,1.5rem)] px-(--d-margen) pt-[clamp(1.25rem,4vw,2rem)] lg:gap-[clamp(0.75rem,1.2vw,1rem)] lg:px-[clamp(1rem,1.6vw,1.5rem)] lg:pt-[clamp(1rem,2vw,1.75rem)]">
-      <header className="grid gap-x-[3cqi] gap-y-[clamp(1rem,4cqi,1.5rem)] @4xl/pagina:grid-cols-[minmax(0,1fr)_minmax(0,24cqi)] @4xl/pagina:items-start">
-        <Titulo
-          as="h1"
-          estilo="negro"
-          className="text-[17cqi] font-stretch-[78%] @4xl/pagina:text-[14.2cqi] @4xl/pagina:font-stretch-[72%]"
-        >
-          <span className="block">Encuentra</span>
-          <span className="block">
-            <em>Tu</em> lugar
-          </span>
-        </Titulo>
-        <div className="flex max-w-xl flex-col gap-[clamp(0.75rem,1.6cqi,1.25rem)] @4xl/pagina:pt-[2.6cqi]">
-          <p className="font-display text-[clamp(1.25rem,1rem+0.9vw,1.75rem)] leading-[1.1] font-extrabold tracking-[-0.02em]">
-            Personas de todas las edades, una misma familia.
-          </p>
-          <Raya />
-          <p className="text-[clamp(1rem,0.92rem+0.35vw,1.1875rem)] leading-snug">
-            Grupos, familias y oportunidades para servir. Hay un lugar para ti en esta casa.
-          </p>
-        </div>
-      </header>
-      {categorias.length > 0 && <FiltroComunidad categorias={categorias} />}
-      <div className="-mx-(--d-margen) lg:-mx-[clamp(1rem,1.6vw,1.5rem)]">
-        <BandaOrientacion />
+    <PaginaPoster>
+      <div className="flex flex-col gap-[clamp(1rem,3vw,1.5rem)]">
+        <PortadaPagina
+          lema="Comunidad · Riobamba"
+          titulo={
+            <>
+              <span className="block">Encuentra</span>
+              <span className="block">
+                <em>Tu</em> lugar
+              </span>
+            </>
+          }
+          frase="Personas de todas las edades, una misma familia."
+          entrada="Grupos, familias y oportunidades para servir. Hay un lugar para ti en esta casa."
+        />
+        {categorias.length > 0 && <Pestanas opciones={categorias} etiqueta="Ver por tipo" />}
       </div>
-    </div>
+      <GruposBarrio grupos={grupos} />
+      <SiguientePaso content={content} />
+      <div className={A_LOS_BORDES}>
+        <BandaCierre />
+      </div>
+    </PaginaPoster>
   );
 }

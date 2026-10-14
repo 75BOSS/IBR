@@ -1,14 +1,10 @@
 import Link from 'next/link';
 import { Icon } from '@/components/Icon';
 import { formatTime } from '@/lib/dates';
+import { RUTA_PRIMERA_VISITA } from '../enlaces';
+import { unirHoras } from '../horarios';
 import { IconoPoster } from '../IconoPoster';
 import { PestanaNueva, Titulo } from '../piezas';
-
-/** «10:00», «10:00 y 18:00», «8:00, 10:00 y 18:00». */
-function unirHoras(horas: string[]): string {
-  if (horas.length < 2) return horas.join('');
-  return `${horas.slice(0, -1).join(', ')} y ${horas.at(-1)}`;
-}
 
 /**
  * Bloque rojo «Este domingo» con las horas reales del culto y «Cómo llegar». En la grilla de
@@ -50,14 +46,14 @@ export function BloqueDomingo({
           <Titulo
             id="este-domingo"
             estilo="grueso"
-            className="text-[clamp(1.0625rem,5.7cqi,2.5rem)] @2xl/pagina:border-b @2xl/pagina:border-canvas/80 @2xl/pagina:pb-[4.5cqi] @2xl/pagina:text-[clamp(2rem,19.5cqi,4.75rem)] @2xl/pagina:leading-[0.88]"
+            className="text-[clamp(1.0625rem,5.7cqi,2.5rem)] @2xl/pagina:border-b @2xl/pagina:border-canvas/80 @2xl/pagina:pb-[4.5cqi] @2xl/pagina:text-[clamp(2rem,18.4cqi,4.75rem)] @2xl/pagina:leading-[0.88]"
           >
             {domingo.length > 0 ? 'Este domingo' : 'Te esperamos'}
           </Titulo>
           <div className="flex flex-col text-[clamp(0.8125rem,3.5cqi,1.125rem)] leading-snug @2xl/pagina:gap-[1.5cqi] @2xl/pagina:text-[clamp(1rem,5.8cqi,1.375rem)]">
             {cuando && <p className="font-semibold">{cuando}</p>}
             {hayHorarios ? (
-              <Link href="/reuniones" className="w-fit link">
+              <Link href={`${RUTA_PRIMERA_VISITA}#horarios`} className="w-fit link">
                 Consulta los horarios
               </Link>
             ) : (
@@ -82,10 +78,7 @@ export function BloqueDomingo({
               className="group flex min-h-11 shrink-0 items-center justify-center gap-[0.55em] rounded-md bg-canvas px-[0.8em] py-[0.55em] font-display text-[clamp(0.875rem,3.7cqi,1.375rem)] leading-none font-bold text-ink font-stretch-[90%] @2xl/pagina:justify-start @2xl/pagina:px-[9cqi] @2xl/pagina:py-[4.6cqi] @2xl/pagina:text-[clamp(1rem,6.2cqi,1.5rem)]"
             >
               Cómo llegar
-              <Icon
-                name="arrowRight"
-                className="size-[1.05em] motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
-              />
+              <Icon name="arrowRight" className="d-flecha size-[1.05em]" />
               <PestanaNueva que="abre Google Maps en una pestaña nueva" />
             </a>
           </>
