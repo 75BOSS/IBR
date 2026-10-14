@@ -1,13 +1,12 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { Icon } from '@/components/Icon';
 
 /*
  * Piezas visuales de la propuesta C · Nocturna. Todo lo que se repite (contenedor, botones
  * píldora, etiquetas, aros de íconos) sale de aquí para no copiar cadenas de clases.
  */
-
-/** Páginas propias de la propuesta (el resto del menú lleva a las páginas del sitio). */
-export const RUTAS = { inicio: '/disenos/nocturna', comunidad: '/disenos/nocturna/comunidad' };
 
 /** Ancho de página: 16 px de margen en 360 y 56 px en 1536 (la barra y el collage de la imagen 7). */
 export const CONTENEDOR = 'mx-auto w-full max-w-[96rem] px-[clamp(1rem,3.65vw,3.5rem)]';
@@ -110,8 +109,10 @@ export function PestanaNueva({ que = 'se abre' }: { que?: string }) {
 }
 
 /**
- * Foto provisional recortada de la propuesta (public/disenos/nocturna). Llena su caja: el tamaño
- * y la forma los da `className`; `sizes` dice qué ancho ocupa para no bajar una foto de más.
+ * Foto que llena su caja: el tamaño y la forma los da `className`; `sizes` dice qué ancho ocupa
+ * para no bajar una foto de más. Un nombre suelto («abrazo.webp») es un recorte provisional de la
+ * propuesta (public/disenos/nocturna); una ruta o URL completa es una foto de la BD o de
+ * /fotos-ejemplo.
  */
 export function Foto({
   src,
@@ -121,6 +122,7 @@ export function Foto({
   encuadre = 'object-center',
   prioridad = false,
   capa = false,
+  efecto = '',
 }: {
   src: string;
   alt?: string;
@@ -131,17 +133,165 @@ export function Foto({
   prioridad?: boolean;
   /** Capa de fondo posicionada por quien la usa (absolute) en vez de una caja en el flujo. */
   capa?: boolean;
+  /** Clases de movimiento de la foto dentro de su marco (Ken Burns, zoom al pasar el mouse). */
+  efecto?: string;
 }) {
+  const ruta = /^(\/|https?:)/.test(src) ? src : `/disenos/nocturna/${src}`;
   return (
     <div className={`${capa ? 'absolute' : 'relative'} overflow-hidden ${className}`}>
       <Image
-        src={`/disenos/nocturna/${src}`}
+        src={ruta}
         alt={alt}
         fill
         sizes={sizes}
         priority={prioridad}
-        className={`object-cover ${encuadre}`}
+        className={`object-cover ${encuadre} ${efecto}`}
       />
     </div>
   );
+}
+
+/** Titular de sección (Poppins extragruesa con la palabra en itálica): «Lo que *viene.*». */
+export const TITULAR =
+  'font-display text-[clamp(2.125rem,1.3rem+3.3vw,3.875rem)] leading-[0.98] font-extrabold tracking-[-0.035em] break-words';
+
+/** Titular de tarjeta o de bloque dentro de una sección. */
+export const SUBTITULAR =
+  'font-display text-[clamp(1.375rem,1.15rem+0.9vw,1.875rem)] leading-[1.08] font-bold tracking-[-0.025em] break-words';
+
+/** Párrafo de entrada bajo un titular. */
+export const ENTRADA = 'text-[clamp(1rem,0.93rem+0.3vw,1.125rem)] leading-[1.45]';
+
+/**
+ * Cabecera de sección: etiqueta con raya, titular (h2) e introducción opcional. `oscuro` = sobre
+ * azul (etiqueta en arena; la palabra en itálica la pasa a durazno la clase on-dark de la sección).
+ */
+export function TituloSeccion({
+  id,
+  etiqueta,
+  children,
+  intro,
+  oscuro = false,
+  className = '',
+}: {
+  id: string;
+  etiqueta: string;
+  children: ReactNode;
+  intro?: ReactNode;
+  oscuro?: boolean;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`d-aparece flex flex-col items-start gap-[clamp(0.75rem,1.4vw,1rem)] ${className}`}
+    >
+      <Etiqueta className={oscuro ? 'text-(--d-arena)' : 'text-accent-strong'}>{etiqueta}</Etiqueta>
+      <h2 id={id} className={TITULAR}>
+        {children}
+      </h2>
+      {intro && (
+        <p className={`max-w-[38rem] ${ENTRADA} ${oscuro ? 'text-cream/85' : 'text-ink-soft'}`}>
+          {intro}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Enlace de texto con flecha que avanza al pasar el mouse («Ver todos →»). El color lo da quien
+ * lo usa; `externo` abre otra pestaña y lo avisa a los lectores de pantalla.
+ */
+export function EnlaceFlecha({
+  href,
+  children,
+  externo = false,
+  className = '',
+}: {
+  href: string;
+  children: ReactNode;
+  externo?: boolean;
+  className?: string;
+}) {
+  const clases = `group inline-flex min-h-11 items-center gap-2 font-display font-semibold transition-colors ${className}`;
+  const contenido = (
+    <>
+      {children}
+      <Icon
+        name="arrowRight"
+        className="size-5 shrink-0 transition-transform motion-safe:group-hover:translate-x-1"
+      />
+    </>
+  );
+  return externo ? (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={clases}>
+      {contenido}
+      <PestanaNueva />
+    </a>
+  ) : (
+    <Link href={href} className={clases}>
+      {contenido}
+    </Link>
+  );
+}
+
+/**
+ * Preguntas en acordeón con <details>/<summary> (accesible y abre sin JavaScript). `oscuro` =
+ * sobre azul. Se abre una a la vez gracias al atributo `name` compartido.
+ */
+export function Acordeon({
+  nombre,
+  preguntas,
+  oscuro = false,
+}: {
+  nombre: string;
+  preguntas: { pregunta: string; respuesta: string }[];
+  oscuro?: boolean;
+}) {
+  return (
+    <div className={`border-t ${oscuro ? 'border-cream/15' : 'border-line'}`}>
+      {preguntas.map((p) => (
+        <details
+          key={p.pregunta}
+          name={nombre}
+          className={`group border-b ${oscuro ? 'border-cream/15' : 'border-line'}`}
+        >
+          <summary
+            className={`flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 font-display text-[clamp(1.0625rem,0.98rem+0.35vw,1.25rem)] leading-snug font-semibold transition-colors [&::-webkit-details-marker]:hidden ${
+              oscuro ? 'hover:text-peach' : 'hover:text-accent-strong'
+            }`}
+          >
+            <span className="min-w-0 break-words">{p.pregunta}</span>
+            <span
+              aria-hidden="true"
+              className={`grid size-9 shrink-0 place-items-center rounded-full border-[1.5px] transition-transform group-open:rotate-45 motion-safe:duration-300 ${
+                oscuro ? 'border-peach/60 text-peach' : 'border-accent/60 text-accent-strong'
+              }`}
+            >
+              <Icon name="plus" className="size-4" />
+            </span>
+          </summary>
+          <p
+            className={`max-w-[44rem] pr-12 pb-5 leading-relaxed motion-safe:animate-toast-in ${
+              oscuro ? 'text-cream/85' : 'text-ink-soft'
+            }`}
+          >
+            {p.respuesta}
+          </p>
+        </details>
+      ))}
+    </div>
+  );
+}
+
+/** Iniciales de un nombre para el retrato de quien aún no tiene foto («Juan Carlos» → «JC»). */
+export function iniciales(nombre: string): string {
+  const palabras = nombre
+    .replace(/^(Pastora?|Pstr\.?|Hno\.?|Hna\.?)\s+/i, '')
+    .split(/\s+/)
+    .filter(Boolean);
+  return palabras
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() ?? '')
+    .join('');
 }

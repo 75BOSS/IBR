@@ -144,7 +144,7 @@ export function TarjetaVisita({ visita, horarios, comoLlegar }: DatosVisita) {
           <Etiqueta className="text-accent-strong">Te esperamos</Etiqueta>
           <h2
             id="visita-titulo"
-            className="font-display text-[clamp(2rem,9.6cqi,3.75rem)] leading-none font-extrabold tracking-[-0.035em]"
+            className="font-display text-[clamp(1.5rem,9cqi,3.75rem)] leading-none font-extrabold tracking-[-0.035em] break-words hyphens-auto"
           >
             {visita?.dia ?? 'Domingos'}
           </h2>

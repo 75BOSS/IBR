@@ -1,12 +1,16 @@
 import Link from 'next/link';
 import { Icon } from '@/components/Icon';
 import { BarraVisita, type DatosVisita } from './Visita';
+import { FocoCursor } from './efectos';
+import { RUTAS } from './rutas';
 import { Alterna, Aro, CONTENEDOR, Foto, pildora } from './ui';
 
 /**
  * Portada del inicio (imágenes 7 y 9): noche azul con la foto a la derecha y un velo que la funde
  * hacia el titular. En escritorio la barra de la visita monta sobre el borde inferior: la foto
  * termina a la mitad de la barra y la otra mitad queda sobre la crema de la sección siguiente.
+ * Movimiento: la foto se acerca lento (Ken Burns), el titular entra desenfocado y se aclara, y
+ * con mouse un foco de luz durazno sigue al cursor.
  */
 export function Portada({ predicas, ...visita }: DatosVisita & { predicas: boolean }) {
   return (
@@ -22,6 +26,7 @@ export function Portada({ predicas, ...visita }: DatosVisita & { predicas: boole
           sizes="60vw"
           prioridad
           encuadre="object-left"
+          efecto="d-ken-burns"
           capa
           className="inset-y-0 right-0 w-[48%] mask-l-from-75% md:hidden"
         />
@@ -30,11 +35,13 @@ export function Portada({ predicas, ...visita }: DatosVisita & { predicas: boole
           sizes="(min-width: 64rem) 60vw, 70vw"
           prioridad
           encuadre="object-left lg:object-[40%_center]"
+          efecto="d-ken-burns"
           capa
           className="inset-y-0 right-0 hidden w-[62%] mask-l-from-60% md:block lg:w-[64%]"
         />
         <div className="absolute inset-0 hidden bg-linear-to-r from-(--d-noche)/70 from-30% to-(--d-noche)/0 to-60% md:block" />
       </div>
+      <FocoCursor />
 
       <div
         className={`${CONTENEDOR} pt-[clamp(3.5rem,1.5rem+5vw,5.25rem)] pb-[clamp(1.75rem,5vw,3rem)] lg:pb-0`}
@@ -42,7 +49,7 @@ export function Portada({ predicas, ...visita }: DatosVisita & { predicas: boole
         <div className="flex flex-col items-start pl-[clamp(0rem,8vw_-_2.25rem,5.5rem)]">
           <h1
             id="portada-titulo"
-            className="font-display text-[clamp(3.25rem,2.2rem+4.6vw,6.15rem)] leading-[0.94] font-extrabold tracking-[-0.035em] text-cream"
+            className="d-entrada font-display text-[clamp(3.25rem,2.2rem+4.6vw,6.15rem)] leading-[0.94] font-extrabold tracking-[-0.035em] text-cream"
           >
             <span className="block">
               Aquí <br className="md:hidden" />
@@ -52,7 +59,7 @@ export function Portada({ predicas, ...visita }: DatosVisita & { predicas: boole
               familia.
             </em>
           </h1>
-          <p className="mt-[clamp(0.75rem,2vw,1.25rem)] max-w-[14rem] text-[clamp(1.0625rem,0.8rem+0.95vw,1.625rem)] leading-snug font-light md:max-w-[24rem] lg:max-w-none">
+          <p className="d-entrada mt-[clamp(0.75rem,2vw,1.25rem)] max-w-[14rem] text-[clamp(1.0625rem,0.8rem+0.95vw,1.625rem)] leading-snug font-light [--d-retraso:200ms] md:max-w-[24rem] lg:max-w-none">
             <Alterna
               movil="Una iglesia para conocer a Jesús, crecer juntos y servir a nuestra ciudad."
               escritorio="Conocemos a Dios y compartimos la vida."
@@ -60,17 +67,20 @@ export function Portada({ predicas, ...visita }: DatosVisita & { predicas: boole
           </p>
           <span
             aria-hidden="true"
-            className="mt-[clamp(1rem,1.6vw,1.5rem)] hidden h-0.5 w-[2.4rem] bg-(--d-durazno) md:block"
+            className="d-entrada mt-[clamp(1rem,1.6vw,1.5rem)] hidden h-0.5 w-[2.4rem] bg-(--d-durazno) [--d-retraso:300ms] md:block"
           />
-          <div className="mt-[clamp(1.25rem,1.6vw,1.5rem)] flex flex-wrap gap-x-5 gap-y-3">
-            <Link href="/soy-nuevo" className={pildora({ tono: 'durazno', tamano: 'lg' })}>
+          <div className="d-entrada mt-[clamp(1.25rem,1.6vw,1.5rem)] flex flex-wrap gap-x-5 gap-y-3 [--d-retraso:380ms]">
+            <Link href={RUTAS.primeraVisita} className={pildora({ tono: 'durazno', tamano: 'lg' })}>
               Planifica tu visita
               <Icon name="arrowRight" className="size-[1.2em]" />
             </Link>
             {/* En celular la imagen 9 deja una sola llamada: «Ver prédicas» aparece desde tablet. */}
             {predicas && (
               <div className="hidden md:block">
-                <Link href="/predicas" className={pildora({ tono: 'contornoClaro', tamano: 'lg' })}>
+                <Link
+                  href={RUTAS.recursos}
+                  className={pildora({ tono: 'contornoClaro', tamano: 'lg' })}
+                >
                   Ver prédicas
                   <Aro className="size-[1.45em]">
                     <Icon name="play" fill="currentColor" className="ml-[0.1em] size-[0.6em]" />
@@ -80,7 +90,7 @@ export function Portada({ predicas, ...visita }: DatosVisita & { predicas: boole
             )}
           </div>
         </div>
-        <div className="mt-[clamp(1.5rem,2.6vw,2.3rem)] hidden lg:block">
+        <div className="d-entrada mt-[clamp(1.5rem,2.6vw,2.3rem)] hidden [--d-retraso:520ms] lg:block">
           <BarraVisita {...visita} />
         </div>
       </div>

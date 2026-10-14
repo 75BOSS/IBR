@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { Icon } from '@/components/Icon';
 import { formatDateTime } from '@/lib/dates';
 import type { Evento } from '@/lib/eventos';
-import { CONTENEDOR, CURSIVA, Etiqueta } from './ui';
+import { FocoCursor, ZonaBrillo } from './efectos';
+import { CONTENEDOR, CURSIVA, Etiqueta, TITULAR } from './ui';
 
 type EventoBreve = Pick<
   Evento,
@@ -46,17 +47,18 @@ export function Eventos({ eventos, verTodos }: { eventos: EventoBreve[]; verTodo
   const [primero, ...resto] = eventos;
   if (!primero) return null;
   return (
-    <section aria-labelledby="eventos-titulo" className="bg-(--d-marino) text-cream on-dark">
+    <section
+      aria-labelledby="eventos-titulo"
+      className="relative isolate bg-(--d-marino) text-cream on-dark"
+    >
+      <FocoCursor />
       <div
         className={`${CONTENEDOR} flex flex-col gap-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(3rem,8vw,5.5rem)]`}
       >
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="flex flex-col gap-3">
+          <div className="d-aparece flex flex-col gap-3">
             <Etiqueta className="text-(--d-arena)">Agenda</Etiqueta>
-            <h2
-              id="eventos-titulo"
-              className="font-display text-[clamp(2.125rem,1.3rem+3.3vw,3.875rem)] leading-[0.98] font-extrabold tracking-[-0.035em]"
-            >
+            <h2 id="eventos-titulo" className={TITULAR}>
               Lo que <em>viene.</em>
             </h2>
           </div>
@@ -73,13 +75,14 @@ export function Eventos({ eventos, verTodos }: { eventos: EventoBreve[]; verTodo
             </Link>
           )}
         </div>
-        <ul
+        <ZonaBrillo
+          as="ul"
           className={`grid gap-[clamp(0.75rem,1.5vw,1rem)] ${resto.length > 0 ? 'lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]' : ''}`}
         >
-          <li className="@container">
+          <li className="d-aparece @container">
             <Link
               href={`/eventos/${primero.slug}`}
-              className="group flex h-full flex-col gap-5 rounded-xl bg-(--d-tinta) p-[clamp(1.25rem,5cqi,2.5rem)] ring-1 ring-cream/10 transition-colors hover:ring-peach/60 @md:flex-row @md:items-center @md:gap-[clamp(1.5rem,5cqi,3rem)]"
+              className="d-brillo group flex h-full flex-col gap-5 rounded-xl bg-(--d-tinta) p-[clamp(1.25rem,5cqi,2.5rem)] ring-1 ring-cream/10 transition-colors hover:ring-peach/60 @md:flex-row @md:items-center @md:gap-[clamp(1.5rem,5cqi,3rem)]"
             >
               <Fecha fecha={primero.fecha_inicio} grande />
               <span className="flex flex-col gap-2">
@@ -101,8 +104,8 @@ export function Eventos({ eventos, verTodos }: { eventos: EventoBreve[]; verTodo
             </Link>
           </li>
           {resto.length > 0 && (
-            <li>
-              <ul className="flex h-full flex-col divide-y divide-cream/12 rounded-xl ring-1 ring-cream/10">
+            <li className="d-aparece">
+              <ul className="d-brillo flex h-full flex-col divide-y divide-cream/12 rounded-xl ring-1 ring-cream/10">
                 {resto.slice(0, 3).map((e) => (
                   <li key={e.id} className="flex-1">
                     <Link
@@ -129,7 +132,7 @@ export function Eventos({ eventos, verTodos }: { eventos: EventoBreve[]; verTodo
               </ul>
             </li>
           )}
-        </ul>
+        </ZonaBrillo>
       </div>
     </section>
   );

@@ -1,9 +1,9 @@
 import { Figtree, Playfair_Display, Poppins } from 'next/font/google';
-import { datosMarco } from '@/disenos/datos';
+import { datosPrimeraVisita } from '@/disenos/datos';
 import { BarraLlegar } from '@/disenos/nocturna/BarraLlegar';
 import { Encabezado } from '@/disenos/nocturna/Encabezado';
 import { Pie } from '@/disenos/nocturna/Pie';
-import { RUTAS } from '@/disenos/nocturna/ui';
+import { armarMenu } from '@/disenos/nocturna/menu';
 import '@/disenos/nocturna/tema.css';
 
 // Propuesta C · Nocturna: titulares en Poppins gruesa (la letra del logo), la palabra destacada
@@ -31,22 +31,13 @@ const texto = Figtree({
 });
 
 export default async function NocturnaLayout({ children }: { children: React.ReactNode }) {
-  const { nombre, nav, redes, config, comoLlegar } = await datosMarco();
-  // La página «Comunidad» de esta propuesta entra al grupo Conéctate del menú.
-  const menu = nav.menu.map((grupo) =>
-    grupo.title === 'Conéctate'
-      ? {
-          ...grupo,
-          items: [
-            {
-              href: RUTAS.comunidad,
-              label: 'Comunidad',
-              description: 'Grupos en casa, familias y servir juntos',
-            },
-            ...grupo.items,
-          ],
-        }
-      : grupo,
+  // El marco (configuración, contenido, redes) más los ministerios reales: el menú enlaza
+  // #kids y #jovenes de la página Ministerios solo si esos ministerios existen.
+  const { nombre, nav, redes, config, comoLlegar, content, ministerios } =
+    await datosPrimeraVisita();
+  const menu = armarMenu(
+    content,
+    ministerios.map((m) => m.slug),
   );
 
   return (
@@ -59,7 +50,7 @@ export default async function NocturnaLayout({ children }: { children: React.Rea
       >
         Saltar al contenido
       </a>
-      <Encabezado nombre={nombre} menu={menu} links={nav.links} />
+      <Encabezado nombre={nombre} menu={menu} />
       <main id="contenido" className="flex-1">
         {children}
       </main>

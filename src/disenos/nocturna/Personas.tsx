@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { Icon } from '@/components/Icon';
 import type { datosPortada } from '@/disenos/datos';
 import { youTubeWatchUrl } from '@/lib/youtube';
+import { ZonaBrillo } from './efectos';
+import { RUTAS } from './rutas';
 import { Alterna, Aro, CONTENEDOR, CURSIVA, Etiqueta, Foto, PestanaNueva, pildora } from './ui';
 
 type UltimaPredica = Awaited<ReturnType<typeof datosPortada>>['ultimaPredica'];
@@ -14,7 +16,7 @@ type UltimaPredica = Awaited<ReturnType<typeof datosPortada>>['ultimaPredica'];
 function TarjetaPredica({ predica }: { predica: NonNullable<UltimaPredica> | null }) {
   const enlace = predica
     ? { href: youTubeWatchUrl(predica.videoId), texto: 'Ver mensaje', externo: true }
-    : { href: '/predicas', texto: 'Ver prédicas', externo: false };
+    : { href: RUTAS.recursos, texto: 'Ver prédicas', externo: false };
   const contenidoEnlace = (
     <>
       <Aro className="size-[clamp(2.75rem,10cqi,3.125rem)] transition-colors group-hover:bg-cream group-hover:text-(--d-tinta)">
@@ -32,7 +34,7 @@ function TarjetaPredica({ predica }: { predica: NonNullable<UltimaPredica> | nul
   return (
     <article
       aria-labelledby="predica-titulo"
-      className="@container relative isolate col-span-2 flex min-h-[19rem] overflow-hidden rounded-xl bg-(--d-tinta) text-cream ring-1 ring-cream/10 on-dark lg:col-span-1 lg:row-span-2"
+      className="d-brillo @container relative isolate col-span-2 flex min-h-[19rem] overflow-hidden rounded-xl bg-(--d-tinta) text-cream ring-1 ring-cream/10 on-dark lg:col-span-1 lg:row-span-2"
     >
       <Foto
         src="predicador.webp"
@@ -104,7 +106,7 @@ export function Personas({
       aria-labelledby="personas-titulo"
       className="bg-(--d-noche) text-cream on-dark lg:bg-canvas lg:text-ink lg:[--focus-ring:var(--color-accent)] lg:[--title-em:var(--color-accent-strong)]"
     >
-      <div
+      <ZonaBrillo
         className={`${CONTENEDOR} grid grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] items-start gap-x-[clamp(1rem,4vw,2rem)] gap-y-[clamp(1.75rem,5vw,2.5rem)] pt-[clamp(1.75rem,4vw,2rem)] pb-[clamp(2.5rem,7vw,4rem)] lg:items-stretch lg:gap-x-2 lg:gap-y-4 ${
           conTarjeta
             ? 'lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)_minmax(0,1fr)]'
@@ -148,22 +150,22 @@ export function Personas({
           className="aspect-[1/1.05] rounded-[clamp(0.75rem,2.5vw,1rem)] md:aspect-[4/3.4] lg:hidden"
         />
         <div className="hidden min-h-[clamp(18rem,1rem+21vw,21.25rem)] grid-cols-[46fr_54fr] grid-rows-2 gap-[0.45rem] lg:row-span-2 lg:grid">
-          <Foto src="abrazo.webp" sizes="16vw" className="row-span-2 rounded-md" />
-          <Foto src="alabanza.webp" sizes="18vw" className="rounded-md" />
-          <Foto src="amigos.webp" sizes="18vw" className="rounded-md" />
+          <Foto src="abrazo.webp" sizes="16vw" className="d-brillo row-span-2 rounded-md" />
+          <Foto src="alabanza.webp" sizes="18vw" className="d-brillo rounded-md" />
+          <Foto src="amigos.webp" sizes="18vw" className="d-brillo rounded-md" />
         </div>
 
         {/* Fuera de la columna del texto: en celular esa columna es angosta (va junto a la foto) y
             el botón ocupa su propia fila; en escritorio vuelve bajo el texto. */}
         <div className="col-span-2 lg:col-span-1 lg:col-start-1 lg:row-start-2 lg:self-end">
-          <Link href="/nosotros" className={pildora({ tono: 'contornoMixto' })}>
+          <Link href={RUTAS.conocenos} className={pildora({ tono: 'contornoMixto' })}>
             Conócenos más
             <Icon name="arrowRight" className="size-[1.15em]" />
           </Link>
         </div>
 
         {conTarjeta && <TarjetaPredica predica={predica} />}
-      </div>
+      </ZonaBrillo>
     </section>
   );
 }
