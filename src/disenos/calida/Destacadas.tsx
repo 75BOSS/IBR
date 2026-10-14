@@ -10,7 +10,8 @@ import { Texto } from './Texto';
 /**
  * Tarjeta oscura con foto (imagen 1): en su ancho grande la foto va a la derecha y se funde con
  * el azul noche hacia el texto; angosta (celular), la foto arriba y el texto debajo. `ancha` es
- * el ancho de la tarjeta (container query) desde el que la foto pasa al costado.
+ * el ancho de la tarjeta (container query) desde el que la foto pasa al costado. Con mouse, una
+ * luz cálida sigue al cursor, la foto se acerca despacio y la tarjeta se eleva.
  */
 function TarjetaOscura({
   foto,
@@ -43,7 +44,8 @@ function TarjetaOscura({
         };
   return (
     <article
-      className={`group @container relative isolate flex flex-col overflow-hidden rounded-[0.875rem] bg-(--d-noche) text-cream on-dark ${lado.tarjeta}`}
+      data-luz=""
+      className={`group calida-luz calida-elevar @container relative isolate flex flex-col overflow-hidden rounded-[0.875rem] bg-(--d-noche) text-cream on-dark ${lado.tarjeta}`}
     >
       <Foto
         src={foto}

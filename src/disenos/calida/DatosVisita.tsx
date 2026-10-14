@@ -6,7 +6,7 @@ import { Etiqueta } from './Etiqueta';
 import { Foto } from './Foto';
 import { IconoNavegar } from './IconoNavegar';
 import { Titulo } from './Titulo';
-import { diaPrincipal } from './textos';
+import { diaPrincipal, rutaCalida } from './textos';
 
 type Destino = { href: string; externo: boolean };
 
@@ -55,7 +55,10 @@ export function DatosVisita({
 }) {
   const principal = diaPrincipal(reuniones);
   if (!principal && !comoLlegar) return null;
-  const aHorarios: Destino | null = verHorarios ? { href: '/reuniones', externo: false } : null;
+  // Los horarios están en la Primera visita de la propuesta (solo si hay reuniones cargadas).
+  const aHorarios: Destino | null = verHorarios
+    ? { href: rutaCalida('/primera-visita#horarios'), externo: false }
+    : null;
   const aMapa: Destino | null = comoLlegar ? { href: comoLlegar, externo: true } : null;
 
   const filas = [

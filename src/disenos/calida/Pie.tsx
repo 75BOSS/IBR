@@ -1,15 +1,16 @@
 import Link from 'next/link';
 import { BrandLogo } from '@/components/BrandMark';
 import { Icon, type IconName } from '@/components/Icon';
-import type { PublicNavGroup, PublicNavItem } from '@/lib/nav';
+import type { PublicNavItem } from '@/lib/nav';
 import { Contenedor } from './Contenedor';
 import { Etiqueta } from './Etiqueta';
 import { botonCalida } from './botones';
+import type { MenuCalida } from './textos';
 
 /**
  * Pie de la propuesta (la imagen no lo muestra): azul noche como las tarjetas oscuras, logo en
- * crema, la visión en la itálica caligráfica, las columnas del menú (ya filtradas por contenido),
- * visítanos con «Cómo llegar», redes y los enlaces legales (Privacidad siempre).
+ * crema, la visión en la itálica caligráfica, las cuatro columnas del menú (con sus anclas),
+ * los horarios reales, visítanos con «Cómo llegar», redes y los enlaces legales.
  */
 export function Pie({
   nombre,
@@ -17,8 +18,8 @@ export function Pie({
   direccion,
   email,
   comoLlegar,
+  horarios,
   menu,
-  links,
   legal,
   redes,
 }: {
@@ -27,8 +28,9 @@ export function Pie({
   direccion: string | null;
   email: string | null;
   comoLlegar: string | null;
-  menu: PublicNavGroup[];
-  links: PublicNavItem[];
+  /** «Domingo 10:00», sin repetir (BD). */
+  horarios: string[];
+  menu: MenuCalida;
   legal: PublicNavItem[];
   redes: { label: string; icon: IconName; href: string }[];
 }) {
@@ -36,7 +38,7 @@ export function Pie({
   return (
     <footer className="bg-(--d-noche) text-cream on-dark">
       <Contenedor className="flex flex-col gap-[clamp(2.5rem,5vw,4rem)] py-[clamp(3rem,7vw,5.5rem)]">
-        <div className="grid gap-[clamp(2.5rem,5vw,4rem)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <div className="grid gap-[clamp(2.5rem,5vw,4rem)] lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]">
           <div className="flex flex-col items-start gap-6">
             <Link href="/disenos/calida" className="rounded-lg text-cream">
               <BrandLogo className="h-[clamp(3.25rem,2.6rem+2.4vw,4.75rem)]" />
@@ -47,12 +49,27 @@ export function Pie({
                 {vision}
               </p>
             )}
+            {horarios.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <Etiqueta className="text-peach">Te esperamos</Etiqueta>
+                <ul className="flex flex-wrap gap-2">
+                  {horarios.slice(0, 4).map((h) => (
+                    <li
+                      key={h}
+                      className="rounded-full px-3 py-1 text-[0.9rem] text-cream/90 ring-1 ring-cream/25"
+                    >
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div className="flex flex-wrap gap-3">
-              <Link href="/soy-nuevo" className={botonCalida('naranja')}>
-                Planifica tu visita
+              <Link href={menu.visita.href} className={botonCalida('naranja')}>
+                {menu.visita.label}
                 <Icon name="arrowRight" className="size-5" />
               </Link>
-              {links.map((item) => (
+              {menu.sueltos.map((item) => (
                 <Link key={item.href} href={item.href} className={botonCalida('contornoClaro')}>
                   {item.label}
                 </Link>
@@ -62,18 +79,18 @@ export function Pie({
 
           <nav
             aria-label="Pie de página"
-            className="grid grid-cols-2 gap-x-6 gap-y-9 md:grid-cols-[repeat(auto-fit,minmax(9rem,1fr))]"
+            className="grid grid-cols-2 gap-x-6 gap-y-9 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4"
           >
-            {menu.map((grupo) => (
-              <div key={grupo.title} className="flex flex-col gap-4">
+            {menu.grupos.map((grupo) => (
+              <div key={grupo.titulo} className="flex min-w-0 flex-col gap-4">
                 <Etiqueta como="h2" className="text-peach">
-                  {grupo.title}
+                  {grupo.titulo}
                 </Etiqueta>
                 <ul className="flex flex-col gap-2.5">
                   {grupo.items.map((item) => (
                     <li key={item.href}>
-                      <Link href={item.href} className="link-quiet">
-                        {item.label}
+                      <Link href={item.href} className="font-semibold text-cream/95">
+                        <span className="calida-trazo">{item.label}</span>
                       </Link>
                     </li>
                   ))}
@@ -104,7 +121,10 @@ export function Pie({
                 </a>
               )}
               {email && (
-                <a href={`mailto:${email}`} className="inline-flex items-center gap-2 link">
+                <a
+                  href={`mailto:${email}`}
+                  className="inline-flex min-w-0 items-center gap-2 link wrap-anywhere"
+                >
                   <Icon name="mail" className="size-5" /> {email}
                 </a>
               )}
@@ -118,7 +138,7 @@ export function Pie({
                     href={r.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="grid size-11 place-items-center rounded-full ring-1 ring-cream/30 transition-colors hover:bg-cream/10"
+                    className="calida-magnetico grid size-11 place-items-center rounded-full ring-1 ring-cream/30 hover:bg-cream/10"
                   >
                     <Icon name={r.icon} className="size-5" />
                     <span className="sr-only">{r.label} (se abre en una pestaña nueva)</span>
@@ -136,8 +156,8 @@ export function Pie({
           <ul className="flex flex-wrap gap-x-6 gap-y-2">
             {legal.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="link-quiet">
-                  {item.label}
+                <Link href={item.href} className="font-semibold">
+                  <span className="calida-trazo">{item.label}</span>
                 </Link>
               </li>
             ))}

@@ -1,6 +1,7 @@
 import { DM_Serif_Display, Playfair_Display } from 'next/font/google';
-import { datosMarco } from '@/disenos/datos';
+import { datosPrimeraVisita } from '@/disenos/datos';
 import { BarraComoLlegar } from '@/disenos/calida/BarraComoLlegar';
+import { EfectosCursor } from '@/disenos/calida/EfectosCursor';
 import { Encabezado } from '@/disenos/calida/Encabezado';
 import { Pie } from '@/disenos/calida/Pie';
 import { menuCalida } from '@/disenos/calida/textos';
@@ -23,13 +24,16 @@ const enfasis = Playfair_Display({
 });
 
 /**
- * Marco de la propuesta A · Cálida (imágenes 1 · 2 · 3): encabezado claro, pie azul noche y, en
- * el celular, la barra fija «Cómo llegar». El selector de diseños y el 404 en producción los pone
- * el layout padre (`disenos/layout.tsx`).
+ * Marco de la propuesta A · Cálida (imágenes 1 · 2 · 3): encabezado claro con el menú
+ * desplegable, pie azul noche con los horarios y, en el celular, la barra fija «Cómo llegar».
+ * Lee los ministerios para saber si Kids y Jóvenes existen (anclas del menú). `EfectosCursor`
+ * pone en marcha los efectos que siguen al mouse. El selector de diseños y el 404 en producción
+ * los pone el layout padre (`disenos/layout.tsx`).
  */
 export default async function CalidaLayout({ children }: { children: React.ReactNode }) {
-  const { config, nav, redes, nombre, comoLlegar } = await datosMarco();
-  const menu = menuCalida(nav.menu);
+  const { config, content, nav, redes, nombre, comoLlegar, horarios, ministerios } =
+    await datosPrimeraVisita();
+  const menu = menuCalida({ content, ministerios });
   return (
     <div className={`diseno-calida ${titulo.variable} ${enfasis.variable} flex min-h-dvh flex-col`}>
       <a
@@ -38,7 +42,8 @@ export default async function CalidaLayout({ children }: { children: React.React
       >
         Saltar al contenido
       </a>
-      <Encabezado nombre={nombre} menu={menu} links={nav.links} />
+      <EfectosCursor />
+      <Encabezado nombre={nombre} menu={menu} />
       <main id="contenido" tabIndex={-1} className="flex-1 focus:outline-none">
         {children}
       </main>
@@ -48,8 +53,8 @@ export default async function CalidaLayout({ children }: { children: React.React
         direccion={config.direccion}
         email={config.email}
         comoLlegar={comoLlegar}
+        horarios={horarios}
         menu={menu}
-        links={nav.links}
         legal={nav.legal}
         redes={redes}
       />

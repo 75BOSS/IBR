@@ -2,9 +2,11 @@
  * Botones píldora de la propuesta (módulo sin 'use client': sirve en Server y Client Components).
  * naranja: la acción principal («Planifica tu visita»); contorno: la secundaria sobre crema
  * («Ver prédicas»); contornoClaro: la secundaria sobre azul marino. Alto mínimo 44–52 px.
+ * Todos son magnéticos (`calida-magnetico`, tema.css + EfectosCursor): con un mouse se acercan
+ * unos píxeles al cursor; la clase también trae la transición de colores.
  */
 const BASE =
-  'inline-flex items-center justify-center gap-3 rounded-full leading-none whitespace-nowrap transition-colors motion-safe:duration-150';
+  'calida-magnetico inline-flex items-center justify-center gap-3 rounded-full leading-none whitespace-nowrap';
 
 const VARIANTES = {
   naranja: 'bg-accent font-sans font-semibold text-cream hover:bg-accent-strong',

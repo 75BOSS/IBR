@@ -2,20 +2,20 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Icon } from '@/components/Icon';
 import { datosComunidad } from '@/disenos/datos';
+import { CabeceraPagina } from '@/disenos/calida/CabeceraPagina';
 import { Contenedor } from '@/disenos/calida/Contenedor';
-import { Etiqueta } from '@/disenos/calida/Etiqueta';
+import { EncabezadoSeccion } from '@/disenos/calida/EncabezadoSeccion';
+import { EnlaceFlecha } from '@/disenos/calida/EnlaceFlecha';
 import { Ficha } from '@/disenos/calida/Ficha';
-import { Foto } from '@/disenos/calida/Foto';
+import { GruposCasa } from '@/disenos/calida/GruposCasa';
 import { SiguientePaso } from '@/disenos/calida/SiguientePaso';
 import {
   DatoConIcono,
   type TarjetaComunidad,
   TarjetasComunidad,
 } from '@/disenos/calida/TarjetasComunidad';
-import { Texto } from '@/disenos/calida/Texto';
-import { Titulo } from '@/disenos/calida/Titulo';
 import { botonCalida } from '@/disenos/calida/botones';
-import { listaNatural } from '@/disenos/calida/textos';
+import { listaNatural, rutaCalida } from '@/disenos/calida/textos';
 import { ministerioName } from '@/lib/ministerios';
 
 export const revalidate = 300;
@@ -37,7 +37,8 @@ function Fichas({ items }: { items: { clave: number; nombre: string; tono?: stri
 
 /**
  * Comunidad de la propuesta A · Cálida (imagen 2): «La vida se comparte.», las tres puertas
- * (grupos, niños y familias, servir) con sus datos reales y la banda «Tu siguiente paso». Cada
+ * (grupos, niños y familias, servir) con sus datos reales, los grupos en casa de esta semana
+ * (#grupos, como «Grupos de conexión» de supresencia) y la banda «Tu siguiente paso». Cada
  * puerta aparece solo si su página tiene contenido.
  */
 export default async function CalidaComunidad() {
@@ -67,7 +68,7 @@ export default async function CalidaComunidad() {
     ...(content.ministerios
       ? [
           {
-            href: '/ministerios',
+            href: rutaCalida('/ministerios'),
             titulo: 'Niños y familias',
             texto:
               'Acompañamos a cada generación con enseñanza bíblica y un ambiente seguro y alegre.',
@@ -104,38 +105,60 @@ export default async function CalidaComunidad() {
   ];
 
   return (
-    <div className="flex flex-col gap-[clamp(2rem,4vw,2.5rem)] pt-[clamp(1.25rem,2.2vw,2rem)]">
-      <section aria-labelledby="calida-comunidad">
-        <Contenedor className="grid items-center gap-[clamp(1.5rem,3.4vw,3rem)] lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-          <div className="flex flex-col items-start gap-[clamp(0.875rem,1.4vw,1.25rem)] xl:pl-[clamp(0rem,6vw,6rem)]">
-            <Etiqueta className="text-accent-strong">Comunidad</Etiqueta>
-            <Titulo como="h1" id="calida-comunidad" tamano="pagina" className="text-ink">
-              La vida se <em className="-mt-[0.08em] block">comparte.</em>
-            </Titulo>
-            <Texto className="max-w-[29rem]">
-              En IBR creemos que la fe se vive mejor en comunidad. Caminamos juntos, nos animamos,
-              servimos y crecemos en todas las etapas de la vida.
-            </Texto>
-            <Link href="/nosotros" className={botonCalida('naranja', 'normal', 'mt-1')}>
-              Conoce más sobre nosotros
-              <Icon name="arrowRight" className="size-4" />
-            </Link>
-          </div>
-          <Foto
-            src="/disenos/calida/comunidad.webp"
-            alt="Amigos de la iglesia conversan y ríen alrededor de una mesa"
-            sizes="(min-width: 64rem) 58vw, 100vw"
-            prioridad
-            encuadre="object-[55%_center]"
-            className="relative aspect-[4/3] rounded-[0.875rem] md:aspect-[16/8] lg:aspect-auto lg:min-h-[clamp(20rem,22vw,22rem)] lg:self-stretch"
-          />
-        </Contenedor>
-      </section>
+    <div className="flex flex-col gap-[clamp(2.5rem,5vw,4rem)] pt-[clamp(1.25rem,2.2vw,2rem)]">
+      <CabeceraPagina
+        id="calida-comunidad"
+        etiqueta="Comunidad"
+        titulo={
+          <>
+            La vida se <em className="-mt-[0.08em] block">comparte.</em>
+          </>
+        }
+        texto="En IBR creemos que la fe se vive mejor en comunidad. Caminamos juntos, nos animamos, servimos y crecemos en todas las etapas de la vida."
+        acciones={
+          <Link href={rutaCalida('/conocenos')} className={botonCalida('naranja', 'normal')}>
+            Conoce más sobre nosotros
+            <Icon name="arrowRight" className="size-4" />
+          </Link>
+        }
+        foto={{
+          src: '/disenos/calida/comunidad.webp',
+          alt: 'Amigos de la iglesia conversan y ríen alrededor de una mesa',
+          encuadre: 'object-[55%_center]',
+        }}
+      />
 
       {tarjetas.length > 0 && (
         <section aria-label="Formas de vivir la comunidad">
           <Contenedor>
             <TarjetasComunidad tarjetas={tarjetas} />
+          </Contenedor>
+        </section>
+      )}
+
+      {grupos.length > 0 && (
+        <section
+          id="grupos"
+          aria-labelledby="calida-grupos"
+          className="pt-[clamp(1rem,3vw,2.5rem)]"
+        >
+          <Contenedor className="flex flex-col gap-[clamp(1.5rem,3vw,2.5rem)]">
+            <EncabezadoSeccion
+              id="calida-grupos"
+              etiqueta="Grupos en casa"
+              titulo={
+                <>
+                  Esta semana en <em>Riobamba</em>
+                </>
+              }
+              texto={`${grupos.length} ${grupos.length === 1 ? 'grupo se reúne' : 'grupos se reúnen'} en casas${
+                zonas.length > 0 ? ` de ${listaNatural(zonas.slice(0, 4))}` : ''
+              }. Elige el que te quede cerca y visítalo cuando quieras.`}
+              accion={
+                content.grupos && <EnlaceFlecha href="/grupos">Buscar por zona y día</EnlaceFlecha>
+              }
+            />
+            <GruposCasa grupos={grupos} />
           </Contenedor>
         </section>
       )}

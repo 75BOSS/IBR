@@ -89,3 +89,273 @@ html:has(.diseno-calida) {
     padding-inline: 0 0.04em;
   }
 }
+
+/*
+ * ── Movimiento (2026-10-13): elegante y suave ──────────────────────────────────────────────
+ * Todo es CSS salvo lo que sigue al cursor (EfectosCursor.tsx pone --mx/--my, --lx/--ly y
+ * --px/--py). Reglas: (1) con «reducir movimiento» nada se mueve; (2) sin JavaScript o sin
+ * soporte de `animation-timeline` nada queda oculto: las apariciones solo existen dentro de
+ * @supports y arrancan desde un estado visible al terminar; (3) los efectos de cursor solo con
+ * un mouse de verdad (hover + pointer fine): en el celular no hay nada que dependa de ellos.
+ * Cada efecto anima su propia propiedad para no pisarse: aparición → transform + opacity,
+ * elevarse e imán → translate, zoom → scale, paralaje → translate de la capa que envuelve la foto.
+ * Ojo: `animation-timeline: view()` se ata al contenedor con scroll más cercano y
+ * `overflow: hidden` cuenta como tal; por eso los marcos con paralaje usan `overflow: clip`.
+ */
+.diseno-calida {
+  --d-sombra-calida:
+    0 1.75rem 3rem -1.5rem rgb(122 52 18 / 0.34), 0 0.375rem 1rem -0.5rem rgb(122 52 18 / 0.16);
+  --d-luz: rgb(243 201 141 / 0.18);
+}
+
+@keyframes calida-aparece {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes calida-paralaje {
+  from {
+    translate: 0 -6%;
+  }
+  to {
+    translate: 0 6%;
+  }
+}
+
+@keyframes calida-dibuja {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes calida-dibuja-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes calida-enciende {
+  from {
+    background-color: var(--color-canvas);
+    scale: 0.8;
+  }
+  to {
+    background-color: var(--color-accent);
+    scale: 1;
+  }
+}
+
+@keyframes calida-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes calida-baja {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes calida-desliza {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Titular de la portada y de cada página: entra al cargar (no depende del scroll). */
+  .calida-entrada {
+    animation: calida-entrada 900ms var(--ease-out-soft) both;
+  }
+  .calida-entrada-2 {
+    animation: calida-entrada 900ms 160ms var(--ease-out-soft) both;
+  }
+  .calida-entrada-3 {
+    animation: calida-entrada 900ms 320ms var(--ease-out-soft) both;
+  }
+
+  /* Paneles del menú desplegable. */
+  .calida-baja {
+    animation: calida-baja 260ms var(--ease-out-soft);
+  }
+
+  @supports (animation-timeline: view()) {
+    /* Aparece al entrar en pantalla: sube 1.5rem y se aclara. */
+    .calida-aparece,
+    .calida-escalonado > * {
+      animation: calida-aparece var(--ease-out-soft) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+    /* Los hermanos que entran juntos (una fila de tarjetas) llegan uno tras otro. */
+    .calida-escalonado > :nth-child(2) {
+      animation-range: entry 10% entry 80%;
+    }
+    .calida-escalonado > :nth-child(3) {
+      animation-range: entry 20% entry 90%;
+    }
+    .calida-escalonado > :nth-child(4) {
+      animation-range: entry 30% entry 100%;
+    }
+    .calida-escalonado > :nth-child(n + 5) {
+      animation-range: entry 40% cover 55%;
+    }
+
+    /* Paralaje: la capa que envuelve la foto (16 % más alta que el marco) baja más lento. */
+    .calida-paralaje {
+      animation: calida-paralaje linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+
+    /* Línea de tiempo: la línea se dibuja hasta la mitad de la pantalla y cada punto se
+       enciende cuando la punta lo alcanza. */
+    .calida-linea {
+      transform-origin: top;
+      animation: calida-dibuja linear both;
+      animation-timeline: view();
+      animation-range: cover 50vh cover calc(100% - 50vh);
+    }
+    /* Línea horizontal (ruta de crecimiento en ancho): se dibuja mientras sube por la pantalla. */
+    .calida-linea-x {
+      transform-origin: left;
+      animation: calida-dibuja-x linear both;
+      animation-timeline: view();
+      animation-range: entry 100% cover 65%;
+    }
+    .calida-punto {
+      animation: calida-enciende linear both;
+      animation-timeline: view();
+      animation-range: cover calc(50vh - 1.5rem) cover calc(50vh + 0.5rem);
+    }
+  }
+}
+
+/* Marquesina (testimonios del inicio): muy lenta, se detiene con el mouse, el foco o el botón. */
+@media (prefers-reduced-motion: no-preference) {
+  .calida-marquesina-pista {
+    animation: calida-desliza 90s linear infinite;
+  }
+  .calida-marquesina:is(:hover, :focus-within, [data-pausa]) .calida-marquesina-pista {
+    animation-play-state: paused;
+  }
+}
+
+/* Tarjeta que se eleva con una sombra cálida (con teclado también, al enfocar algo dentro). */
+.calida-elevar {
+  transition:
+    translate 600ms var(--ease-out-soft),
+    box-shadow 600ms var(--ease-out-soft);
+}
+.calida-elevar:focus-within {
+  box-shadow: var(--d-sombra-calida);
+}
+@media (hover: hover) and (pointer: fine) {
+  .calida-elevar:hover {
+    box-shadow: var(--d-sombra-calida);
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .calida-elevar:hover {
+    translate: 0 -0.375rem;
+  }
+}
+
+/* Subrayado que se dibuja de izquierda a derecha (menú, pie, nombres): naranja en claro,
+   durazno sobre azul (sigue a --link-line, que cambia `on-dark`). Al enfocar o en la página
+   actual queda dibujado: no depende del mouse. */
+.calida-trazo {
+  background-image: linear-gradient(var(--link-line), var(--link-line));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 0.125rem;
+  padding-bottom: 0.15em;
+  box-decoration-break: clone;
+  transition: background-size 500ms var(--ease-out-soft);
+}
+.calida-trazo:focus-visible,
+.calida-trazo.calida-trazo-fijo,
+.calida-trazo[aria-current='page'],
+:focus-visible > .calida-trazo,
+[aria-current='page'] > .calida-trazo {
+  background-size: 100% 0.125rem;
+}
+@media (hover: hover) and (pointer: fine) {
+  .calida-trazo:hover,
+  :hover > .calida-trazo,
+  .group:hover .calida-trazo-grupo {
+    background-size: 100% 0.125rem;
+  }
+}
+
+/* Botón magnético: se acerca unos píxeles al cursor (--mx/--my los pone EfectosCursor). */
+.calida-magnetico {
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    translate 450ms var(--ease-out-soft);
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .calida-magnetico {
+    translate: var(--mx, 0) var(--my, 0);
+  }
+
+  /* Foto con profundidad: se desplaza un poco al revés del cursor (--px/--py van de -1 a 1). */
+  .calida-profundidad {
+    scale: 1.05;
+    translate: calc(var(--px, 0) * -0.75rem) calc(var(--py, 0) * -0.5rem);
+    transition: translate 900ms var(--ease-out-soft);
+  }
+}
+
+/* Luz cálida que sigue al cursor sobre las tarjetas oscuras (--lx/--ly en px). */
+.calida-luz::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    30rem circle at var(--lx, 50%) var(--ly, 50%),
+    var(--d-luz),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out-soft);
+}
+@media (hover: hover) and (pointer: fine) {
+  .calida-luz:hover::after {
+    opacity: 1;
+  }
+}
+
+/* Acordeón (<details>): el contenido aparece suave al abrir. */
+@media (prefers-reduced-motion: no-preference) {
+  .calida-acordeon[open] > .calida-acordeon-cuerpo {
+    animation: calida-baja 360ms var(--ease-out-soft);
+  }
+}

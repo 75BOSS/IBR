@@ -5,11 +5,13 @@ import { Ficha } from './Ficha';
 import { Foto } from './Foto';
 import { Titulo } from './Titulo';
 import { Texto } from './Texto';
+import { rutaCalida } from './textos';
 
 /**
  * «Un lugar para ti.» (imagen 3): titular y foto lado a lado también en el celular. Debajo, los
- * ministerios reales (uno por edad, con su color) que llevan a su página; sin ministerios con
- * contenido, el enlace invita a la primera visita.
+ * ministerios reales (uno por edad, con su color) que llevan a su sección en Ministerios de la
+ * propuesta; sin ministerios con contenido, el enlace invita a la primera visita. Aparece al
+ * entrar en pantalla y la foto baja más lento que la página (paralaje).
  */
 export function LugarParaTi({
   ministerios,
@@ -33,7 +35,7 @@ export function LugarParaTi({
         {/* Angosto: titular y foto lado a lado, las fichas debajo a todo el ancho. Ancho: texto y
             fichas en una columna centrada junto a la foto. */}
         <div className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] items-center gap-x-[clamp(1rem,5cqi,5rem)] gap-y-6 [grid-template-areas:'texto_foto'_'fichas_fichas'] @4xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] @4xl:grid-rows-[1fr_auto_auto_1fr] @4xl:[grid-template-areas:'._foto'_'texto_foto'_'fichas_foto'_'._foto']">
-          <div className="flex flex-col gap-[clamp(0.875rem,2.2cqi,1.5rem)] [grid-area:texto]">
+          <div className="calida-aparece flex flex-col gap-[clamp(0.875rem,2.2cqi,1.5rem)] [grid-area:texto]">
             <Titulo
               id="calida-lugar"
               tamano="libre"
@@ -51,14 +53,19 @@ export function LugarParaTi({
             alt="Dos amigas se abrazan al encontrarse en la iglesia"
             sizes="(min-width: 48rem) 45vw, 42vw"
             encuadre="object-[60%_center]"
-            className="relative aspect-[306/268] rounded-[0.875rem] [grid-area:foto] @4xl:aspect-[16/11]"
+            paralaje
+            className="calida-aparece relative aspect-[306/268] rounded-[0.875rem] [grid-area:foto] @4xl:aspect-[16/11]"
           />
-          <div className="flex flex-col items-start gap-5 [grid-area:fichas]">
+          <div className="calida-aparece flex flex-col items-start gap-5 [grid-area:fichas]">
             {conFichas && (
               <ul className="flex flex-wrap gap-2">
                 {ministerios.map((m) => (
                   <li key={m.id}>
-                    <Ficha href={`/ministerios/${m.slug}`} tono={m.color} detalle={edadText(m)}>
+                    <Ficha
+                      href={rutaCalida(`/ministerios#${m.slug}`)}
+                      tono={m.color}
+                      detalle={edadText(m)}
+                    >
                       {ministerioName(m)}
                     </Ficha>
                   </li>
@@ -66,9 +73,9 @@ export function LugarParaTi({
               </ul>
             )}
             {conFichas ? (
-              <EnlaceFlecha href="/ministerios">Conoce los ministerios</EnlaceFlecha>
+              <EnlaceFlecha href={rutaCalida('/ministerios')}>Conoce los ministerios</EnlaceFlecha>
             ) : (
-              <EnlaceFlecha href="/soy-nuevo">Planifica tu visita</EnlaceFlecha>
+              <EnlaceFlecha href={rutaCalida('/primera-visita')}>Planifica tu visita</EnlaceFlecha>
             )}
           </div>
         </div>
